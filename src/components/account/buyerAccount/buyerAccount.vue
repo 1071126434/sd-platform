@@ -1,11 +1,9 @@
 <template>
-  <div>
-    coinPay
-  </div>
+  <div>buyerAccount</div>
 </template>
 <script type="text/ecmascript-6">
 export default {
-  name: 'coinPay',
+  name: 'buyerAccount',
   data () {
     return {
     }

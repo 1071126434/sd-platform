@@ -36,7 +36,7 @@ export default {
             routerHead: 'task',
             lines: [
               {
-                text: '垫付任务',
+                text: '任务管理',
                 link: 'task',
                 bradge: 12
               }
@@ -44,21 +44,67 @@ export default {
           },
           {
             icon: 'el-icon-menu',
-            header: '资金记录',
-            routerHead: 'coin',
+            header: '订单管理',
+            routerHead: 'order',
             lines: [
               {
-                text: '充值押金',
-                link: 'coinPay',
-                bradge: 3
+                text: '派单管理',
+                link: 'orderManger'
               },
               {
-                text: '押金提现',
-                link: 'coinApply'
+                text: '订单查询',
+                link: 'orderFind'
               },
               {
-                text: '资金记录',
-                link: 'coinList'
+                text: '订单驳回处理',
+                link: 'orderRegectDetail'
+              },
+              {
+                text: '评价驳回处理',
+                link: 'orderEvaluteRegect'
+              }
+            ]
+          },
+          {
+            icon: 'el-icon-menu',
+            header: '资金管理',
+            routerHead: 'money',
+            lines: [
+              {
+                text: '买家提现',
+                link: 'buyerApply'
+              },
+              {
+                text: '商家充值',
+                link: 'sellerRecharge',
+                bradge: 12
+              }
+            ]
+          },
+          {
+            icon: 'el-icon-menu',
+            header: '帐号管理',
+            routerHead: 'account',
+            lines: [
+              {
+                text: '商家帐号',
+                link: 'sellerAccount',
+                bradge: 12
+              },
+              {
+                text: '买家帐号',
+                link: 'buyerAccount'
+              }
+            ]
+          },
+          {
+            icon: 'el-icon-menu',
+            header: '投诉处理',
+            routerHead: 'complain',
+            lines: [
+              {
+                text: '商家投诉',
+                link: 'sellerComplain'
               }
             ]
           }
@@ -75,8 +121,24 @@ export default {
         let activeRouter = this.$route.path
         if (activeRouter.indexOf('task') !== -1) {
           this.isActive = 0
-        } else if (activeRouter.indexOf('coin') !== -1) {
+        } else if (activeRouter.indexOf('orderManger') !== -1) {
           this.isActive = 1
+        } else if (activeRouter.indexOf('orderFind') !== -1) {
+          this.isActive = 1
+        } else if (activeRouter.indexOf('orderRegectDetail') !== -1) {
+          this.isActive = 1
+        } else if (activeRouter.indexOf('orderEvaluteRegect') !== -1) {
+          this.isActive = 1
+        } else if (activeRouter.indexOf('buyerApply') !== -1) {
+          this.isActive = 2
+        } else if (activeRouter.indexOf('sellerRecharge') !== -1) {
+          this.isActive = 2
+        } else if (activeRouter.indexOf('sellerAccount') !== -1) {
+          this.isActive = 3
+        } else if (activeRouter.indexOf('buyerAccount') !== -1) {
+          this.isActive = 3
+        } else if (activeRouter.indexOf('sellerComplain') !== -1) {
+          this.isActive = 4
         }
       })
     }

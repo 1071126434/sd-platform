@@ -1,11 +1,9 @@
 <template>
-  <div>
-    coinList
-  </div>
+  <div>buyerApply</div>
 </template>
 <script type="text/ecmascript-6">
 export default {
-  name: 'coinList',
+  name: 'buyerApply',
   data () {
     return {
     }

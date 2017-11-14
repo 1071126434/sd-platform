@@ -1,11 +1,9 @@
 <template>
-  <div>
-    coinApply
-  </div>
+  <div>orderRegectDetail</div>
 </template>
 <script type="text/ecmascript-6">
 export default {
-  name: 'coinApply',
+  name: 'orderRegectDetail',
   data () {
     return {
     }
