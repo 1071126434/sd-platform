@@ -33,7 +33,9 @@
                         <i class="red">4696868146-51541</i>
                       </p>
                       <p>任务类型:
-                        <i class="red">图文好评</i>
+                        <!-- <i class="red">图文好评</i>
+                         <i class="red">文字好评</i> -->
+                          <i class="red">默认好评</i>
                       </p>
                     </li>
                     <li style="width:60px;border:none;margin-left:40px">
@@ -99,6 +101,8 @@
                       <li style="width:25%">
                         <span class="taskOrder">任务类型:
                           <i>默认好评</i>
+                          <!-- <i>图文好评</i>
+                          <i>纯文好评</i> -->
                         </span>
                       </li>
                       <li style="width:15%">
@@ -124,14 +128,16 @@
                     </li>
                     <li style="width:40%">
                       <p>
-                        <span>图文好评</span>&nbsp;&nbsp; |&nbsp;&nbsp; 
-                        <i>东西很不错,下次继续光顾</i>
+                        <!-- <span>图文好评</span>&nbsp;&nbsp; |&nbsp;&nbsp;  -->
+                        <span>文字好评好评</span>&nbsp;&nbsp; |&nbsp;&nbsp;
+                        <i>东西很不错,下次继续光顾分发万福金安开发垃圾</i>
                       </p>
-                      <p>
+                      <!-- <p>
                         <img style="margin-right:10px" alt="" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg">
                         <img style="margin-right:10px" alt="" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg">
                         <img alt="" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg">
-                      </p>
+                      </p> -->
+                      
                     </li>
                     <li style="width:60px;border:none;margin-left:60px">
                       <img class="taskImg" src="https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=499534944,3745393208&fm=173&s=F0B58B7467D353D0480EFDD6030070BA&w=640&h=448&img.JPEG" alt="">
@@ -140,6 +146,7 @@
                       <p class="taskState">淘宝/天猫订单编号:
                       </p>
                       <span class="red">145616516315665</span>
+                      <el-button type="primary">去审核</el-button>
                     </li>
                   </ul>
                 </div>

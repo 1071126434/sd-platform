@@ -57,7 +57,7 @@
           </el-col>
           <el-col :span="9">
             <div class="grid-content bg-purple bgColor">
-              <el-select v-model="select3"  placeholder="分配时间" size="small">
+              <el-select v-model="select3" placeholder="分配时间" size="small">
                 <el-option label="分配时间" value="1"></el-option>
                 <el-option label="评价时间" value="2"></el-option>
                 <el-option label="撤销时间" value="3"></el-option>
@@ -92,8 +92,11 @@
               <li style="width:60%">
                 <span class="shopType"></span>
                 <span>升达旗舰店</span>
-                <spn class="person">对接人: <em>大黄</em></spn>
-                <span class="taskOrder">任务编号: <i>9901640082449467</i>
+                <span class="person">对接人:
+                  <em>大黄</em>
+                </span>
+                <span class="taskOrder">任务编号:
+                  <i>9901640082449467</i>
                   <span class="link">[查看任务详情]</span>
                 </span>
               </li>
@@ -114,19 +117,25 @@
               </li>
               <li style="width:20%;margin-left:-80px">
                 <p>安卓数据线
-                    <span>商品链接</span>
-                </p>  
+                  <span>商品链接</span>
+                </p>
                 <p>子任务编号:
                   <i class="red">4696868146-51541</i>
                 </p>
                 <p>任务类型:
-                  <i class="red">图文好评</i>
+                  <!-- <i class="red">图文好评</i>
+                         <i class="red">文字好评</i> -->
+                  <i class="red">默认好评</i>
                 </p>
               </li>
               <li style="width:30%">
                 <p>
-                  <span>姓名:<i class="red">黄军</i></span>
-                  <span>订单金额:<i class="red">58</i></span>
+                  <span>姓名:
+                    <i class="red">黄军</i>
+                  </span>
+                  <span>订单金额:
+                    <i class="red">58</i>
+                  </span>
                 </p>
                 <p>京东订单编号:
                   <span class="red">68489646146</span>
@@ -134,18 +143,22 @@
                 <p>京东用户名:
                   <span class="red">测试一下看看多少字</span>
                 </p>
-                 <p>手机号:
+                <p>手机号:
                   <span class="red">15103541616</span>
                 </p>
               </li>
               <li class="center" style="width:20%">
                 <p class="taskState">子任务状态:</p>
-                <span class="tipSuccess lh60">已完成</span>
+                <!-- <span class="tipSuccess lh60">已完成</span> -->
+                <span class="tipWait lh60">待下单</span>
+                <p>
+                  <el-checkbox v-model="checked">已联系做单</el-checkbox>
+                </p>
               </li>
               <li style="width:20%">
-                  <p class="center">
-                    <span class="smButton">撤&nbsp;&nbsp;销</span>
-                  </p>
+                <p class="center">
+                  <span class="smButton">撤&nbsp;&nbsp;销</span>
+                </p>
               </li>
             </ul>
           </div>
@@ -185,7 +198,8 @@ export default {
       select2: '',
       select3: '',
       activeName: 'first',
-      currentPage: 1
+      currentPage: 1,
+      checked: true
     }
   },
   methods: {
@@ -271,7 +285,7 @@ export default {
             height 16px
             background red
           .person
-            margin-left 66px  
+            margin-left 66px
           .taskOrder
             margin-left 46px
         .itemCont
