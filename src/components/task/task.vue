@@ -47,7 +47,7 @@
               <span class="shopType"></span>
               <span>升达旗舰店</span>
               <span class="taskOrder">任务编号: 9901640082449467
-                <span class="link">[查看任务详情]</span>
+                <span class="link" @click="lookDetail">[查看任务详情]</span>
               </span>
             </li>
             <li style="width:25%">
@@ -133,6 +133,10 @@ export default {
     }
   },
   methods: {
+    // 查看任务详情
+    lookDetail () {
+      this.$router.push({ name: 'taskDetail' })
+    },
     handleClick (tab, event) {
       console.log(tab, event)
     },
