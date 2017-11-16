@@ -131,6 +131,7 @@ export default {
   name: 'orderManger',
   data () {
     return {
+      currentPage: 1,
       input_1: '',
       input_2: '',
       input_3: '',
