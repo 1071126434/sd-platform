@@ -8,6 +8,11 @@ const SellerAccount = (resolve) => {
     resolve(module)
   })
 }
+const SellerAccountDetail = (resolve) => {
+  import('@/components/account/sellerAccount/sellerAccountDetail').then((module) => {
+    resolve(module)
+  })
+}
 const account = [{
   path: 'account/buyerAccount',
   component: BuyerAccount,
@@ -16,5 +21,9 @@ const account = [{
   path: 'account/sellerAccount',
   component: SellerAccount,
   name: 'sellerAccount'
+}, {
+  path: 'account/sellerAccountDetail',
+  component: SellerAccountDetail,
+  name: 'sellerAccountDetail'
 }]
 export default account
