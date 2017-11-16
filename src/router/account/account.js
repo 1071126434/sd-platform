@@ -3,6 +3,11 @@ const BuyerAccount = (resolve) => {
     resolve(module)
   })
 }
+const BuyerAccountDetail = (resolve) => {
+  import('@/components/account/buyerAccount/buyerAccountDetail').then((module) => {
+    resolve(module)
+  })
+}
 const SellerAccount = (resolve) => {
   import('@/components/account/sellerAccount/sellerAccount').then((module) => {
     resolve(module)
@@ -17,6 +22,10 @@ const account = [{
   path: 'account/buyerAccount',
   component: BuyerAccount,
   name: 'buyerAccount'
+}, {
+  path: 'account/buyerAccountDetail',
+  component: BuyerAccountDetail,
+  name: 'buyerAccountDetail'
 }, {
   path: 'account/sellerAccount',
   component: SellerAccount,

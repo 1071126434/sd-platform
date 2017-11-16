@@ -121,23 +121,13 @@ export default {
         let activeRouter = this.$route.path
         if (activeRouter.indexOf('task') !== -1) {
           this.isActive = 0
-        } else if (activeRouter.indexOf('orderManger') !== -1) {
+        } else if (activeRouter.indexOf('order') !== -1) {
           this.isActive = 1
-        } else if (activeRouter.indexOf('orderFind') !== -1) {
-          this.isActive = 1
-        } else if (activeRouter.indexOf('orderRegectDetail') !== -1) {
-          this.isActive = 1
-        } else if (activeRouter.indexOf('orderEvaluteRegect') !== -1) {
-          this.isActive = 1
-        } else if (activeRouter.indexOf('buyerApply') !== -1) {
+        } else if (activeRouter.indexOf('money') !== -1) {
           this.isActive = 2
-        } else if (activeRouter.indexOf('sellerRecharge') !== -1) {
-          this.isActive = 2
-        } else if (activeRouter.indexOf('sellerAccount') !== -1) {
+        } else if (activeRouter.indexOf('account') !== -1) {
           this.isActive = 3
-        } else if (activeRouter.indexOf('buyerAccount') !== -1) {
-          this.isActive = 3
-        } else if (activeRouter.indexOf('sellerComplain') !== -1) {
+        } else if (activeRouter.indexOf('complain') !== -1) {
           this.isActive = 4
         }
       })

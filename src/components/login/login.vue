@@ -1,128 +1,218 @@
 <template>
   <div class="login">
-    <div class="logo">
-      <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1510149804507&di=38dc2b1b6be35acb5c774289b83f10fd&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F0124f358cec437a801219c77cd9b01.jpg%40900w_1l_2o_100sh.jpg" alt="logo">
-      <span>抱 一 通 信</span>
-    </div>
-    <div class="cont">
-      <div class="text">
-        <h1>数 据 智 能&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;驱 动 未 来</h1>
+    <div class="logLeft">
+      <img :src="loginImg" alt="">
+      <div class="logo">
+        <!-- <img src="./logo.png" alt="logo"> -->
       </div>
-      <div class="board">
-        <h2>登&nbsp;录</h2>
-        <div class="inputCont">
-          <div class="input">
-            <span class="el-icon-edit"></span>
-            <input type="number" placeholder="输入手机号">
-          </div>
-          <div class="input">
-            <span class="el-icon-edit-outline"></span>
-            <input type="password" placeholder="输入登录密码">
-          </div>
-          <button>登&nbsp;录</button>
-          <h3>
-            <span>忘记密码</span>
-          </h3>
+      <h1>后台管理系统</h1>
+    </div>
+    <div class="logoRight" @keyup.13="LogoIn">
+      <div class="logoBox">
+        <h2>用户登录</h2>
+        <div class="border_img">
+          <img src="./logoInPng.jpg" alt="">
         </div>
+        <div class="inputs">
+          <span class="iconfont icon-user"></span>
+          <input type="text" class="userName" @focus="waringText=''" v-model="username" placeholder="请输入姓名">
+          <span></span>
+        </div>
+        <div class="inputs pass">
+          <span class="iconfont icon-lock"></span>
+          <input v-show="canSeePass" v-model="password" @focus="waringText=''" type="text" class="passWord" placeholder="请输入密码">
+          <input v-show="!canSeePass" v-model="password" @focus="waringText=''" type="password" class="passWord" placeholder="请输入密码">
+          <span class="iconfont eyes" :class="{ 'icon-no-see': !canSeePass, 'icon-see':  canSeePass }" @click="canSeePass = !canSeePass"></span>
+        </div>
+        <p class="waring">
+          <span>{{ waringText }}</span>
+        </p>
+        <div class="btn" @click="LogoIn">登录</div>
       </div>
     </div>
   </div>
 </template>
 <script type="text/ecmascript-6">
+// import md5 from 'md5'
+import loginImg from '../../assets/images/login.jpg'
+// import { mapActions } from 'vuex'
 export default {
   name: 'login',
   data () {
     return {
+      username: '',
+      password: '',
+      waringText: '',
+      canSeePass: false,
+      loginImg: loginImg
     }
+  },
+  methods: {
+    LogoIn () {
+      if (this.username === '' || this.password === '') {
+        this.waringText = '请输入正确用户名或密码！'
+        return false
+      } else if (this.password.length < 6) {
+        this.waringText = '密码至少6位！'
+        return false
+      } else {
+        this.$ajax.post('/api/manage/account/login', {
+          telephone: this.username,
+          password: this.password
+        }).then(data => {
+          // if (data.data.code === '200') {
+          //   this.setUserInfo(data.data.data)
+          //   this.setTaskIndex('[7]')
+          //   this.$message({
+          //     message: '登录成功,页面跳转中...',
+          //     type: 'success',
+          //     onClose: () => {
+          //       this.$router.push({ name: 'taskTry' })
+          //     }
+          //   })
+          // } else {
+          //   this.$message({
+          //     message: data.data.message,
+          //     type: 'warning'
+          //   })
+          // }
+        }).catch(() => {
+          this.$message.error('服务器错误！')
+        })
+      }
+    }
+    // ...mapActions([
+    //   'setUserInfo',
+    //   'setTaskIndex'
+    // ])
   }
 }
 </script>
-<style lang="stylus" scoped>
+<style lang="stylus" rel="stylesheet/stylus" scoped>
 .login
   position fixed
-  min-width 800px
+  top 0
+  left 0
   width 100%
   height 100%
-  background black
-  .logo
-    color #ffffff
-    height 33px
-    padding 26px 45px
-    overflow hidden
+  background #f0f0f0
+  display flex
+  justify-content space-between
+  .logLeft::before
+    content ''
+    position absolute
+    top 0
+    left 0
+    width 100%
+    height 100%
+    background rgba(0, 0, 0, 0.26)
+  .logLeft
+    position relative
+    width 42.6%
+    min-width 350px
     img
-      width 108px
-      height 33px
-      line-height 33px
-      opacity 37.53
-      float left
-      vertical-align middle
-    span
-      font-size 18px
-      line-height 33px
-      margin-left 12px
-  .cont
-    display flex
-    justify-content space-around
-    align-content center
-    height calc(100% - 200px)
-    .text
-      align-self center
-      font-size 24px
-      line-height 33px
+      width 100%
+      height 100%
+    .logo
+      position absolute
+      top 0
+      left 0
+      right 0
+      bottom 38px
+      border-radius 50%
+      margin auto
+      width 120px
+      height 120px
+      background url('./logo.png') rgba(255, 255, 255, 0.5) center no-repeat
+      background-size 70px 70px
+      background-color #ff3344
+    h1
+      font-size 30px
+      font-weight 500
       color #ffffff
-    .board
-      align-self center
+      text-align center
+      position absolute
+      width 100%
+      height 30px
+      bottom 75px
+  .logoRight
+    flex 1
+    display flex
+    justify-content center
+    /* flex-direction column */
+    align-items center
+    .logoBox
+      width 468px
+      height 400px
       background #ffffff
-      border 1px solid #cccccc
-      box-shadow 0 1px 12px rgba(255, 255, 255, 0.5)
+      box-shadow 0 1px 5px 0 #ffffff
+      border-radius 4px
       h2
-        font-size 24px
-        color #7c7c7c
-        line-height 60px
-        box-shadow 0 1px 0 #cfc9c9
+        margin-top 45px
+        margin-bottom 24px
         text-align center
-      .inputCont
-        padding 30px
-        .input
-          width 310px
-          height 22px
-          border 1px solid #cccccc
-          padding 15px 8px
-          margin-bottom 16px
-          span
-            display inline-block
-            width 24px
-            height 24px
-            text-align center
-          input
-            width 250px
-            margin-left 15px
-            outline none
-            border none
-            font-size 16px
-            line-height 22px
-        button
-          width 100%
-          border none
-          outline none
-          line-height 52px
-          color #ffffff
+        font-size 18px
+        font-weight 500
+        color #666666
+      .border_img
+        height 8px
+        text-align center
+        margin-bottom 42px
+        img
+          height 8px
+      .inputs
+        width 340px
+        height 16px
+        padding 8px 0
+        border-bottom 1px solid #cccccc
+        margin 0 auto 40px
+        span
           font-size 16px
-          background #40b6ff
+          padding-left 12px
+          padding-right 12px
+          color #666666
+          line-height 16px
+        .eyes:hover
+          color #333333
           cursor pointer
-          border-radius 2px
-          margin-bottom 16px
-          &:hover
-            background #40b6f2
-          &:active
-            color lightgreen
-        h3
-          overflow hidden
-          span
-            font-size 12px
-            float right
-            line-height 38px
-            cursor pointer
-            &:hover
-              color red
+        input
+          width 230px
+          vertical-align top
+          padding 0 12px
+          height 16px
+          line-height 16px
+          font-size 16px
+          outline none
+          color #333333
+        :-moz-placeholder /* Mozilla Firefox 4 to 18 */
+          color lightgray
+        ::-moz-placeholder /* Mozilla Firefox 19+ */
+          color lightgray
+        input:-ms-input-placeholder
+          color lightgray
+        input::-webkit-input-placeholder
+          color lightgray
+      .pass
+        margin-bottom 0
+      .btn
+        width 340px
+        height 40px
+        border-radius 4px
+        background-color #ff2933
+        cursor pointer
+        margin 24px auto 0
+        color #ffffff
+        font-size 16px
+        line-height 40px
+        text-align center
+      .btn:hover
+        background red
+      .waring
+        width 340px
+        height 28px
+        margin 0 auto
+        span
+          color #ff3341
+          font-size 12px
+          line-height 28px
 </style>

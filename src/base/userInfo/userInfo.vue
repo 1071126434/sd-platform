@@ -1,10 +1,6 @@
 <template>
   <div class="userInfo">
     <div class="nav">
-
-    </div>
-    <div class="reportButton">
-      <el-button type="text" icon="el-icon-warning">举报</el-button>
     </div>
     <div class="info">
       <img :src="user.imgUrl" class="img">

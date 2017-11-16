@@ -31,7 +31,25 @@
       </div>
     </div>
     <div class="linkAccount">
-      <el-button>导入账号</el-button>
+      <el-button @click="showAlert=true">导入账号</el-button>
+      <el-dialog title="导入帐号?" :append-to-body="true" :visible.sync="showAlert" width="40%">
+        <div class="upload">
+          <div class="cont">
+            <el-upload class="upload-demo" accept=".svc" style="text-align:center" drag action="https://jsonplaceholder.typicode.com/posts/" multiple>
+              <i class="el-icon-upload"></i>
+              <div class="el-upload__text">拖拽CSV文件到此处或者
+                <em>点击上传</em>
+              </div>
+              <div class="el-upload__tip" style="text-align:left;" slot="tip">ps:文件中不得出现 , (逗号)字符, 单次上传20条左右</div>
+            </el-upload>
+          </div>
+          <p style="color:red;font-size14px;">有错误</p>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="showAlert = false">取消导入</el-button>
+          <el-button type="primary" @click="showAlert = false">确定导入</el-button>
+        </span>
+      </el-dialog>
     </div>
     <div class="accountTab">
       <el-table :data="tableData" style="width: 100%">
@@ -47,7 +65,7 @@
         </el-table-column>
         <el-table-column align="center" label="帐号状态">
           <template slot-scope="scope">
-            <span class="tipSmall" :class="scope.row.JDStatus==='已认证' ? 'tipSuccess' : scope.row.JDStatus==='未提交' ? 'tipWait' : 'tipError'">{{scope.row.JDStatus}}</span>
+            <span class="tipSmall" :class="scope.row.JDStatus==='已认证' ? 'tipSuccess' : scope.row.JDStatus==='待审核' ? 'tipWait' : 'tipError'">{{scope.row.JDStatus}}</span>
           </template>
         </el-table-column>
         <el-table-column prop="JDStatus" align="center" label="京东帐号状态">
@@ -78,6 +96,7 @@ export default {
     return {
       currentPage: 1,
       typeValue: '',
+      showAlert: false, // 导入帐号弹框
       typeClass: [{
         value: '1',
         label: '一类'
@@ -124,6 +143,7 @@ export default {
   methods: {
     handleClick (row) {
       console.log(row)
+      this.$router.push({ name: 'buyerAccountDetail' })
     },
     handleSizeChange (val) {
       console.log(`每页 ${val} 条`)
