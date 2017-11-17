@@ -57,37 +57,14 @@ export default {
         return false
       } else {
         // 注册
-        this.$ajax.post('/api/operateAccount/register', {
-          telephone: this.username,
-          newPassword: md5(this.password)
-        }).then((data) => {
-          if (data.data.code === '200') {
-            this.$message({
-              message: '注册成功',
-              type: 'success'
-            })
-          } else {
-            this.$message({
-              message: data.data.message,
-              type: 'warning'
-            })
-          }
-        }).catch(() => {
-          this.$message.error('服务器错误！')
-        })
-        // 登录
-        // this.$ajax.post('/api/operateAccount/login', {
+        // this.$ajax.post('/api/operateAccount/register', {
         //   telephone: this.username,
-        //   newPassword: md5(this.password)
-        // }).then(data => {
+        //   password: md5(this.password)
+        // }).then((data) => {
         //   if (data.data.code === '200') {
-        //     // this.setUserInfo(data.data.data)
         //     this.$message({
-        //       message: '登录成功,页面跳转中...',
-        //       type: 'success',
-        //       onClose: () => {
-        //         this.$router.push({ name: 'task' })
-        //       }
+        //       message: '注册成功',
+        //       type: 'success'
         //     })
         //   } else {
         //     this.$message({
@@ -98,6 +75,29 @@ export default {
         // }).catch(() => {
         //   this.$message.error('服务器错误！')
         // })
+        // 登录
+        this.$ajax.post('/api/operateAccount/login', {
+          telephone: this.username,
+          password: md5(this.password)
+        }).then(data => {
+          if (data.data.code === '200') {
+            // this.setUserInfo(data.data.data)
+            this.$message({
+              message: '登录成功,页面跳转中...',
+              type: 'success',
+              onClose: () => {
+                this.$router.push({ name: 'task' })
+              }
+            })
+          } else {
+            this.$message({
+              message: data.data.message,
+              type: 'warning'
+            })
+          }
+        }).catch(() => {
+          this.$message.error('服务器错误！')
+        })
       }
     }
     // ...mapActions([
