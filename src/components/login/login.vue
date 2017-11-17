@@ -35,13 +35,13 @@
 <script type="text/ecmascript-6">
 import md5 from 'md5'
 import loginImg from '../../assets/images/login.jpg'
-// import { mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
   name: 'login',
   data () {
     return {
-      username: '',
-      password: '',
+      username: '18667199035',
+      password: '123456',
       waringText: '',
       canSeePass: false,
       loginImg: loginImg
@@ -79,9 +79,11 @@ export default {
         this.$ajax.post('/api/operateAccount/login', {
           telephone: this.username,
           password: md5(this.password)
-        }).then(data => {
+        }).then((data) => {
+          console.log(data)
           if (data.data.code === '200') {
-            // this.setUserInfo(data.data.data)
+            this.setUserInfo(data.data.data)
+            this.setUserToken(data.headers.accesstoken)
             this.$message({
               message: '登录成功,页面跳转中...',
               type: 'success',
@@ -95,15 +97,16 @@ export default {
               type: 'warning'
             })
           }
-        }).catch(() => {
+        }).catch((err) => {
+          console.log(err)
           this.$message.error('服务器错误！')
         })
       }
-    }
-    // ...mapActions([
-    //   'setUserInfo',
-    //   'setTaskIndex'
-    // ])
+    },
+    ...mapActions([
+      'setUserInfo',
+      'setUserToken'
+    ])
   }
 }
 </script>
