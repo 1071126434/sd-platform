@@ -9,7 +9,7 @@
       <el-button style="margin-top:24px" @click="add">添加商户</el-button>
       <div class="line"></div>
       <div class="accountTab">
-        <el-table :data="tableData" style="width: 100%">
+        <el-table :data="tableData" style="width: 100%;padding-right:20px">
           <el-table-column width="60" type="index" align="center" label="编号">
           </el-table-column>
           <el-table-column prop="name" align="center" label="姓名">
@@ -45,7 +45,7 @@
       </div>
       <!-- 弹框部分 -->
       <el-dialog title="确认添加商户" :visible.sync="dialogFormVisible" :modal-append-to-body=false width="40%" class="selectSize">
-        <el-form>
+        <el-form style="padding:0 20px">
           <el-form-item label="手机号" :label-width="formLabelWidth">
             <el-input v-model="phone" auto-complete="off"></el-input>
           </el-form-item>
@@ -91,7 +91,9 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
+import { pageCommon } from '../../../assets/js/mixin'
 export default {
+  mixins: [pageCommon],
   name: 'sellerAccount',
   data () {
     return {
@@ -106,40 +108,8 @@ export default {
       source: '',
       bank: '',
       currentPage: 1,
-      tableData: [{
-        name: '王小虎',
-        phone: '18655554444',
-        shopName: '乱七八糟',
-        state: '正常',
-        all: '1/2',
-        loginTime: '2017-11-15 20:30:30',
-        creatTime: '2017-11-15 20:30:30',
-        inviter: '1866699887',
-        admin: '黄军',
-        adminWecht: '156146146'
-      }, {
-        name: '王小虎',
-        phone: '18655554444',
-        shopName: '乱七八糟',
-        state: '正常',
-        all: '1/2',
-        loginTime: '2017-11-15 20:30:30',
-        creatTime: '2017-11-15 20:30:30',
-        inviter: '1866699887',
-        admin: '黄军',
-        adminWecht: '156146146'
-      }, {
-        name: '王小虎',
-        phone: '18655554444',
-        shopName: '乱七八糟',
-        state: '正常',
-        all: '1/2',
-        loginTime: '2017-11-15 20:30:30',
-        creatTime: '2017-11-15 20:30:30',
-        inviter: '1866699887',
-        admin: '黄军',
-        adminWecht: '156146146'
-      }],
+      apiUrl: '/api/sellerAccout/getSellerListByConditions',
+      tableData: [],
       dialogTableVisible: false,
       dialogFormVisible: false,
       form: {
@@ -153,22 +123,43 @@ export default {
         desc: ''
       },
       formLabelWidth: '100px'
-
+    }
+  },
+  // 通过计算属性进行处理
+  computed: {
+    params () {
+      return {
+        pageSize: this.pageSize,
+        pageNo: this.pageNo,
+        telephoneOrUserName: '111'
+      }
     }
   },
   methods: {
     handleClick (row) {
       this.$router.push({ name: 'sellerAccountDetail' })
     },
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
-    },
-    handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
-    },
     add () {
       this.dialogFormVisible = true
+    },
+    setList (data) {
+      let arr = []
+      for (let word of data) {
+        let goods = {
+          state: word.accountStatus === 1 ? '正常' : '正常',
+          id: word.buyerUserId,
+          phone: word.telephone,
+          data: word.gmtCreate,
+          new: word.gmtModify,
+          sureState: word.taobaoStatus === 0 ? '未通过' : word.taobaoStatus === 1 ? '已认证' : word.taobaoStatus === 2 ? '待审核' : '未绑定'
+        }
+        arr.push(goods)
+      }
+      this.tableData = arr
     }
+  },
+  mounted () {
+    this.getTask()
   }
 }
 </script>

@@ -57,9 +57,40 @@
               </el-input>
             </div>
             <div class="excel">
-            <el-button>导出excel</el-button>
+              <el-button>导出excel</el-button>
             </div>
           </div>
+          <!-- 展示内容部分 -->
+            <div class="accountTab">
+              <el-table :data="tableDataBuy" style="width: 100%">
+                <el-table-column prop="orderTask" align="center" label="订单号">
+                </el-table-column>
+                <el-table-column prop="phone" align="center" label="手机号">
+                </el-table-column>
+                <el-table-column prop="moneyNum" align="center" label="金额">
+                </el-table-column>
+                <el-table-column prop="remark" align="center" label="充值备注">
+                </el-table-column>
+                <el-table-column prop="sBank" align="center" label="收款银行卡">
+                </el-table-column>
+                <el-table-column prop="dBank" align="center" label="打款银行卡">
+                </el-table-column>
+                <el-table-column align="center" label="状态">
+                  <template slot-scope="scope">
+                    <span class="tipSmall" :class="scope.row.JDStatus==='已到账' ? 'tipSuccess' : scope.row.JDStatus==='未到账' ? 'tipWait' : 'tipError'">{{scope.row.JDStatus}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="time" align="center" label="确认时间">
+                </el-table-column>
+                <el-table-column prop="person" align="center" label="操作人">
+                </el-table-column>
+              </el-table>
+              <!-- 分页 -->
+              <div class="pager">
+                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
+                </el-pagination>
+              </div>
+            </div>
         </el-tab-pane>
       </el-tabs>
     </header>
@@ -83,6 +114,17 @@ export default {
         collectionBank: '545565695685856',
         moneyBank: '186669985665687',
         creatTime: '2017-11-15 20:30:30'
+      }],
+      tableDataBuy: [{
+        orderTask: '55616156156156156',
+        phone: '18655554444',
+        moneyNum: '100.00',
+        remark: '备注一下',
+        sBank: '545565695685856',
+        dBank: '186669985665687',
+        JDStatus: '已到账',
+        time: '2017-11-15 20:30:30',
+        person: '展示'
       }]
     }
   },
@@ -123,5 +165,5 @@ export default {
         width 280px
         float left
       .excel
-        float right   
+        float right
 </style>

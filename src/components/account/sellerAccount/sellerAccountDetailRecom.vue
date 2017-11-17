@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="borderCard">
     <el-tabs type="border-card">
       <el-tab-pane label="员工账号">
         <div class="accountTab">
@@ -20,11 +20,6 @@
             <el-table-column prop="time" align="center" label="注册时间">
             </el-table-column>
           </el-table>
-          <!-- 分页 -->
-          <div class="pager">
-            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
-            </el-pagination>
-          </div>
         </div>
       </el-tab-pane>
       <el-tab-pane label="买手账号">
@@ -46,11 +41,6 @@
             <el-table-column prop="time" align="center" label="注册时间">
             </el-table-column>
           </el-table>
-          <!-- 分页 -->
-          <div class="pager">
-            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
-            </el-pagination>
-          </div>
         </div>
       </el-tab-pane>
       <el-tab-pane label="管理员账号">
@@ -70,13 +60,13 @@
             <el-table-column prop="time" align="center" label="注册时间">
             </el-table-column>
           </el-table>
-          <!-- 分页 -->
-          <div class="pager">
-            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
-            </el-pagination>
-          </div>
         </div>
       </el-tab-pane>
+      <!-- 分页 -->
+      <div class="pager">
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
+        </el-pagination>
+      </div>
     </el-tabs>
   </div>
 </template>
@@ -128,5 +118,4 @@ export default {
 }
 </script>
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-
 </style>
