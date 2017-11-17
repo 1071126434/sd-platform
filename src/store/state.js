@@ -3,6 +3,6 @@ const state = {
   userInfo: loadUserInfo(),
   userToken: loadUserToken(),
   // userAccountId: null,
-  errorTimeList: null
+  errorTimeList: []
 }
 export default state
