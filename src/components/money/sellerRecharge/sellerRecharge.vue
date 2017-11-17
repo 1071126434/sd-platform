@@ -56,7 +56,9 @@
                 <el-button slot="append" icon="el-icon-search"></el-button>
               </el-input>
             </div>
-            <el-button style="float:right">导出excel</el-button>
+            <div class="excel">
+            <el-button>导出excel</el-button>
+            </div>
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -112,11 +114,14 @@ export default {
       margin-top 24px
     .second_top
       margin-top 20px
-      float left
+      width 100%
+      overflow hidden
       .Stime
         float left
         margin-right 30px
       .search
         width 280px
         float left
+      .excel
+        float right   
 </style>
