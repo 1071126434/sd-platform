@@ -3,7 +3,7 @@ import store from '../../store'
 import ElementUI from 'element-ui'
 import * as types from '../../store/mutation-types'
 import router from '../../router'
-import { setErrorTimeList, getErrorTimeList, clearErrorTimeList } from '../js/cache'
+import { setErrorTimeList, getErrorTimeList, clearErrorTimeList, setUserTokenStorage } from '../js/cache'
 // axios 配置
 axios.defaults.timeout = 5000
 clearErrorTimeList()
@@ -20,6 +20,9 @@ axios.interceptors.request.use((config) => {
 })
 axios.interceptors.response.use((res) => {
   // 需做用户token和userid存储
+  if (res.code === '200') {
+    setUserTokenStorage(res.headers.accesstoken)
+  }
   return res
 }, (error) => {
   console.log(error)

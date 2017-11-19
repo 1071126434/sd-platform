@@ -63,7 +63,7 @@
         </el-table-column>
         <el-table-column prop="type" align="center" label="类别">
         </el-table-column>
-        <el-table-column align="center" label="帐号状态">
+        <el-table-column align="center" width="90" label="帐号状态">
           <template slot-scope="scope">
             <span class="tipSmall" :class="scope.row.JDStatus==='已认证' ? 'tipSuccess' : scope.row.JDStatus==='待审核' ? 'tipWait' : 'tipError'">{{scope.row.JDStatus}}</span>
           </template>

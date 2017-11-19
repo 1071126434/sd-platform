@@ -2,31 +2,37 @@
   <div class="taskList">
     <div class="head">
       <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="全部任务" name="first"></el-tab-pane>
-        <el-tab-pane label="待审核" name="second"></el-tab-pane>
-        <el-tab-pane label="待上线" name="third"></el-tab-pane>
-        <el-tab-pane label="已上线" name="fourth"></el-tab-pane>
-        <el-tab-pane label="已完成任务" name="five"></el-tab-pane>
-        <el-tab-pane label="未支付任务" name="six"></el-tab-pane>
+        <el-tab-pane label="全部任务" name="first" value="all"></el-tab-pane>
+        <el-tab-pane label="待审核" name="second" value="toCheck"></el-tab-pane>
+        <el-tab-pane label="待上线" name="third" value="toLine"></el-tab-pane>
+        <el-tab-pane label="已上线" name="fourth" value="lined"></el-tab-pane>
+        <el-tab-pane label="已完成任务" name="five" value="done"></el-tab-pane>
+        <el-tab-pane label="未支付任务" name="six" value="toPay"></el-tab-pane>
       </el-tabs>
       <div class="btns">
         <div class="select">
           <span>任务类型:</span>
-          <el-select v-model="taskValue" placeholder="请选择">
-            <el-option v-for="item in taskClass" :key="item.value" :label="item.label" :value="item.value">
+          <el-select v-model="taskType" placeholder="请选择">
+            <el-option label="垫付" value="0">
+            </el-option>
+            <el-option label="浏览" value="1">
             </el-option>
           </el-select>
         </div>
         <div class="select">
           <span>平台:</span>
-          <el-select v-model="taskValue" placeholder="请选择">
-            <el-option v-for="item in taskClass" :key="item.value" :label="item.label" :value="item.value">
+          <el-select v-model="shopType" placeholder="请选择">
+            <el-option label="京东" value="0">
+            </el-option>
+            <el-option label="淘宝" value="1">
+            </el-option>
+            <el-option label="天猫" value="2">
             </el-option>
           </el-select>
         </div>
         <div class="select">
           <span>关键词:</span>
-          <el-input placeholder="任务编号/商品名称关键词"></el-input>
+          <el-input v-model="keyword" placeholder="任务编号/商品名称关键词"></el-input>
         </div>
         <div class="searchBtn">
           <el-button type="primary">查询</el-button>
@@ -116,20 +122,32 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
+import { pageCommon } from '../../assets/js/mixin'
 export default {
   name: 'task',
+  mixins: [pageCommon],
   data () {
     return {
       currentPage: 1,
       activeName: 'first',
-      taskValue: '',
-      taskClass: [{
-        value: '1',
-        label: '垫付'
-      }, {
-        value: '2',
-        label: '浏览'
-      }]
+      taskStatus: null,
+      taskType: null,
+      shopType: null,
+      keyword: null,
+      apiUrl: '/api/platform/task/getTaskByCondition'
+    }
+  },
+  computed: {
+    params () {
+      return {
+        taskStatus: this.taskStatus,
+        taskType: this.taskType,
+        shopType: this.shopType,
+        keyword: this.keyword,
+        keywordType: this.filter(this.keyword),
+        pageNo: this.pageNo,
+        pageSize: this.pageSize
+      }
     }
   },
   methods: {
@@ -145,6 +163,16 @@ export default {
     },
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`)
+    },
+    filter (val) {
+      let res = ''
+      let reg = /[^\u4e00-\u9fa5]/
+      if (val.match(reg)) {
+        res = 'keyword'
+      } else {
+        res = 'task'
+      }
+      return res
     }
   }
 }
