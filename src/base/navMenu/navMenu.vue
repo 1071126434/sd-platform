@@ -37,8 +37,8 @@ export default {
             lines: [
               {
                 text: '任务管理',
-                link: 'task',
-                bradge: 12
+                link: 'task'
+                // bradge: 12
               }
             ]
           },
@@ -76,8 +76,8 @@ export default {
               },
               {
                 text: '商家充值',
-                link: 'sellerRecharge',
-                bradge: 12
+                link: 'sellerRecharge'
+                // bradge: 12
               }
             ]
           },
@@ -88,8 +88,8 @@ export default {
             lines: [
               {
                 text: '商家帐号',
-                link: 'sellerAccount',
-                bradge: 12
+                link: 'sellerAccount'
+                // bradge: 12
               },
               {
                 text: '买家帐号',

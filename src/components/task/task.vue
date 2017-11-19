@@ -2,12 +2,12 @@
   <div class="taskList">
     <div class="head">
       <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="全部任务" name="first" value="all"></el-tab-pane>
-        <el-tab-pane label="待审核" name="second" value="toCheck"></el-tab-pane>
-        <el-tab-pane label="待上线" name="third" value="toLine"></el-tab-pane>
-        <el-tab-pane label="已上线" name="fourth" value="lined"></el-tab-pane>
-        <el-tab-pane label="已完成任务" name="five" value="done"></el-tab-pane>
-        <el-tab-pane label="未支付任务" name="six" value="toPay"></el-tab-pane>
+        <el-tab-pane label="全部任务" name="all"></el-tab-pane>
+        <el-tab-pane label="待审核" name="toCheck"></el-tab-pane>
+        <el-tab-pane label="待上线" name="toLine"></el-tab-pane>
+        <el-tab-pane label="已上线" name="lined"></el-tab-pane>
+        <el-tab-pane label="已完成任务" name="done"></el-tab-pane>
+        <el-tab-pane label="未支付任务" name="toPay"></el-tab-pane>
       </el-tabs>
       <div class="btns">
         <div class="select">
@@ -99,10 +99,10 @@
             <li style="width:16%">
               <div>
                 <p class="center">
-                  <span class="smButton greenBg">去审核</span>
+                  <span class="smButton greenBg" @click="toCheck">去审核</span>
                 </p>
                 <p class="center">
-                  <span class="smButton">撤&nbsp;&nbsp;销</span>
+                  <span class="smButton" @click="callBack">撤&nbsp;&nbsp;销</span>
                 </p>
               </div>
               <!-- <div style="margin-top:16px">
@@ -122,14 +122,14 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
-import { pageCommon } from '../../assets/js/mixin'
+// import { pageCommon } from '../../assets/js/mixin'
 export default {
   name: 'task',
-  mixins: [pageCommon],
+  // mixins: [pageCommon],
   data () {
     return {
       currentPage: 1,
-      activeName: 'first',
+      activeName: 'all',
       taskStatus: null,
       taskType: null,
       shopType: null,
@@ -144,19 +144,30 @@ export default {
         taskType: this.taskType,
         shopType: this.shopType,
         keyword: this.keyword,
-        keywordType: this.filter(this.keyword),
+        keywordType: this.keyword ? this.filter(this.keyword) : '',
         pageNo: this.pageNo,
         pageSize: this.pageSize
       }
     }
   },
   methods: {
+    // setList (data) {
+
+    // },
+    toCheck () {
+
+    },
+    callBack () {
+
+    },
     // 查看任务详情
     lookDetail () {
       this.$router.push({ name: 'taskDetail' })
     },
     handleClick (tab, event) {
       console.log(tab, event)
+      this.taskStatus = tab.name
+      this.setList()
     },
     handleSizeChange (val) {
       console.log(`每页 ${val} 条`)
@@ -167,7 +178,7 @@ export default {
     filter (val) {
       let res = ''
       let reg = /[^\u4e00-\u9fa5]/
-      if (val.match(reg)) {
+      if (reg.test(val)) {
         res = 'keyword'
       } else {
         res = 'task'

@@ -45,7 +45,7 @@ export const pageCommon = {
         let mydata = response.data
         if (mydata.code === '200') {
           this.pageTotal = mydata.data.total || mydata.totalCount || mydata.data.totalCount
-          let myDatas = mydata.data.datas || mydata.data.userAccountDOList
+          let myDatas = mydata.data.datas || mydata.data.userAccountDOList || mydata.data.buyers
           this.setList(myDatas)
         } else {
           this.$message.error(mydata.message)
@@ -54,6 +54,12 @@ export const pageCommon = {
         console.log(error)
         this.$message.error('网络错误，刷新下试试')
       })
+    },
+    isNull (val) {
+      if (val) {
+        return val
+      }
+      return '暂无数据'
     }
   }
 }
