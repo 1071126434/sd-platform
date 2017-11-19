@@ -2,8 +2,8 @@
   <div class="wrapSeller">
     <header>
       <div class="top">
-        <el-input placeholder="请输入姓名/手机号" v-model="input5" class="input-with-select">
-          <el-button slot="append" icon="el-icon-search"></el-button>
+        <el-input placeholder="请输入姓名/手机号" v-model="input5_1" class="input-with-select">
+          <el-button slot="append" icon="el-icon-search" @click="btn_search"></el-button>
         </el-input>
       </div>
       <el-button style="margin-top:24px" @click="add">添加商户</el-button>
@@ -12,17 +12,15 @@
         <el-table :data="tableData" style="width: 100%;padding-right:20px">
           <el-table-column width="60" type="index" align="center" label="编号">
           </el-table-column>
-          <el-table-column prop="name" align="center" label="姓名">
-          </el-table-column>
           <el-table-column prop="phone" align="center" label="手机号">
           </el-table-column>
           <el-table-column prop="shopName" align="center" label="首个店铺名">
           </el-table-column>
           <el-table-column prop="state" align="center" label="帐号状态">
           </el-table-column>
-          <el-table-column prop="all" align="center" label="全部">
+          <el-table-column prop="all" align="center" label="全部" width="60">
           </el-table-column>
-          <el-table-column prop="loginTime" align="center" label="最后登录时间">
+          <el-table-column prop="loginTime" align="center" label="最后登录时间" >
           </el-table-column>
           <el-table-column prop="creatTime" align="center" label="创建时间">
           </el-table-column>
@@ -34,12 +32,12 @@
           </el-table-column>
           <el-table-column align="center" label="操作">
             <template slot-scope="scope">
-              <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+              <el-button @click="handleClick(scope.$index, scope.row)" type="text" size="small">查看</el-button>
             </template>
           </el-table-column>
         </el-table>
         <div class="pager">
-          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
+          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pageNo" :page-sizes="pageSizeArray" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pageTotal">
           </el-pagination>
         </div>
       </div>
@@ -63,12 +61,12 @@
           </el-form-item>
           <el-form-item label="管理员人姓名" :label-width="formLabelWidth">
             <el-select v-model="adminName">
-              <el-option label="区域一" value="shanghai"></el-option>
+              <el-option v-for="(item, index) in adminNameArr" :label="item.userName" :value="item.operateUserAccountId" :key="index"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="管理员微信号" :label-width="formLabelWidth">
             <el-select v-model="adminWechat">
-              <el-option label="区域一" value="shanghai"></el-option>
+              <el-option v-for="(item, index) in wechatArr" :label="item.wechatNum" :value="item.operateWechatId" :key="index"></el-option>
             </el-select>
           </el-form-item>
           <p style="margin-top:-20px;margin-left:100px">该商家及邀请来的买家添加该账号以便管理</p>
@@ -77,14 +75,14 @@
           </el-form-item>
           <el-form-item label="充值银行卡" :label-width="formLabelWidth">
             <el-select v-model="bank">
-              <el-option label="区域一" value="shanghai"></el-option>
+              <el-option v-for="(item, index) in bankArr" :label="item.bankName+' '+item.cardNo+' '+item.userName" :value="item.bankCarId" :key="index"></el-option>
             </el-select>
           </el-form-item>
           <p style="margin-top:-20px;margin-left:100px">该商户充值会向本银行卡转账</p>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+          <el-button type="primary" @click="addSure">确 定</el-button>
         </div>
       </el-dialog>
     </header>
@@ -92,12 +90,13 @@
 </template>
 <script type="text/ecmascript-6">
 import { pageCommon } from '../../../assets/js/mixin'
+import { mapGetters } from 'vuex'
 export default {
   mixins: [pageCommon],
   name: 'sellerAccount',
   data () {
     return {
-      input5: '',
+      input5_1: '',
       phone: '',
       password: '',
       qqNumber: '',
@@ -105,12 +104,14 @@ export default {
       inviteName: '',
       adminName: '',
       adminWechat: '',
+      wechatArr: [],
+      adminNameArr: [],
+      bankArr: [],
       source: '',
       bank: '',
       currentPage: 1,
       apiUrl: '/api/sellerAccout/getSellerListByConditions',
       tableData: [],
-      dialogTableVisible: false,
       dialogFormVisible: false,
       form: {
         name: '',
@@ -130,37 +131,162 @@ export default {
     params () {
       return {
         pageSize: this.pageSize,
-        pageNo: this.pageNo,
-        telephoneOrUserName: '111'
+        pageNo: this.pageNo
+        // telephoneOrUserName: this.input5_1
       }
-    }
+    },
+    ...mapGetters([
+      'userInfo'
+    ])
   },
   methods: {
-    handleClick (row) {
-      this.$router.push({ name: 'sellerAccountDetail' })
+    handleClick (index, seller) {
+      console.log(index, seller)
+      this.$router.push({ name: 'sellerAccountDetail', query: { sellerUserId: seller.sellerUserid, severName: seller.admin } })
+    },
+    // 搜索
+    btn_search () {
+      this.getTask()
     },
     add () {
       this.dialogFormVisible = true
+      this.wechats()
+      this.bankInfo()
+      this.adminName_1()
     },
     setList (data) {
       let arr = []
       for (let word of data) {
         let goods = {
-          state: word.accountStatus === 1 ? '正常' : '正常',
-          id: word.buyerUserId,
           phone: word.telephone,
-          data: word.gmtCreate,
-          new: word.gmtModify,
-          sureState: word.taobaoStatus === 0 ? '未通过' : word.taobaoStatus === 1 ? '已认证' : word.taobaoStatus === 2 ? '待审核' : '未绑定'
+          shopName: word.firstShopName,
+          state: word.status === '1' ? '正常' : '冻结',
+          loginTime: word.lastLoginTime,
+          creatTime: word.gmtCreate,
+          inviter: word.inviterName,
+          admin: word.operateUserName,
+          adminWecht: word.operateWechatNum,
+          sellerUserid: word.sellerUserId
         }
         arr.push(goods)
       }
       this.tableData = arr
+    },
+    // 添加商家的请求
+    addSure () {
+      this.$ajax.post('/api/sellerAccout/register', {
+        telephone: this.phone,
+        password: this.password,
+        qqNum: this.qqNumber,
+        wechatNum: this.wechat,
+        inviterName: this.inviteName,
+        operateUserAccountId: this.adminName,
+        operateWechatId: this.adminWechat,
+        sellerSourceChannel: this.source,
+        platformChargeBankCardId: this.bank
+      }).then((data) => {
+        console.log(data)
+        let res = data.data
+        if (res.code === '200') {
+          this.setList(data)
+          this.dialogFormVisible = false
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          })
+        }
+      }).catch(() => {
+        this.$message.error('网络错误，刷新下试试')
+      })
+    },
+    // 获取平台端联系人微信列表
+    wechats () {
+      this.$ajax.post('/api/platform/wechat/getListByOperateUserId', {
+        operateUserId: this.userInfo.operateUserAccountId
+      }).then((data) => {
+        console.log(data)
+        let res = data.data
+        if (res.code === '200') {
+          let arr = []
+          for (let word of res.data) {
+            let goods = {
+              wechatNickName: word.wechatNickName,
+              wechatNum: word.wechatNum,
+              operateWechatId: word.operateWechatId
+            }
+            arr.push(goods)
+          }
+          this.wechatArr = arr
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          })
+        }
+      }).catch(() => {
+        this.$message.error('网络错误，刷新下试试')
+      })
+    },
+    // 获取管理员姓名接口
+    adminName_1 () {
+      this.$ajax.post('/api/operateAccount/getOperatersOfPlatform', {
+      }).then((data) => {
+        console.log(data)
+        let res = data.data
+        if (res.code === '200') {
+          let arr = []
+          for (let word of res.data) {
+            let goods = {
+              userName: word.userName || '暂无数据',
+              operateUserAccountId: word.operateUserAccountId
+            }
+            arr.push(goods)
+          }
+          this.adminNameArr = arr
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          })
+        }
+      }).catch(() => {
+        this.$message.error('网络错误，刷新下试试')
+      })
+    },
+    // 充值银行卡的信息获取
+    bankInfo () {
+      this.$ajax.post('/api/config/bankCard/getListByType', {
+        type: 0
+      }).then((data) => {
+        console.log(data)
+        let res = data.data
+        if (res.code === '200') {
+          let arr = []
+          for (let word of res.data) {
+            let goods = {
+              bankName: word.bankName,
+              cardNo: word.cardNo,
+              userName: word.userName,
+              bankCarId: word.bankCardId
+            }
+            arr.push(goods)
+          }
+          this.bankArr = arr
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          })
+        }
+      }).catch(() => {
+        this.$message.error('网络错误，刷新下试试')
+      })
     }
-  },
-  mounted () {
-    this.getTask()
   }
+  // mounted () {
+  //   this.getTask()
+  // }
 }
 </script>
 <style lang="stylus" rel="stylesheet/stylus" scoped>
