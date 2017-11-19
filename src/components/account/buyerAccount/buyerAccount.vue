@@ -81,7 +81,7 @@
             <span>{{scope.row.buyerStatus == 0 ? '冻结' : '正常'}}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" width="90" label="京东帐号状态">
+        <el-table-column align="center" width="100" label="京东帐号状态">
           <template slot-scope="scope">
             <span class="tipSmall" :class="scope.row.isJdPassCheck==1 ? 'tipSuccess' : scope.row.isJdPassCheck==2 ? 'tipWait' : 'tipError'">{{scope.row.isJdPassCheck == 1 ? '已认证' : scope.row.isJdPassCheck == 0 ? '未提交' : '待审核' }}</span>
           </template>
@@ -133,6 +133,7 @@ export default {
   methods: {
     handleClick (row) {
       console.log(row)
+      window.sessionStorage.setItem('clickUserInfo', JSON.stringify(row))
       this.$router.push({ name: 'buyerAccountDetail' })
     },
     linkAccount () {
@@ -159,12 +160,14 @@ export default {
           isJdPassCheck: this.isNull(i.isJdPassCheck),
           operateUserAccountId: this.isNull(i.operateUserAccountId),
           operaterName: this.isNull(i.operaterName),
+          operaterWechatNum: this.isNull(i.operaterWechatNum),
           parentTelephone: this.isNull(i.parentTelephone),
           parentUserName: this.isNull(i.parentUserName),
           parentUserType: this.isNull(i.parentUserType),
           telephone: this.isNull(i.telephone),
           userName: this.isNull(i.userName),
-          wechatNum: this.isNull(i.wechatNum)
+          wechatNum: this.isNull(i.wechatNum),
+          buyerUserAccountId: this.isNull(i.buyerUserAccountId)
         }
         arr.push(obj)
       }

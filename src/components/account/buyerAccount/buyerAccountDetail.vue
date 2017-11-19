@@ -13,14 +13,14 @@
           <li>
             <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg" alt="">
           </li>
-          <li>用户名</li>
+          <li>{{ userInfoObj.userName }}</li>
           <li>
             <b></b>
-            <span>15710023215</span>
+            <span>{{ userInfoObj.telephone }}</span>
           </li>
           <li>
-            <span>帐号类型: 员工</span>
-            <span>会员等级: 一类</span>
+            <span>帐号类型: {{ userInfoObj.buyerType == 0 ? '买家' : '员工' }}</span>
+            <span>会员等级: {{ userInfoObj.buyerLevel == 1 ? '一类' : userInfoObj.buyerLevel == 2 ? '二类' : '三类' }}</span>
           </li>
         </ul>
       </div>
@@ -28,17 +28,17 @@
         <h2 class="title">买家帐号信息</h2>
         <ul>
           <li>
-            <strong>600</strong>
+            <strong>0</strong>
             <p>本金余额
               <span class="link">提前支取</span>
             </p>
           </li>
           <li>
-            <strong>600</strong>
+            <strong>0</strong>
             <p>佣金余额</p>
           </li>
         </ul>
-        <p>中国银行&nbsp;&nbsp;622114741236546985&nbsp;&nbsp;皇军</p>
+        <p>{{ userInfoObj.bankName }}&nbsp;&nbsp;{{ userInfoObj.bankCardNo }}&nbsp;&nbsp;{{ userInfoObj.bankUserName }}</p>
       </div>
       <div class="manger">
         <h2 class="title">买家账号管理</h2>
@@ -49,7 +49,7 @@
             <p>接单</p>
           </li>
           <li>
-            <strong>12</strong>分
+            <strong>0</strong>分
             <p>用户行为分</p>
           </li>
         </ul>
@@ -61,37 +61,39 @@
           <div class="tabCont">
             <h2>帐号绑定情况</h2>
             <h3>京东帐号&nbsp;&nbsp;
-              <strong class="red">(认证待审核)</strong>
-              <span>收货地址:&nbsp;&nbsp;浙江省余杭区大厦大啥大所多大厦大厦大啥大所多</span>
+              <strong class="red" v-if="userInfoObj.isJdPassCheck!=1">(认证待审核)</strong>
+              <span>收货地址:&nbsp;&nbsp;{{userInfoObj.postProvince + userInfoObj.postCity + userInfoObj.postRegion + userInfoObj.postAddress}}</span>
             </h3>
             <ul>
               <li>
                 <p>帐号昵称:
-                  <b>皇军</b>
+                  <b>{{ userInfoObj.jdNickName }}</b>
                 </p>
                 <p>帐号等级:
                   <b>金牌会员</b>
                 </p>
                 <p>京东实名认证截图:
-                  <a href="">
+                  <a href="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg">
                     <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg" alt="">
                   </a>
                 </p>
               </li>
               <li>
                 <p>plus会员:
-                  <b>否</b>
+                  <b>{{ userInfoObj.isJdPlus ==1 ? '是' : '否' }}</b>
                 </p>
                 <p>plus会员类型:
-                  <b>无</b>
+                  <b>{{ userInfoObj.jdPlusType == 0 ? '临时会员' : '正式会员' }}</b>
                 </p>
                 <p>plus会员到期时间:
-                  <b>无</b>
+                  <b>{{ userInfoObj.jdPlusEndDate }}</b>
                 </p>
               </li>
               <li>
-                <span class="btn" @click="confirmAlert(1)">认证通过</span>
-                <!-- <span class="btn whiteBtn el-icon-circle-check" style="color:#40B6FF;font-size:16px"></span> -->
+                <span v-if="userInfoObj.isJdPassCheck!=1" class="btn" @click="confirmAlert(1)">认证通过</span>
+                <span v-else class="btn whiteBtn el-icon-circle-check" style="color:#40B6FF;font-size:16px">
+                  <span style="color:#000;font-size:12px">&nbsp;&nbsp;已认证</span>
+                </span>
                 <span class="btn whiteBtn" @click="editPLUS=true">修改plus</span>
                 <el-dialog title="修改plus" :append-to-body="true" :visible.sync="editPLUS" width="40%">
                   <ul class="editCont" style="padding:0 20px;">
@@ -122,25 +124,28 @@
             <ul>
               <li>
                 <p>微信认证绑定状态:
-                  <b>未确认</b>
+                  <b>{{ userInfoObj.isAddManagerWechat == 1 ? '已加微信' : '未确认' }}</b>
                 </p>
                 <p>微信号:
-                  <b>264565416541</b>
+                  <b>{{ userInfoObj.wechatNum }}</b>
                 </p>
                 <p>微信昵称:
-                  <b>挥洒法国电视</b>
+                  <b>{{ userInfoObj.wechatNum }}</b>
                 </p>
               </li>
               <li>
                 <p>平台管理员:
-                  <b>杭军</b>
+                  <b>{{ storageUserInfo.operaterName }}</b>
                 </p>
                 <p>管理员微信号:
-                  <b>1556626555</b>
+                  <b>{{ storageUserInfo.operaterWechatNum }}</b>
                 </p>
               </li>
               <li>
-                <span class="btn longBtn" @click="confirmAlert(2)">确认已加微信</span>
+                <span v-if="userInfoObj.isAddManagerWechat == 1" class="btn longBtn">
+                  <span class="el-icon-circle-check" style="color:#ffffff;font-size:16px"></span>&nbsp;&nbsp;已加微信
+                </span>
+                <span v-else class="btn longBtn" @click="confirmAlert(2)">确认已加微信</span>
               </li>
             </ul>
           </div>
@@ -223,7 +228,7 @@
                 <tr></tr>
               </table>
               <div class="pager">
-                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
+                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
                 </el-pagination>
               </div>
             </div>
@@ -239,7 +244,11 @@ export default {
   data () {
     return {
       currentPage: 1,
-      canGetOrder: false,
+      pageSize: 5,
+      pageNo: 1,
+      totalCount: 0,
+      storageUserInfo: JSON.parse(sessionStorage.getItem('clickUserInfo')),
+      canGetOrder: true,
       activeName: 'first',
       addInivite: false,
       editPLUS: false,
@@ -248,6 +257,8 @@ export default {
       isPlus: '0',
       plusType: '0',
       plusTime: '',
+      // 用户信息
+      userInfoObj: {},
       pickerOptions: { // 时间筛选
         disabledDate (time) {
           return time.getTime() < Date.now()
@@ -258,12 +269,48 @@ export default {
   methods: {
     handleClick (tab, event) {
       console.log(tab, event)
+      if (tab.name === 'second') {
+        this.$ajax.post('/api/buyerAccount/getBuyerListByParentUserId', {
+          parentUserId: this.storageUserInfo.inviterId,
+          pageSize: this.pageSize,
+          pageNo: this.pageNo
+        }).then((data) => {
+          console.log(data)
+          if (data.data.code === '200') {
+
+          } else {
+            this.$message({
+              message: data.data.message,
+              type: 'warning'
+            })
+          }
+        }).catch((err) => {
+          this.$message.error(err)
+        })
+      }
     },
     handleSizeChange (val) {
       console.log(`每页 ${val} 条`)
     },
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`)
+    },
+    getUserInfo () {
+      this.$ajax.post('/api/buyerAccount/getUserInfoByUserId', {
+        buyerUserAccountId: this.storageUserInfo.buyerUserAccountId
+      }).then((data) => {
+        console.log(data)
+        if (data.data.code === '200') {
+          this.userInfoObj = data.data.data
+        } else {
+          this.$message({
+            message: data.data.message,
+            type: 'warning'
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
     },
     // 弹框提醒
     confirmAlert (index) {
@@ -317,6 +364,9 @@ export default {
         })
       }
     }
+  },
+  mounted () {
+    this.getUserInfo()
   }
 }
 </script>
@@ -357,6 +407,7 @@ export default {
     >div
       height 250px
       box-shadow 0 1px 5px rgba(0, 0, 0, 0.2)
+      background #ffffff
       border-radius 4px
       flex 1
     .title
