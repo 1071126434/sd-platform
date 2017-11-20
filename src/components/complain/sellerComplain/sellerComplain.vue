@@ -1,6 +1,13 @@
 <template>
   <div class="sellerComplain">
     <div class="tab">
+      <div class="inp">
+        <div class="search">
+          <el-input placeholder="请输入姓名/手机号">
+            <el-button slot="append" icon="el-icon-search" class="primary"></el-button>
+          </el-input>
+        </div>
+      </div>
       <div class="nav">
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="未受理" name="first"></el-tab-pane>
@@ -40,7 +47,7 @@
               </el-tooltip>
             </template>
           </el-table-column>
-          <el-table-column prop="applyTime" align="center" label="申请时间">
+          <el-table-column prop="applyTime" align="center" :label="activeName == 'first' ? '申请时间' : activeName == 'second' ? '受理时间' : '完成时间'">
           </el-table-column>
           <el-table-column v-if="activeName!='first'" prop="operateMember" align="center" label="操作人">
           </el-table-column>
@@ -99,6 +106,18 @@ export default {
   .tab
     padding 20px
     background #ffffff
+    .inp
+      text-align right
+      .search
+        display inline-block
+        max-width 300px
+        .primary
+          background #40B6FF
+          color #ffffff
+          border-color #40B6FF
+          border-top-left-radius 0
+          border-bottom-left-radius 0
+          border 1px solid #40B6FF
     .overElipes
       display inline-block
       width 112px

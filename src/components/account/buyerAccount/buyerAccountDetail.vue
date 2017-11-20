@@ -154,7 +154,7 @@
           <div class="inviteCont">
             <div class="top">
               <h2>上一级</h2>
-              <span class="btn" @click="addInivite=true">+添加邀请人</span>
+              <span class="btn" @click="addInivite=true" v-if="!showTop">+添加邀请人</span>
               <el-dialog title="添加邀请人" :append-to-body="true" :visible.sync="addInivite" width="600px">
                 <ul class="add" style="padding: 0 20px 0 0;">
                   <li style="margin-bottom:20px">
@@ -178,24 +178,24 @@
                   <el-button type="primary" @click="addInivite = false">确 定</el-button>
                 </span>
               </el-dialog>
-              <ul>
-                <li>李刚
-                  <span>(管理员)</span>
-                  <span class="link" style="font-size:12px;cursor:pointer;">查看详情</span>
+              <ul v-if="showTop">
+                <li>{{ topInfoObj.userName }}
+                  <span>{{ userInfoObj.parentUserType == 2 ? '(管理员)' : userInfoObj.parentUserType == 1 ? '(员工)' : '(买家)' }}</span>
+                  <span v-if="userInfoObj.parentUserType == 1" class="link" style="font-size:12px;cursor:pointer;" @click="toDetail(userInfoObj.parentUserId)">查看详情</span>
                 </li>
-                <li>注册时间: 2011-11-11</li>
-                <li>手机号: 18666999988</li>
-                <li>店铺联系人手机号: 16665477865</li>
+                <li>注册时间: {{ topInfoObj.gmtCreate }}</li>
+                <li>手机号: {{ topInfoObj.telephone }}</li>
+                <li v-if="userInfoObj.parentUserType != 2">收货地址: {{ (topInfoObj.postProvince+topInfoObj.postCity+topInfoObj.postRegion+topInfoObj.postAddress) ? (topInfoObj.postProvince+topInfoObj.postCity+topInfoObj.postRegion+topInfoObj.postAddress) : '暂未填写' }}</li>
               </ul>
             </div>
             <div class="user">
               <h2>用户</h2>
-              <b>皇军
-                <span style="color:#929292;">(买家)</span>
+              <b>{{ userInfoObj.userName }}
+                <span style="color:#929292;">{{ userInfoObj.buyerType == 0 ? '(买家)' : '(员工)' }}</span>
               </b>
-              <el-button @click="confirmAlert(3)">标记为源头帐号</el-button>
+              <el-button @click="confirmAlert(3)" v-if="userInfoObj.buyerType == 0">标记为源头帐号</el-button>
             </div>
-            <div class="next">
+            <div class="next" v-if="userInfoObj.parentUserType != 0">
               <h2>下一级</h2>
               <table>
                 <tr>
@@ -205,27 +205,26 @@
                   <th>平台管理员</th>
                   <th>收货地址</th>
                 </tr>
-                <tr>
+                <tr v-for="(item, index) in nextBuyerList" :key="index">
                   <td>
-                    <b>王二
-                      <span style="color:#929292;">(买家)</span>
-                      <span class="link" style="font-size:12px;cursor:pointer;">查看详情</span>
+                    <b>{{ item.userName }}
+                      <span style="color:#929292;">{{ (item.buyerType == 0 ? '(买家)' : '(员工)') }}</span>
+                      <span class="link" style="font-size:12px;cursor:pointer;" @click="toDetail(item.buyerUserAccountId)">查看详情</span>
                     </b>
                   </td>
                   <td>
-                    2018-11-11
+                    {{ item.gmtCreate }}
                   </td>
                   <td>
-                    18669998865
+                    {{ item.wechatNum }}
                   </td>
                   <td>
-                    皇军-18669885544
+                    {{ item.operaterUserName }}
                   </td>
                   <td>
-                    浙江省杭州市余杭区倒萨大赛获得搜狐
+                    {{ item.postProvince+item.postCity+item.postRegion+item.postAddress }}
                   </td>
                 </tr>
-                <tr></tr>
               </table>
               <div class="pager">
                 <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
@@ -257,8 +256,14 @@ export default {
       isPlus: '0',
       plusType: '0',
       plusTime: '',
+      // 显示上级信息
+      showTop: true,
+      // 上级信息
+      topInfoObj: {},
       // 用户信息
       userInfoObj: {},
+      // 下一级买家列表
+      nextBuyerList: [],
       pickerOptions: { // 时间筛选
         disabledDate (time) {
           return time.getTime() < Date.now()
@@ -270,38 +275,86 @@ export default {
     handleClick (tab, event) {
       console.log(tab, event)
       if (tab.name === 'second') {
-        this.$ajax.post('/api/buyerAccount/getBuyerListByParentUserId', {
-          parentUserId: this.storageUserInfo.inviterId,
-          pageSize: this.pageSize,
-          pageNo: this.pageNo
-        }).then((data) => {
-          console.log(data)
-          if (data.data.code === '200') {
-
-          } else {
-            this.$message({
-              message: data.data.message,
-              type: 'warning'
-            })
-          }
-        }).catch((err) => {
-          this.$message.error(err)
-        })
+        if (this.userInfoObj.parentUserId && this.userInfoObj.parentUserType) {
+          let parentUserId = this.userInfoObj.parentUserId
+          let parentUserType = this.userInfoObj.parentUserType
+          this.getTopInfo(parentUserId, parentUserType)
+        } else {
+          this.showTop = false
+        }
+        // 调曲邀请关系列表
+        this.getRelativeList()
       }
     },
     handleSizeChange (val) {
       console.log(`每页 ${val} 条`)
+      this.pageSize = val
+      this.getRelativeList()
     },
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`)
+      this.pageNo = val
+      this.getRelativeList()
     },
-    getUserInfo () {
+    // 获取用户信息
+    getUserInfo (isLook) {
+      let id = ''
+      if (isLook) {
+        id = this.$route.query.id
+      } else {
+        id = this.storageUserInfo.buyerUserAccountId
+      }
       this.$ajax.post('/api/buyerAccount/getUserInfoByUserId', {
-        buyerUserAccountId: this.storageUserInfo.buyerUserAccountId
+        buyerUserAccountId: id
       }).then((data) => {
         console.log(data)
         if (data.data.code === '200') {
           this.userInfoObj = data.data.data
+        } else {
+          this.$message({
+            message: data.data.message,
+            type: 'warning'
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
+    },
+    // 获取上级信息
+    getTopInfo (id, type) {
+      let api = ''
+      if (parseInt(type) === 2) {
+        api = '/api/sellerManagerAccount/getParentSellerManagerByManagerId'
+      } else {
+        api = '/api/buyerAccount/getUserInfoByUserId'
+      }
+      this.$ajax.post(api, {
+        sellerManagerId: id
+      }).then((data) => {
+        console.log(data)
+        if (data.data.code === '200') {
+          this.topInfoObj = data.data.data
+        } else {
+          this.$message({
+            message: data.data.message,
+            type: 'warning'
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
+    },
+    // 获取邀请关系
+    getRelativeList () {
+      this.$ajax.post('/api/buyerAccount/getBuyerListByParentUserId', {
+        parentUserId: this.storageUserInfo.inviterId,
+        pageSize: this.pageSize,
+        pageNo: this.pageNo
+      }).then((data) => {
+        console.log(data)
+        if (data.data.code === '200') {
+          this.nextBuyerList = data.data.data.buyerUsers
+          this.totalCount = data.data.data.totalCount
         } else {
           this.$message({
             message: data.data.message,
@@ -363,6 +416,11 @@ export default {
           })
         })
       }
+    },
+    // 查看详情
+    toDetail (id) {
+      this.$router.push({ name: 'buyerAccountDetail', query: { id: id } })
+      this.getUserInfo(this.$route.query.id)
     }
   },
   mounted () {
