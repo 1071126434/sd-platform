@@ -5,7 +5,7 @@ export const pageCommon = {
       pageNo: 1,
       pageSize: 5,
       pageTotal: null
-        // loadingList: false
+      // loadingList: false
     }
   },
   mounted () {
@@ -27,9 +27,9 @@ export const pageCommon = {
     // 修改每页显示的数据数目
     handleSizeChange (val) {
       this.pageSize = val
-        // if (this.pageTotal > val) {
-        //   return false
-        // }
+      // if (this.pageTotal > val) {
+      //   return false
+      // }
     },
     // 设置pageNo
     handleCurrentChange (val) {
@@ -45,7 +45,7 @@ export const pageCommon = {
         let mydata = response.data
         if (mydata.code === '200') {
           this.pageTotal = mydata.data.total || mydata.totalCount || mydata.data.totalCount
-          let myDatas = mydata.data.datas || mydata.data.userAccountDOList || mydata.data.buyers
+          let myDatas = mydata.data.datas || mydata.data.userAccountDOList || mydata.data.buyers || mydata.data.sellers
           this.setList(myDatas)
         } else {
           this.$message.error(mydata.message)

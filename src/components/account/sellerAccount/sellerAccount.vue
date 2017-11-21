@@ -20,7 +20,7 @@
           </el-table-column>
           <el-table-column prop="all" align="center" label="全部" width="60">
           </el-table-column>
-          <el-table-column prop="loginTime" align="center" label="最后登录时间" >
+          <el-table-column prop="loginTime" align="center" label="最后登录时间">
           </el-table-column>
           <el-table-column prop="creatTime" align="center" label="创建时间">
           </el-table-column>
@@ -131,8 +131,8 @@ export default {
     params () {
       return {
         pageSize: this.pageSize,
-        pageNo: this.pageNo
-        // telephoneOrUserName: this.input5_1
+        pageNo: this.pageNo,
+        telephoneOrUserName: this.input5_1
       }
     },
     ...mapGetters([
@@ -174,6 +174,13 @@ export default {
     },
     // 添加商家的请求
     addSure () {
+      if (this.phone === '' || this.password === '' || this.qqNumber === '' || this.wechat === '' || this.inviteName === '' || this.adminName === '' || this.adminWechat === '' || this.source === '' || this.bank === '') {
+        this.$message({
+          message: '内容不能为空,请正确填写信息',
+          type: 'warning'
+        })
+        return false
+      }
       this.$ajax.post('/api/sellerAccout/register', {
         telephone: this.phone,
         password: this.password,
