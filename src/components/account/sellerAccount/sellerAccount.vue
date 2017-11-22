@@ -48,7 +48,7 @@
             <el-input v-model="phone" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="密码" :label-width="formLabelWidth">
-            <el-input v-model="password" auto-complete="off"></el-input>
+            <el-input v-model="password" auto-complete="off" type="password"></el-input>
           </el-form-item>
           <el-form-item label="QQ号" :label-width="formLabelWidth">
             <el-input v-model="qqNumber" auto-complete="off"></el-input>
@@ -69,7 +69,7 @@
               <el-option v-for="(item, index) in wechatArr" :label="item.wechatNum" :value="item.operateWechatId" :key="index"></el-option>
             </el-select>
           </el-form-item>
-          <p style="margin-top:-20px;margin-left:100px">该商家及邀请来的买家添加该账号以便管理</p>
+          <p style="margin-top:-20px;margin-left:100px;color:#898989">该商家及邀请来的买家添加该账号以便管理</p>
           <el-form-item label="商家来源" :label-width="formLabelWidth">
             <el-input v-model="source" auto-complete="off"></el-input>
           </el-form-item>
@@ -78,7 +78,7 @@
               <el-option v-for="(item, index) in bankArr" :label="item.bankName+' '+item.cardNo+' '+item.userName" :value="item.bankCarId" :key="index"></el-option>
             </el-select>
           </el-form-item>
-          <p style="margin-top:-20px;margin-left:100px">该商户充值会向本银行卡转账</p>
+          <p style="margin-top:-20px;margin-left:100px;color:#898989">该商户充值会向本银行卡转账</p>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -91,6 +91,7 @@
 <script type="text/ecmascript-6">
 import { pageCommon } from '../../../assets/js/mixin'
 import { mapGetters } from 'vuex'
+import md5 from 'md5'
 export default {
   mixins: [pageCommon],
   name: 'sellerAccount',
@@ -183,7 +184,7 @@ export default {
       }
       this.$ajax.post('/api/sellerAccout/register', {
         telephone: this.phone,
-        password: this.password,
+        password: md5(this.password),
         qqNum: this.qqNumber,
         wechatNum: this.wechat,
         inviterName: this.inviteName,
@@ -195,16 +196,21 @@ export default {
         console.log(data)
         let res = data.data
         if (res.code === '200') {
-          this.setList(data)
+          this.$message({
+            message: res.message,
+            type: 'success'
+          })
           this.dialogFormVisible = false
+          this.getTask()
         } else {
           this.$message({
             message: res.message,
             type: 'warning'
           })
         }
-      }).catch(() => {
-        this.$message.error('网络错误，刷新下试试')
+      }).catch((error) => {
+        console.log(error)
+        this.$message.error(error)
       })
     },
     // 获取平台端联系人微信列表
