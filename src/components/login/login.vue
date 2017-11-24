@@ -103,8 +103,7 @@ export default {
       }
     },
     ...mapActions([
-      'setUserInfo',
-      'setUserToken'
+      'setUserInfo'
     ])
   }
 }
