@@ -1,10 +1,9 @@
 import axios from 'axios'
 import store from '../../store'
-// import ElementUI from 'element-ui'
-// import * as types from '../../store/mutation-types'
-// import router from '../../router'
-// import { setErrorTimeList, getErrorTimeList, clearErrorTimeList, setUserTokenStorage } from '../js/cache'
-import { clearErrorTimeList, setUserTokenStorage } from '../js/cache'
+import ElementUI from 'element-ui'
+import * as types from '../../store/mutation-types'
+import router from '../../router'
+import { setErrorTimeList, getErrorTimeList, clearErrorTimeList, setUserTokenStorage } from '../js/cache'
 // axios 配置
 axios.defaults.timeout = 5000
 clearErrorTimeList()
@@ -27,29 +26,29 @@ axios.interceptors.response.use((res) => {
   return res
 }, (error) => {
   console.log(error)
-    // if (error.response) {
-    //   switch (error.response.status) {
-    //     case 403:
-    //       setErrorTimeList((new Date()).getTime())
-    //       let lifeTime = getErrorTimeList()
-    //       if (lifeTime.length === 1) {
-    //         ElementUI.MessageBox.confirm('登录失效，请重新登录', '提示', {
-    //           type: 'error',
-    //           showCancelButton: false,
-    //           closeOnClickModal: false
-    //         }).then(() => {
-    //           store.commit(types.CLEAR_USER_INFO)
-    //           router.replace({
-    //             name: 'login'
-    //           })
-    //         }).catch((err) => {
-    //           console.log(err)
-    //         })
-    //       }
-    //       break
-    //   }
-    //   return false
-    // }
+  if (error.response) {
+    switch (error.response.status) {
+      case 403:
+        setErrorTimeList((new Date()).getTime())
+        let lifeTime = getErrorTimeList()
+        if (lifeTime.length === 1) {
+          ElementUI.MessageBox.confirm('登录失效，请重新登录', '提示', {
+            type: 'error',
+            showCancelButton: false,
+            closeOnClickModal: false
+          }).then(() => {
+            store.commit(types.CLEAR_USER_TOKEN)
+            router.replace({
+              name: 'login'
+            })
+          }).catch((err) => {
+            console.log(err)
+          })
+        }
+        break
+    }
+    return false
+  }
   return Promise.reject(error.response.data)
 })
 
