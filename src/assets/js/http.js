@@ -20,9 +20,7 @@ axios.interceptors.request.use((config) => {
 })
 axios.interceptors.response.use((res) => {
   // 需做用户token和userid存储
-  if (parseInt(res.status) === 200) {
-    setUserTokenStorage(res.config.headers.accesstoken)
-  }
+  setUserTokenStorage(res.config.headers.accesstoken)
   return res
 }, (error) => {
   console.log(error)
