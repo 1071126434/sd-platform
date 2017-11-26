@@ -83,6 +83,7 @@ export default {
           console.log(data)
           if (data.data.code === '200') {
             this.setUserInfo(data.data.data)
+            this.setUserToken(data.headers.accesstoken)
             this.$message({
               message: '登录成功,页面跳转中...',
               type: 'success',
@@ -103,7 +104,8 @@ export default {
       }
     },
     ...mapActions([
-      'setUserInfo'
+      'setUserInfo',
+      'setUserToken'
     ])
   }
 }
