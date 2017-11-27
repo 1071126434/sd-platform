@@ -347,7 +347,7 @@ export default {
     // 获取邀请关系
     getRelativeList () {
       this.$ajax.post('/api/buyerAccount/getBuyerListByParentUserId', {
-        parentUserId: this.storageUserInfo.inviterId,
+        parentUserId: this.storageUserInfo.buyerUserAccountId,
         pageSize: this.pageSize,
         pageNo: this.pageNo
       }).then((data) => {
