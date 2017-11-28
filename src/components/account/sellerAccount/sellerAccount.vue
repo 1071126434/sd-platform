@@ -201,7 +201,7 @@ export default {
             type: 'success'
           })
           this.dialogFormVisible = false
-          // this.getTask()
+          this.getTask()
         } else {
           this.$message({
             message: res.message,
