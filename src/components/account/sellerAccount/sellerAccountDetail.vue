@@ -15,7 +15,7 @@
             </div>
             <div class="wchat">
               服务人微信号:
-              <span>{{obj.severWechat}}</span>
+              <span>{{this.$route.query.adminWechat}}</span>
               <em class="yaoPerson">邀请人:
                 <span>{{obj.inviterName}}</span>
               </em>

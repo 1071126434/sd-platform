@@ -18,7 +18,7 @@
           </el-table-column>
           <el-table-column prop="state" align="center" label="帐号状态">
           </el-table-column>
-          <el-table-column prop="all" align="center" label="全部" width="60">
+          <el-table-column prop="all" align="center" label="店铺数量">
           </el-table-column>
           <el-table-column prop="loginTime" align="center" label="最后登录时间">
           </el-table-column>
@@ -60,12 +60,12 @@
             <el-input v-model="inviteName" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="管理员人姓名" :label-width="formLabelWidth">
-            <el-select v-model="adminName">
+            <el-select v-model="adminName" @change="adName">
               <el-option v-for="(item, index) in adminNameArr" :label="item.userName" :value="item.operateUserAccountId" :key="index"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="管理员微信号" :label-width="formLabelWidth">
-            <el-select v-model="adminWechat">
+            <el-select v-model="adminWechats">
               <el-option v-for="(item, index) in wechatArr" :label="item.wechatNum" :value="item.operateWechatId" :key="index"></el-option>
             </el-select>
           </el-form-item>
@@ -104,7 +104,7 @@ export default {
       wechat: '',
       inviteName: '',
       adminName: '',
-      adminWechat: '',
+      adminWechats: '',
       wechatArr: [],
       adminNameArr: [],
       bankArr: [],
@@ -143,7 +143,7 @@ export default {
   methods: {
     handleClick (index, seller) {
       console.log(index, seller)
-      this.$router.push({ name: 'sellerAccountDetail', query: { sellerUserId: seller.sellerUserid, severName: seller.admin } })
+      this.$router.push({ name: 'sellerAccountDetail', query: { sellerUserId: seller.sellerUserid, severName: seller.admin, adminWechat: seller.adminWecht } })
     },
     // 搜索
     btn_search () {
@@ -151,7 +151,6 @@ export default {
     },
     add () {
       this.dialogFormVisible = true
-      this.wechats()
       this.bankInfo()
       this.adminName_1()
     },
@@ -159,15 +158,16 @@ export default {
       let arr = []
       for (let word of data) {
         let goods = {
-          phone: word.telephone,
-          shopName: word.firstShopName,
+          phone: word.telephone || '暂无数据',
+          shopName: word.firstShopName || '暂无数据',
           state: word.status === '1' ? '正常' : '冻结',
-          loginTime: word.lastLoginTime,
-          creatTime: word.gmtCreate,
-          inviter: word.inviterName,
-          admin: word.operateUserName,
-          adminWecht: word.operateWechatNum,
-          sellerUserid: word.sellerUserId
+          all: word.sellerShopNum || 0,
+          loginTime: word.lastLoginTime || '暂无数据',
+          creatTime: word.gmtCreate || '暂无数据',
+          inviter: word.inviterName || '暂无数据',
+          admin: word.operateUserName || '暂无数据',
+          adminWecht: word.operateWechatNum || '暂无数据',
+          sellerUserid: word.sellerUserId || '暂无数据'
         }
         arr.push(goods)
       }
@@ -189,7 +189,7 @@ export default {
         wechatNum: this.wechat,
         inviterName: this.inviteName,
         operateUserAccountId: this.adminName,
-        operateWechatId: this.adminWechat,
+        operateWechatId: this.adminWechats,
         sellerSourceChannel: this.source,
         platformChargeBankCardId: this.bank
       }).then((data) => {
@@ -201,7 +201,7 @@ export default {
             type: 'success'
           })
           this.dialogFormVisible = false
-          this.getTask()
+          // this.getTask()
         } else {
           this.$message({
             message: res.message,
@@ -213,10 +213,14 @@ export default {
         this.$message.error(error)
       })
     },
+    adName () {
+      this.adminWechats = ''
+      this.wechats()
+    },
     // 获取平台端联系人微信列表
     wechats () {
       this.$ajax.post('/api/platform/wechat/getListByOperateUserId', {
-        operateUserId: this.userInfo.operateUserAccountId
+        operateUserId: this.adminName
       }).then((data) => {
         console.log(data)
         let res = data.data
@@ -237,8 +241,9 @@ export default {
             type: 'warning'
           })
         }
-      }).catch(() => {
-        this.$message.error('网络错误，刷新下试试')
+      }).catch((error) => {
+        console.log(error)
+        // this.$message.error('网络错误，刷新下试试')
       })
     },
     // 获取管理员姓名接口
