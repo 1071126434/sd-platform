@@ -6,6 +6,7 @@ import router from './router'
 import store from './store'
 import ElementUI from 'element-ui'
 import axios from './assets/js/http'
+import 'babel-polyfill'
 import 'element-ui/lib/theme-chalk/index.css'
 import './assets/stylus/index.styl'
 
