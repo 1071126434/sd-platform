@@ -139,6 +139,7 @@ export default {
     ...mapGetters([
       'userInfo'
     ])
+
   },
   methods: {
     handleClick (index, seller) {
@@ -214,7 +215,8 @@ export default {
       })
     },
     adName () {
-      this.adminWechats = ''
+      this.adminWechats = ' '
+      this.wechatArr = []
       this.wechats()
     },
     // 获取平台端联系人微信列表
