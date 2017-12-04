@@ -2,52 +2,49 @@
   <div class="wrap">
     <header>
       <h4>第一步</h4>
-      <div class="btn">下载今日任务列表</div>
+      <div class="btn" @click="downLoad">下载今日任务列表</div>
       <h4 class="two">第二步 任务分配</h4>
       <el-row :gutter="10">
         <el-col :span="7" style="border:1px solid rgba(0,0,0,0.2);margin-top:32px;margin-right:24px">
-          <div class="grid-content bg-purple ">
+          <div class="grid-content bg-purple">
             <h5>任务一</h5>
-            <el-input v-model="input_1" placeholder="请输入内容" style="width:90%;margin-top:8px">
+            <el-input v-model="input_1" placeholder="请输入内容" style="width:90%;margin-top:8px" @blur="taskOne">
             </el-input>
-            <p class="redColor">任务编号有误</p>
             <div class="Surtask">
               <p>剩余任务量</p>
-              <span>0</span>单
+              <span>{{taskData.leftNum||0}}</span>单
             </div>
             <div class="surMoney">
               <p>剩余任务金额</p>
-              <span>0</span>元
+              <span>{{taskData.sprice||0}}</span>元
             </div>
           </div>
         </el-col>
         <el-col :span="7" style=" border:1px solid rgba(0,0,0,0.2);margin-top:32px;margin-right:24px">
           <div class="grid-content bg-purple ">
-            <h5>任务一</h5>
-            <el-input v-model="input_2" placeholder="请输入内容" style="width:90%;margin-top:8px"></el-input>
-            <p class="redColor">任务编号有误</p>
+            <h5>任务二</h5>
+            <el-input v-model="input_2" placeholder="请输入内容" style="width:90%;margin-top:8px" @blur="taskTwo"></el-input>
             <div class="Surtask">
               <p>剩余任务量</p>
-              <span>0</span>单
+              <span>{{taskData_1.leftNum||0}}</span>单
             </div>
             <div class="surMoney">
               <p>剩余任务金额</p>
-              <span>0</span>元
+              <span>{{taskData_1.sprice||0}}</span>元
             </div>
           </div>
         </el-col>
         <el-col :span="7" style="border:1px solid rgba(0,0,0,0.2);margin-top:32px;margin-right:24px">
           <div class=" grid-content bg-purple ">
-            <h5>任务一</h5>
-            <el-input v-model="input_3 " placeholder="请输入内容 " style="width:90%;margin-top:8px "></el-input>
-            <p class="redColor">任务编号有误</p>
-            <div class="Surtask ">
+            <h5>任务三</h5>
+            <el-input v-model="input_3 " placeholder="请输入内容 " style="width:90%;margin-top:8px " @blur="taskThree"></el-input>
+            <div class="Surtask">
               <p>剩余任务量</p>
-              <span>0</span>单
+              <span>{{taskData_2.leftNum||0}}</span>单
             </div>
-            <div class="surMoney ">
+            <div class="surMoney">
               <p>剩余任务金额</p>
-              <span>0</span>元
+              <span>{{taskData_2.sprice||0}}</span>元
             </div>
           </div>
         </el-col>
@@ -55,41 +52,40 @@
       <el-row :gutter="10">
         <el-col :span="7" style="border:1px solid rgba(0,0,0,0.2);margin-top:32px;margin-right:24px">
           <div class="grid-content bg-purple ">
-            <h5>任务一</h5>
-            <el-input v-model="input_4" placeholder="请输入内容" style="width:90%;margin-top:8px"></el-input>
-            <p class="redColor">任务编号有误</p>
+            <h5>任务四</h5>
+            <el-input v-model="input_4" placeholder="请输入内容" style="width:90%;margin-top:8px" @blur="taskFour"></el-input>
             <div class="Surtask">
               <p>剩余任务量</p>
-              <span>0</span>单
+              <span>{{taskData_3.leftNum||0}}</span>单
             </div>
             <div class="surMoney">
               <p>剩余任务金额</p>
-              <span>0</span>元
+              <span>{{taskData_3.sprice||0}}</span>元
             </div>
           </div>
         </el-col>
         <el-col :span="7" style=" border:1px solid rgba(0,0,0,0.2);margin-top:32px;margin-right:24px">
           <div class="grid-content bg-purple ">
-            <h5>任务一</h5>
-            <el-input v-model="input_5" placeholder="请输入内容" style="width:90%;margin-top:8px"></el-input>
-            <p class="redColor">任务编号有误</p>
+            <h5>任务五</h5>
+            <el-input v-model="input_5" placeholder="请输入内容" style="width:90%;margin-top:8px" @blur="taskFive"></el-input>
             <div class="Surtask">
               <p>剩余任务量</p>
-              <span>0</span>单
+              <span>{{taskData_4.leftNum||0}}</span>单
             </div>
             <div class="surMoney">
               <p>剩余任务金额</p>
-              <span>0</span>元
+              <span>{{taskData_4.sprice||0}}</span>元
             </div>
           </div>
         </el-col>
+        <el-button type="primary" style="margin-top:130px" @click="sureTask">确认发包</el-button>
       </el-row>
       <div class="line"></div>
       <div class="bottom">
         <div class="bottom_money">包单金额:&nbsp;&nbsp;
           <span style="color:black;font-weight:600">678</span>元</div>
         <el-checkbox v-model="checked" style="margin-top:27px" v-show="check">使用该商家的买手账号</el-checkbox>&nbsp;&nbsp;
-        <el-button type="primary" style="margin-top:16px">确认筛选</el-button>
+        <el-button type="primary" style="margin-top:16px" @click="sureChoose">确认筛选</el-button>
       </div>
       <h4>第三步 订单分配</h4>
       <div class="orderMent">
@@ -137,6 +133,11 @@ export default {
       input_3: '',
       input_4: '',
       input_5: '',
+      taskData: {},
+      taskData_1: {},
+      taskData_2: {},
+      taskData_3: {},
+      taskData_4: {},
       checked: false,
       check: true,
       tableData: [{
@@ -187,6 +188,193 @@ export default {
     },
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`)
+    },
+    downLoad () {
+      this.$ajax.get('/api/file/downloadTodayTaskFile', {
+      }).then((data) => {
+        window.open('http://182.61.29.51:8089/file/downloadTodayTaskFile')
+      }).catch((err) => {
+        this.$message.error(err)
+      })
+    },
+    // 当点击确认发包触发的事件
+    sureTask () {
+      if (this.input_1 === '' && this.input_2 === '' && this.input_3 === '' && this.input_4 === '' && this.input_5 === '') {
+        this.$message({
+          type: 'warning',
+          message: '操作失败,请至少添加一条任务!'
+        })
+        return false
+      }
+      let arr = []
+      if (this.input_1 !== '') {
+        arr.push(this.input_1)
+      }
+      if (this.input_2 !== '') {
+        arr.push(this.input_2)
+      }
+      if (this.input_3 !== '') {
+        arr.push(this.input_3)
+      }
+      if (this.input_4 !== '') {
+        arr.push(this.input_4)
+      }
+      if (this.input_5 !== '') {
+        arr.push(this.input_5)
+      }
+      this.$ajax.post('/api/seller/taskSearch/checkSellerTasksDuplicate', {
+        sellerTaskIds: arr
+      }).then((data) => {
+        let res = data.data
+        if (res.code === '200') {
+          this.$message({
+            type: 'success',
+            message: '任务发放成功'
+          })
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.message
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
+    },
+    // 当点击确认筛选的时候进行买家的筛选
+    sureChoose () {
+
+    },
+    // 任务一失焦的时候请求对应的接口
+    taskOne () {
+      if (this.input_2 === this.input_1 || this.input_3 === this.input_1 || this.input_4 === this.input_1 || this.input_5 === this.input_1) {
+        this.$message({
+          type: 'warning',
+          message: '该任务编号添加失败,请仔细核对!'
+        })
+        this.input_1 = ''
+        return false
+      }
+      this.$ajax.post('/api/seller/taskSearch/getTodayTaskDayBySellerTaskIds', {
+        sellerTaskIds: [this.input_1]
+      }).then((data) => {
+        let res = data.data
+        if (res.code === '200') {
+          let obj = {
+            leftNum: res.data[0].leftNum,
+            sprice: res.data[0].price,
+            sellerTaskDayId: res.data[0].sellerTaskDayId,
+            sellerTaskId: res.data[0].sellerTaskId
+          }
+          this.taskData = obj
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
+    },
+    taskTwo () {
+      if (this.input_3 === this.input_2 || this.input_4 === this.input_2 || this.input_5 === this.input_2 || this.input_1 === this.input_2) {
+        this.$message({
+          type: 'warning',
+          message: '该任务编号添加失败,请仔细核对!'
+        })
+        this.input_2 = ''
+        return false
+      }
+      this.$ajax.post('/api/seller/taskSearch/getTodayTaskDayBySellerTaskIds', {
+        sellerTaskIds: [this.input_2]
+      }).then((data) => {
+        let res = data.data
+        if (res.code === '200') {
+          let obj = {
+            leftNum: res.data[0].leftNum,
+            sprice: res.data[0].price,
+            sellerTaskDayId: res.data[0].sellerTaskDayId,
+            sellerTaskId: res.data[0].sellerTaskId
+          }
+          this.taskData_1 = obj
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
+    },
+    taskThree () {
+      if (this.input_4 === this.input_3 || this.input_5 === this.input_3 || this.input_1 === this.input_3 || this.input_2 === this.input_3) {
+        this.$message({
+          type: 'warning',
+          message: '该任务编号添加失败,请仔细核对!'
+        })
+        this.input_3 = ''
+        return false
+      }
+      this.$ajax.post('/api/seller/taskSearch/getTodayTaskDayBySellerTaskIds', {
+        sellerTaskIds: [this.input_3]
+      }).then((data) => {
+        let res = data.data
+        if (res.code === '200') {
+          let obj = {
+            leftNum: res.data[0].leftNum,
+            sprice: res.data[0].price,
+            sellerTaskDayId: res.data[0].sellerTaskDayId,
+            sellerTaskId: res.data[0].sellerTaskId
+          }
+          this.taskData_2 = obj
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
+    },
+    taskFour () {
+      if (this.input_1 === this.input_4 || this.input_4 === this.input_2 || this.input_4 === this.input_3 || this.input_5 === this.input_4) {
+        this.$message({
+          type: 'warning',
+          message: '该任务编号添加失败,请仔细核对!'
+        })
+        this.input_4 = ''
+        return false
+      }
+      this.$ajax.post('/api/seller/taskSearch/getTodayTaskDayBySellerTaskIds', {
+        sellerTaskIds: [this.input_4]
+      }).then((data) => {
+        let res = data.data
+        if (res.code === '200') {
+          let obj = {
+            leftNum: res.data[0].leftNum,
+            sprice: res.data[0].price,
+            sellerTaskDayId: res.data[0].sellerTaskDayId,
+            sellerTaskId: res.data[0].sellerTaskId
+          }
+          this.taskData_3 = obj
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
+    },
+    taskFive () {
+      if (this.input_1 === this.input_5 || this.input_5 === this.input_2 || this.input_5 === this.input_3 || this.input_5 === this.input_4) {
+        this.$message({
+          type: 'warning',
+          message: '该任务编号添加失败,请仔细核对!'
+        })
+        this.input_5 = ''
+        return false
+      }
+      this.$ajax.post('/api/seller/taskSearch/getTodayTaskDayBySellerTaskIds', {
+        sellerTaskIds: [this.input_5]
+      }).then((data) => {
+        let res = data.data
+        if (res.code === '200') {
+          let obj = {
+            leftNum: res.data[0].leftNum,
+            sprice: res.data[0].price,
+            sellerTaskDayId: res.data[0].sellerTaskDayId,
+            sellerTaskId: res.data[0].sellerTaskId
+          }
+          this.taskData_4 = obj
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
     }
   }
 }
@@ -194,6 +382,7 @@ export default {
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .wrap
   padding 20px
+  min-width 900px
   header
     background rgba(255, 255, 255, 1)
     padding 20px
@@ -219,12 +408,6 @@ export default {
       margin-top 40px
     .bg-purple
       margin-left 24px
-      .redColor
-        color red
-        text-align right
-        padding-top 5px
-        font-size 10px
-        margin-right 30px
       h5
         font-size 14px
         color rgba(51, 51, 51, 1)

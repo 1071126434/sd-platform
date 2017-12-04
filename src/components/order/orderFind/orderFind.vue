@@ -16,7 +16,7 @@
           <el-col :span="7">
             <div class="grid-content bg-purple">
               店铺名称:
-              <el-input v-model="value2" placeholder="请输入内容" style="windth:240px;height:32px"></el-input>
+              <el-autocomplete class="inline-input" v-model="value2" :fetch-suggestions="querySearch" placeholder="请输入内容" :trigger-on-focus="false" @select="handleSelect" style="windth:240px;height:32px"></el-autocomplete>
             </div>
           </el-col>
           <el-col :span="7">
@@ -37,9 +37,9 @@
             <div class="grid-content bg-purple">
               <el-input placeholder="请输入内容" v-model="input1" class="input-with-select">
                 <el-select v-model="select1" slot="prepend" placeholder="买家昵称" size="small">
-                  <el-option label="买家昵称" value="1"></el-option>
-                  <el-option label="买家微信号" value="2"></el-option>
-                  <el-option label="买家手机号" value="3"></el-option>
+                  <el-option label="买家昵称" value="nick"></el-option>
+                  <el-option label="买家微信号" value="wechat"></el-option>
+                  <el-option label="买家手机号" value="telephone"></el-option>
                 </el-select>
               </el-input>
             </div>
@@ -48,9 +48,10 @@
             <div class="grid-content bg-purple">
               <el-input placeholder="请输入内容" v-model="input2" class="input-with-select">
                 <el-select v-model="select2" slot="prepend" placeholder="任务包编号" size="small">
-                  <el-option label="任务包编号" value="1"></el-option>
-                  <el-option label="任务编号" value="2"></el-option>
-                  <el-option label="子任务编号" value="3"></el-option>
+                  <el-option label="任务包编号" value="package"></el-option>
+                  <el-option label="任务编号" value="task"></el-option>
+                  <el-option label="子任务编号" value="subTask"></el-option>
+                  <el-option label="订单编号" value="order"></el-option>
                 </el-select>
               </el-input>
             </div>
@@ -58,9 +59,10 @@
           <el-col :span="9">
             <div class="grid-content bg-purple bgColor">
               <el-select v-model="select3" placeholder="分配时间" size="small">
-                <el-option label="分配时间" value="1"></el-option>
-                <el-option label="评价时间" value="2"></el-option>
-                <el-option label="撤销时间" value="3"></el-option>
+                <el-option label="分配时间" value="allot"></el-option>
+                <el-option label="下单时间" value="order"></el-option>
+                <el-option label="评价时间" value="favor"></el-option>
+                <el-option label="撤销时间" value="cancel"></el-option>
               </el-select>
               <el-date-picker v-model="value4" type="date" placeholder="选择日期">
               </el-date-picker>
@@ -194,12 +196,13 @@ export default {
       input1: '',
       input2: '',
       input3: '',
-      select1: '',
-      select2: '',
+      select1: 'nick',
+      select2: 'package',
       select3: '',
       activeName: 'first',
       currentPage: 1,
-      checked: true
+      checked: true,
+      restaurants: []
     }
   },
   methods: {
@@ -214,7 +217,32 @@ export default {
     },
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`)
+    },
+    querySearch (queryString, cb) {
+      var restaurants = this.restaurants
+      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    createFilter (queryString) {
+      return (restaurant) => {
+        return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) >= 0)
+      }
+    },
+    loadAll () {
+      return [
+        { 'value': '三全鲜食（北新泾店）' },
+        { 'value': '四全鲜食（北新泾店）' },
+        { 'value': '五全鲜食（北新泾店）' },
+        { 'value': '六全鲜食（北新泾店）' }
+      ]
+    },
+    handleSelect (item) {
+      console.log(item)
     }
+  },
+  mounted () {
+    this.restaurants = this.loadAll()
   }
 }
 </script>

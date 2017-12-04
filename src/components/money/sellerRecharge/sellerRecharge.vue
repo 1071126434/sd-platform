@@ -1,7 +1,7 @@
 <template>
   <div class="wrap">
     <header>
-      <el-tabs v-model="activeName2" type="card" @tab-click="handleClick">
+      <el-tabs v-model="activeName2" type="card">
         <el-tab-pane label="卖家充值申请" name="first">
           <div class="top">
             <el-input placeholder="请输入申请的卡号" v-model="input5" class="input-with-select">
@@ -34,7 +34,7 @@
               <el-table-column align="center" label="操作">
                 <template slot-scope="scope">
                   <el-button @click="handleClick(scope.row)" type="text" size="small">确认到账</el-button>
-                  <el-button @click="handleClick(scope.row)" type="text" size="small">未到账</el-button>
+                  <el-button @click="handleNoClick(scope.row)" type="text" size="small">未到账</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -61,36 +61,36 @@
             </div>
           </div>
           <!-- 展示内容部分 -->
-            <div class="accountTab">
-              <el-table :data="tableDataBuy" style="width: 100%">
-                <el-table-column prop="orderTask" align="center" label="订单号">
-                </el-table-column>
-                <el-table-column prop="phone" align="center" label="手机号">
-                </el-table-column>
-                <el-table-column prop="moneyNum" align="center" label="金额">
-                </el-table-column>
-                <el-table-column prop="remark" align="center" label="充值备注">
-                </el-table-column>
-                <el-table-column prop="sBank" align="center" label="收款银行卡">
-                </el-table-column>
-                <el-table-column prop="dBank" align="center" label="打款银行卡">
-                </el-table-column>
-                <el-table-column align="center" label="状态">
-                  <template slot-scope="scope">
-                    <span class="tipSmall" :class="scope.row.JDStatus==='已到账' ? 'tipSuccess' : scope.row.JDStatus==='未到账' ? 'tipWait' : 'tipError'">{{scope.row.JDStatus}}</span>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="time" align="center" label="确认时间">
-                </el-table-column>
-                <el-table-column prop="person" align="center" label="操作人">
-                </el-table-column>
-              </el-table>
-              <!-- 分页 -->
-              <div class="pager">
-                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
-                </el-pagination>
-              </div>
+          <div class="accountTab">
+            <el-table :data="tableDataBuy" style="width: 100%">
+              <el-table-column prop="orderTask" align="center" label="订单号">
+              </el-table-column>
+              <el-table-column prop="phone" align="center" label="手机号">
+              </el-table-column>
+              <el-table-column prop="moneyNum" align="center" label="金额">
+              </el-table-column>
+              <el-table-column prop="remark" align="center" label="充值备注">
+              </el-table-column>
+              <el-table-column prop="sBank" align="center" label="收款银行卡">
+              </el-table-column>
+              <el-table-column prop="dBank" align="center" label="打款银行卡">
+              </el-table-column>
+              <el-table-column align="center" label="状态">
+                <template slot-scope="scope">
+                  <span class="tipSmall" :class="scope.row.JDStatus==='已到账' ? 'tipSuccess' : scope.row.JDStatus==='未到账' ? 'tipWait' : 'tipError'">{{scope.row.JDStatus}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="time" align="center" label="确认时间">
+              </el-table-column>
+              <el-table-column prop="person" align="center" label="操作人">
+              </el-table-column>
+            </el-table>
+            <!-- 分页 -->
+            <div class="pager">
+              <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
+              </el-pagination>
             </div>
+          </div>
         </el-tab-pane>
       </el-tabs>
     </header>
@@ -130,13 +130,36 @@ export default {
   },
   methods: {
     handleClick (val) {
-      console.log(val)
+      this.$confirm('此操作将确认卖家充值到账, 是否继续?', '确认卖家充值到账?', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'success'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '操作成功!'
+        })
+      }).catch(() => {
+      })
     },
     handleSizeChange (val) {
       console.log(`每页 ${val} 条`)
     },
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`)
+    },
+    handleNoClick (val) {
+      this.$confirm('此操作将确认卖家充值未到账, 是否继续?', '确认卖家充值未到账?', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '操作成功!'
+        })
+      }).catch(() => {
+      })
     }
   }
 }
