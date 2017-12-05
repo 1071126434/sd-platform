@@ -243,6 +243,8 @@ export default {
       taskInfoObj: {},
       // 商品信息相关信息
       goodsInfoObj: {},
+      // 获取使用份数
+      orderTaskList: [],
       tableData: [{
         phone: '18655554444',
         buyerName: '王小虎',
@@ -343,6 +345,19 @@ export default {
         console.log(arr)
         return arr
       }
+    },
+    setTaskNum: function () {
+      let obj = {}
+      if (this.orderTaskList) {
+        obj.dateArr = []
+        for (let m of this.orderTaskList) {
+          let date = m.time
+          let formDate = date.substr(4, 2) + '-' + date.substr(6)
+          obj.dateArr.push(formDate)
+          this.option.xAxis.date = obj.dateArr
+        }
+        return obj
+      }
     }
   },
   methods: {
@@ -405,7 +420,9 @@ export default {
     },
     handleClick (tab, event) {
       console.log(tab, event)
-      console.log(this.newSearchWordList)
+      if (this.activeName === 'second') {
+        this.getOrderNum()
+      }
     },
     // 分页
     handleSizeChange (val) {
@@ -440,6 +457,32 @@ export default {
         console.log(data)
         if (data.data.code === '200') {
           this.goodsInfoObj = data.data.data
+        } else {
+          this.$message({
+            type: 'warning',
+            message: data.data.message
+          })
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
+    },
+    // 获取试用份数
+    getOrderNum () {
+      this.$ajax.post('/api/platform/task/getTrailList', {
+        sellerTaskId: this.$route.query.sellerTaskId
+      }).then((data) => {
+        console.log(data)
+        if (data.data.code === '200') {
+          let dateObj = data.data.data
+          let dateArr = []
+          for (let m of dateObj) {
+            let date = m.time
+            let formDate = date.substr(4, 2) + '-' + date.substr(6)
+            dateArr.push(formDate)
+            this.option.xAxis.date = dateArr
+          }
+          this.resizeCharts()
         } else {
           this.$message({
             type: 'warning',
