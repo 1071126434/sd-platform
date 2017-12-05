@@ -35,7 +35,7 @@
           <el-input v-model="keyword" placeholder="任务编号/商品名称关键词"></el-input>
         </div>
         <div class="searchBtn">
-          <el-button type="primary">查询</el-button>
+          <el-button type="primary" @click="search">查询</el-button>
         </div>
       </div>
     </div>
@@ -47,74 +47,77 @@
         <div style="width:15%">操作</div>
       </div>
       <div class="tables">
-        <div class="tableItem">
+        <div class="tableItem" v-for="(item, index) in orderListArr" :key="index">
           <ul class="itemHead">
-            <li style="width:50%">
+            <li>
               <span class="shopType"></span>
-              <span>升达旗舰店</span>
-              <span class="taskOrder">任务编号: 9901640082449467
-                <span class="link" @click="lookDetail">[查看任务详情]</span>
+              <span class="shopName">{{ item.shopName }}</span>
+              <span class="taskOrder">任务编号: {{ item.sellerTaskId }}
+                <span class="link" @click="lookDetail(item.sellerTaskId)">[查看任务详情]</span>
               </span>
             </li>
-            <li style="width:25%">
+            <li>
               <span class="taskType">任务类型:
-                <span class="red">垫付</span>
+                <span class="red">{{ item.taskTypeDesc }}</span>
               </span>
             </li>
-            <li style="width:25%">
+            <li>
               <span class="onlineTime">上线时间:
-                <span class="red">2017-11-14</span>
+                <span class="red">{{ item.throwTime }}</span>
               </span>
             </li>
           </ul>
           <ul class="itemCont">
             <li style="width:20%">
-              <img alt="" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg">
-              <span class="goodsName">安卓数据线</span>
+              <img alt="" :src="item.productPicUrl">
+              <span class="goodsName">{{ item.productName }}</span>
             </li>
             <li style="width:16%">
               <p>付款价格:
-                <span class="red">9.90</span>
+                <span class="red">{{ item.payment }}</span>
               </p>
               <p>待确认订单:
-                <span class="red">0</span>
+                <span class="red">{{ item.toConfirmOrderNum }}</span>
               </p>
             </li>
             <li style="width:16%">
               <p>任务数量:
-                <span class="red">99</span>
+                <span class="red">{{ item.throwNum }}</span>
               </p>
               <p>待确认评价截图:
-                <span class="red">0</span>
+                <span class="red">{{ item.toConfirmFavorNum }}</span>
               </p>
             </li>
             <li style="width:16%">
               <p class="lh60">已完成订单:
-                <span class="red">99</span>
+                <span class="red">{{ item.doneNum }}</span>
               </p>
             </li>
             <li class="center" style="width:16%">
-              <span class="tipSuccess lh60">已完成</span>
+              <span v-if="item.taskStatus==1 || item.taskStatus==2" class="tipError lh60">待提交</span>
+              <span v-if="item.taskStatus==3" class="tipError lh60">待支付</span>
+              <span v-if="item.taskStatus==4" class="tipWait lh60">待审核</span>
+              <span v-if="item.taskStatus==5" class="tipWait lh60">待上线</span>
+              <span v-if="item.taskStatus==6" class="tipError lh60">未通过</span>
+              <span v-if="item.taskStatus==7" class="tipError lh60">已撤销</span>
+              <span v-if="item.taskStatus==8" class="tipDoing lh60">进行中</span>
+              <span v-if="item.taskStatus==20" class="tipSuccess lh60">已完成</span>
+              <span v-if="item.taskStatus==21" class="tipSuccess lh60">已结束</span>
             </li>
             <li style="width:16%">
               <div>
-                <p class="center">
-                  <span class="smButton greenBg" @click="toCheck">去审核</span>
+                <p class="center" v-if="item.taskStatus==4">
+                  <span class="smButton greenBg" @click="lookDetail(item.sellerTaskId)">去审核</span>
                 </p>
-                <p class="center">
-                  <span class="smButton" @click="callBack">撤&nbsp;&nbsp;销</span>
+                <p class="center" v-if="item.taskStatus!=7 && item.taskStatus!=20 && item.taskStatus!=21" :class="{'lh60': !(item.taskStatus==4)}">
+                  <span class="smButton" @click="callBack(item.sellerTaskId)">撤&nbsp;&nbsp;销</span>
                 </p>
               </div>
-              <!-- <div style="margin-top:16px">
-                <p class="center">
-                  <span class="smButton">撤&nbsp;&nbsp;销</span>
-                </p>
-              </div> -->
             </li>
           </ul>
         </div>
         <div class="pager">
-          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
+          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="pageSizeArray" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pageTotal">
           </el-pagination>
         </div>
       </div>
@@ -122,10 +125,10 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
-// import { pageCommon } from '../../assets/js/mixin'
+import { pageCommon } from '../../assets/js/mixin'
 export default {
   name: 'task',
-  // mixins: [pageCommon],
+  mixins: [pageCommon],
   data () {
     return {
       currentPage: 1,
@@ -134,13 +137,14 @@ export default {
       taskType: null,
       shopType: null,
       keyword: null,
+      orderListArr: [],
       apiUrl: '/api/platform/task/getTaskByCondition'
     }
   },
   computed: {
     params () {
       return {
-        taskStatus: this.taskStatus,
+        taskStatus: this.activeName,
         taskType: this.taskType,
         shopType: this.shopType,
         keyword: this.keyword,
@@ -151,37 +155,60 @@ export default {
     }
   },
   methods: {
-    // setList (data) {
-
-    // },
-    toCheck () {
-
+    setList (data) {
+      console.log(data)
+      this.orderListArr = data
     },
-    callBack () {
-
+    search () {
+      this.getTask()
+    },
+    callBack (sellerTaskId) {
+      this.$confirm('确认将该任务撤销?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$ajax.post('/api/platform/task/cancelTask', {
+          sellerTaskId: sellerTaskId
+        }).then((data) => {
+          if (data.data.code === '200') {
+            this.$message({
+              type: 'success',
+              message: '撤销成功!'
+            })
+            this.getTask()
+          } else {
+            this.$message({
+              type: 'warning',
+              message: data.data.message
+            })
+          }
+        }).catch((err) => {
+          console.log(err)
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
+      })
     },
     // 查看任务详情
-    lookDetail () {
-      this.$router.push({ name: 'taskDetail' })
+    lookDetail (sellerTaskId) {
+      this.$router.push({ name: 'taskDetail', query: { sellerTaskId: sellerTaskId } })
     },
     handleClick (tab, event) {
       console.log(tab, event)
-      this.taskStatus = tab.name
-      this.setList()
-    },
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
-    },
-    handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+      // this.taskStatus = tab.name
+      this.getTask()
     },
     filter (val) {
       let res = ''
       let reg = /[^\u4e00-\u9fa5]/
       if (reg.test(val)) {
-        res = 'keyword'
-      } else {
         res = 'task'
+      } else {
+        res = 'keyword'
       }
       return res
     }
@@ -198,6 +225,7 @@ export default {
     .btns
       margin-top 20px
       display flex
+      position relative
       justify-content flex-start
       .select
         margin-left 25px
@@ -205,7 +233,8 @@ export default {
         .el-input
           width 226px
       .searchBtn
-        position absolute
+        // position absolute
+        margin-left 40px
         right 40px
   .list
     margin-top 12px
@@ -229,19 +258,27 @@ export default {
           line-height 32px
           background rgba(151, 204, 247, 0.2)
           color #535353
+          li
+            margin-right 50px
           .shopType
             margin 7px 10px 8px 20px
             float left
             width 16px
             height 16px
             background red
+          .shopName
+            display inline-block
+            width 120px
+            overflow
+            text-overflow ellipsis
+            white-space nowrap
           .taskOrder
             margin-left 48px
         .itemCont
           display flex
           padding 20px
           li
-            min-width 150px
+            // min-width 150px
             border-right 1px solid #E5E5E5
             &:last-child
               border none
@@ -279,6 +316,8 @@ export default {
     border-radius 4px
     line-height 24px
     border 1px solid #cccccc
+    &:hover
+      opacity 0.8
   .greenBg
     background #40B6FF
     color #ffffff

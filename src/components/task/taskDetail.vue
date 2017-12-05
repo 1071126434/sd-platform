@@ -8,39 +8,47 @@
     </div>
     <div class="head">
       <div class="taskStatus">
-        <div class="toDo">待审核</div>
+        <div v-if="taskInfoObj.status==1 || taskInfoObj.status==2" class="toDo error">待提交</div>
+        <div v-if="taskInfoObj.status==3" class="toDo error">待支付</div>
+        <div v-if="taskInfoObj.status==4" class="toDo wait">待审核</div>
+        <div v-if="taskInfoObj.status==5" class="toDo wait">待上线</div>
+        <div v-if="taskInfoObj.status==6" class="toDo error">未通过</div>
+        <div v-if="taskInfoObj.status==7" class="toDo success">已撤销</div>
+        <div v-if="taskInfoObj.status==8" class="toDo doing">进行中</div>
+        <div v-if="taskInfoObj.status==20" class="toDo success">已完成</div>
+        <div v-if="taskInfoObj.status==21" class="toDo success">已结束</div>
         <h2>任务状态</h2>
       </div>
       <div class="taskInfo">
         <div class="title">
-          <span>天猫</span>
-          <span>凭轩旗舰店</span>
-          <span>手淘app垫付</span>
+          <span>{{ taskInfoObj.shopType == 0 ? '京东' : taskInfoObj.shopType == 1 ? '淘宝' : '天猫' }}</span>
+          <span>{{ taskInfoObj.shopName }}</span>
+          <span>{{ taskInfoObj.taskTypeDetail }}</span>
         </div>
-        <h3>任务编号: 51553151546351321541543135</h3>
+        <h3>任务编号: {{ taskInfoObj.sellerTaskId }}</h3>
         <ul class="infoDetail">
           <li>
             <p>商品价格:
-              <span class="red">9.90</span>
+              <span class="red">{{ taskInfoObj.payment }}</span>
             </p>
             <p>待确认付款金额:
-              <span class="red">0</span>
+              <span class="red">{{ taskInfoObj.payment * taskInfoObj.toConfirmOrderNum }}</span>
             </p>
           </li>
           <li>
             <p>投放数量:
-              <span class="red">99</span>
+              <span class="red">{{ taskInfoObj.throwNum }}</span>
             </p>
             <p>已领取:
-              <span class="red">0</span>
+              <span class="red">{{ taskInfoObj.actualNum }}</span>
             </p>
           </li>
           <li>
             <p>待确认好评:
-              <span class="red">99</span>
+              <span class="red">{{ taskInfoObj.toConfirmFavorNum }}</span>
             </p>
             <p>已确认好评:
-              <span class="red">0</span>
+              <span class="red">{{ taskInfoObj.confirmedFavorNum }}</span>
             </p>
           </li>
         </ul>
@@ -53,20 +61,24 @@
           <li>
             <span></span>皇军</li>
           <li>
-            <span></span>15517756698</li>
+            <span></span>{{ taskInfoObj.telephone || '暂未填写手机号码' }}</li>
           <li>
-            <span></span>1072551555@qq.com</li>
+            <span></span>{{ taskInfoObj.email || '暂未填写邮箱地址' }}</li>
           <li>
-            <span></span>1866654745</li>
+            <span></span>{{ taskInfoObj.qqNum || '暂未填写QQ号码' }}</li>
         </ul>
       </div>
     </div>
     <div class="cont">
       <ul class="contTitle">
         <li>任务审核</li>
-        <li>
-          <span>审核不通过</span>
-          <span>审核通过</span>
+        <li v-if="taskInfoObj.status == 4">
+          <span @click="passIt(0)">审核不通过</span>
+          <span @click="passIt(1)">审核通过</span>
+        </li>
+        <li v-else>
+          <span class="disabled">审核不通过</span>
+          <span class="disabled">审核通过</span>
         </li>
       </ul>
       <div class="contNav">
@@ -76,23 +88,23 @@
               <li class="step1">
                 <h2>1.商品信息</h2>
                 <div class="info">
-                  <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg" alt="">
+                  <img :src="goodsInfoObj.productPicUrl" alt="商品展示图">
                   <div>
                     <div>
-                      <p>商品名称: 安卓数据线</p>
-                      <p>所在分类: 手机周边</p>
+                      <p>商品名称: {{ goodsInfoObj.productName }}</p>
+                      <p>所在分类: {{ goodsInfoObj.productClassFirstDetail }}</p>
                     </div>
                     <div>
                       <p style="width:80%">商品链接:
-                        <a class="link" href="http://www.baidu.com">http://www.baidu.com</a>
+                        <a class="link" :href="goodsInfoObj.productUrl" target="_blank">{{ goodsInfoObj.productUrl }}</a>
                       </p>
                     </div>
                     <div>
-                      <p>商品售价: 9元</p>
-                      <p>买手每单拍: 1件</p>
+                      <p>商品售价: {{ goodsInfoObj.productShowPrice }}元</p>
+                      <p>买手每单拍: {{ goodsInfoObj.numPerOrder }}件</p>
                     </div>
                     <div>
-                      <p>下单价格: 9元</p>
+                      <p>下单价格: {{ goodsInfoObj.productOrderPrice }}元</p>
                     </div>
                   </div>
                 </div>
@@ -100,56 +112,27 @@
               <li class="step2">
                 <h2>2.如何找到商品</h2>
                 <ul class="toFind">
-                  <li>
-                    <h3>搜索关键词1安卓</h3>
+                  <li v-for="(item, index) in newSearchWordList" :key="index">
+                    <h3>搜索关键词{{ index+1 }}：{{ item.keyword }}</h3>
                     <p>
-                      <span>排序方式:</span>综合排序</p>
+                      <span>排序方式:</span>{{ item.sortClass == 0 ? '综合排序' : '其他' }}</p>
                     <p>
-                      <span>价格区间:</span>0.00-100.00元</p>
+                      <span>价格区间:</span>{{ item.priceLow }}-{{ item.priceHigh }}元</p>
                     <p>
-                      <span>品牌:</span>阿迪</p>
+                      <span>品牌:</span>{{ item.brand || '暂无品牌信息' }}</p>
                     <p>
-                      <span>发货地:</span>全国</p>
+                      <span>发货地:</span>{{ item.postLocation }}</p>
                     <p>
-                      <span>评价数(约):</span>51</p>
+                      <span>评价数(约):</span>{{ item.favorNum }}</p>
                     <p>
-                      <span>预计翻页数:</span>5</p>
-                  </li>
-                  <li>
-                    <h3>搜索关键词2安卓</h3>
-                    <p>
-                      <span>排序方式:</span>综合排序</p>
-                    <p>
-                      <span>价格区间:</span>0.00-100.00元</p>
-                    <p>
-                      <span>品牌:</span>阿迪</p>
-                    <p>
-                      <span>发货地:</span>全国</p>
-                    <p>
-                      <span>评价数(约):</span>51</p>
-                    <p>
-                      <span>预计翻页数:</span>5</p>
-                  </li>
-                  <li>
-                    <h3>搜索关键词3安卓</h3>
-                    <p>
-                      <span>排序方式:</span>综合排序</p>
-                    <p>
-                      <span>价格区间:</span>0.00-100.00元</p>
-                    <p>
-                      <span>品牌:</span>阿迪</p>
-                    <p>
-                      <span>发货地:</span>全国</p>
-                    <p>
-                      <span>评价数(约):</span>51</p>
-                    <p>
-                      <span>预计翻页数:</span>5</p>
+                      <span>预计翻页数:</span>{{ item.pageNum }}</p>
                   </li>
                 </ul>
               </li>
               <li class="step3">
                 <h2>3.商品收取运费的方式</h2>
-                <p>包邮试用: 试客无需支付运费</p>
+                <p v-if="goodsInfoObj.isPostFree==1">包邮试用: 试客无需支付运费</p>
+                <p v-else>不包邮试用: 试客需支付运费</p>
               </li>
             </ul>
           </el-tab-pane>
@@ -229,6 +212,20 @@
         </el-tabs>
       </div>
     </div>
+    <!-- 弹窗 -->
+    <el-dialog class="alertReturn" title="确认该试用任务审核不通过？" :modal-append-to-body="false" :visible.sync="showReturn" width="600px">
+      <ul class="commonCont">
+        <li>
+          <span>不通过原因</span>
+          <el-input type="textarea" :rows="3" placeholder="请输入不通过原因" v-model="returnBackCommon" style="width:320px;" resize="none">
+          </el-input>
+        </li>
+      </ul>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="showReturn = false">取 消</el-button>
+        <el-button type="primary" @click="passIt(3)">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -238,7 +235,14 @@ export default {
   data () {
     return {
       activeName: 'first',
+      showReturn: false,
+      // 不通过原因
+      returnBackCommon: '',
       currentPage: 1,
+      // 任务信息相关信息
+      taskInfoObj: {},
+      // 商品信息相关信息
+      goodsInfoObj: {},
       tableData: [{
         phone: '18655554444',
         buyerName: '王小虎',
@@ -331,9 +335,77 @@ export default {
       }
     }
   },
+  computed: {
+    newSearchWordList: function () {
+      if (this.goodsInfoObj.searchWordList) {
+        let str = this.goodsInfoObj.searchWordList
+        let arr = JSON.parse(str)
+        console.log(arr)
+        return arr
+      }
+    }
+  },
   methods: {
+    passIt (type) {
+      if (type === 0) { // 审核不通过
+        this.showReturn = true
+      } else if (type === 1) { // 审核通过
+        this.$confirm('此操作将通过该任务审核，是否继续？', '确认该试用任务审核通过？', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'success'
+        }).then(() => {
+          this.$ajax.post('/api/platform/task/passTask', {
+            sellerTaskId: this.$route.query.sellerTaskId
+          }).then((data) => {
+            if (data.data.code === '200') {
+              this.showReturn = false
+              this.$message({
+                type: 'success',
+                message: '通过成功!'
+              })
+              this.$router.push({ name: 'task' })
+            } else {
+              this.$message({
+                type: 'warning',
+                message: data.data.message
+              })
+            }
+          }).catch((err) => {
+            console.log(err)
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消通过'
+          })
+        })
+      } else if (type === 3) {
+        this.$ajax.post('/api/platform/task/rejectTask', {
+          sellerTaskId: this.$route.query.sellerTaskId,
+          comment: this.returnBackCommon
+        }).then((data) => {
+          if (data.data.code === '200') {
+            this.showReturn = false
+            this.$message({
+              type: 'success',
+              message: '驳回成功!'
+            })
+            this.$router.push({ name: 'task' })
+          } else {
+            this.$message({
+              type: 'warning',
+              message: data.data.message
+            })
+          }
+        }).catch((err) => {
+          console.log(err)
+        })
+      }
+    },
     handleClick (tab, event) {
       console.log(tab, event)
+      console.log(this.newSearchWordList)
     },
     // 分页
     handleSizeChange (val) {
@@ -341,6 +413,42 @@ export default {
     },
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`)
+    },
+    // 获取任务详情信息
+    getTaskInfo () {
+      this.$ajax.post('/api/platform/task/getTaskDetail', {
+        sellerTaskId: this.$route.query.sellerTaskId
+      }).then((data) => {
+        // console.log(data)
+        if (data.data.code === '200') {
+          this.taskInfoObj = data.data.data
+        } else {
+          this.$message({
+            type: 'warning',
+            message: data.data.message
+          })
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
+    },
+    // 获取商品详情信息
+    getGoodsInfo () {
+      this.$ajax.post('/api/platform/task/getTaskProductInfo', {
+        sellerTaskId: this.$route.query.sellerTaskId
+      }).then((data) => {
+        console.log(data)
+        if (data.data.code === '200') {
+          this.goodsInfoObj = data.data.data
+        } else {
+          this.$message({
+            type: 'warning',
+            message: data.data.message
+          })
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
     },
     // 自适应折线图
     resizeCharts () {
@@ -358,6 +466,8 @@ export default {
   },
   mounted () {
     this.resizeCharts()
+    this.getTaskInfo()
+    this.getGoodsInfo()
   }
 }
 </script>
@@ -374,6 +484,14 @@ export default {
       font-size 12px
       line-height 36px
       color #262626
+  .alertReturn
+    .commonCont
+      padding-left 40px
+      li
+        span
+          margin-right 24px
+          vertical-align top
+          line-height 30px
   .head
     display flex
     justify-content space-between
@@ -398,6 +516,16 @@ export default {
       .toDo
         background #5DC0FF
         box-shadow 0 1px 5px #4DB7FF
+      .success
+        background #029E4A
+      .error
+        background #FF2933
+      .wait
+        background #FFAD33
+      .doing
+        background #3377FF
+      .gray
+        background #ededed
       h2
         font-size 16px
         color #333333
@@ -500,6 +628,9 @@ export default {
               margin-right 40px
             &:last-child
               background #5DC0FF
+          span.disabled
+            background #dedede
+            cursor not-allowed
     .contNav
       margin-top 24px
     .contDetail
@@ -522,6 +653,15 @@ export default {
             font-size 14px
             color #333333
             line-height 30px
+            vertical-align middle
+            a
+              display inline-block
+              line-height 30px
+              max-width 700px
+              overflow hidden
+              text-overflow ellipsis
+              white-space nowrap
+              vertical-align middle
       .step2
         .toFind
           padding 20px 20px 0

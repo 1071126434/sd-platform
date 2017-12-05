@@ -40,8 +40,8 @@ export default {
   name: 'login',
   data () {
     return {
-      username: '',
-      password: '',
+      username: '18667199035',
+      password: '123456',
       waringText: '',
       canSeePass: false,
       loginImg: loginImg
