@@ -78,97 +78,101 @@
     </header>
     <div class="orderList">
       <div class="head">
-        <el-tabs v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane label="全部任务" name="first"></el-tab-pane>
+        <el-tabs v-model="activeName">
+          <el-tab-pane label="全部任务" name="first" @click="first">
+            <div class="list" v-for="(item,index) in firstArr" :key="index">
+              <div class="tables">
+                <div class="tableItem">
+                  <ul class="itemHead">
+                    <li style="width:60%">
+                      <span class="shopType"></span>
+                      <span>{{item.sellerShopName}}</span>
+                      <span class="person">对接人:
+                        <em>{{item.operaterUserName}}</em>
+                      </span>
+                      <span class="taskOrder">任务编号:
+                        <i>{{item.buyerTaskRecordId}}</i>
+                        <span class="link">[查看任务详情]</span>
+                      </span>
+                    </li>
+                    <li style="width:20%">
+                      <span class="taskType">任务包编号:
+                        <span>{{item.buyerTaskPackageId}}</span>
+                      </span>
+                    </li>
+                    <li style="width:20%">
+                      <span class="onlineTime">提交时间:
+                        <span class="red">{{item.gmtCreate}}</span>
+                      </span>
+                    </li>
+                  </ul>
+                  <ul class="itemCont">
+                    <li style="width:5%;border:none;margin-top:17px">
+                      <img alt="" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg">
+                    </li>
+                    <li style="width:20%;margin-left:-80px">
+                      <p>{{item.productName}}
+                        <span>{{item.productUrl}}</span>
+                      </p>
+                      <p>子任务编号:
+                        <i class="red">{{item.sellerTaskDayId}}</i>
+                      </p>
+                      <p>任务类型:
+                        <i class="red" v-if="item.sellerTaskType===1">图文好评</i>
+                        <i class="red" v-else-if="item.sellerTaskType===2">文字好评</i>
+                        <i class="red" v-else>默认好评</i>
+                      </p>
+                    </li>
+                    <li style="width:30%">
+                      <p>
+                        <span>姓名:
+                          <i class="red">{{item.userName}}</i>
+                        </span>
+                        <span>订单金额:
+                          <i class="red">{{item.realOrderPrice}}</i>
+                        </span>
+                      </p>
+                      <p>京东订单编号:
+                        <span class="red">{{item.realOrderId}}</span>
+                      </p>
+                      <p>京东用户名:
+                        <span class="red">{{item.jdNickName}}</span>
+                      </p>
+                      <p>手机号:
+                        <span class="red">{{item.telephone}}</span>
+                      </p>
+                    </li>
+                    <li class="center" style="width:20%">
+                      <p class="taskState">子任务状态:</p>
+                      <span class="tipSuccess lh60" v-if="item.taskStatus===1">已完成</span>
+                      <span class="tipWait lh60" v-else-if="item.taskStatus===2">待下单</span>
+                      <span class="tipWait lh60" v-else-if="item.taskStatus===3">已撤销</span>
+                      <span class="tipWait lh60" v-else-if="item.taskStatus===4">待商家审核</span>
+                      <span class="tipWait lh60" v-else>待评价</span>
+                      <p>
+                        <el-checkbox v-model="checked">已联系做单</el-checkbox>
+                      </p>
+                    </li>
+                    <li style="width:20%">
+                      <p class="center">
+                        <span class="smButton" v-if="item.taskStatus===2">撤&nbsp;&nbsp;销</span>
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </el-tab-pane>
           <el-tab-pane label="待审核" name="second"></el-tab-pane>
           <el-tab-pane label="待上线" name="third"></el-tab-pane>
           <el-tab-pane label="已上线" name="fourth"></el-tab-pane>
           <el-tab-pane label="已完成任务" name="five"></el-tab-pane>
           <el-tab-pane label="未支付任务" name="six"></el-tab-pane>
-        </el-tabs>
-      </div>
-      <div class="list">
-        <div class="tables">
-          <div class="tableItem">
-            <ul class="itemHead">
-              <li style="width:60%">
-                <span class="shopType"></span>
-                <span>升达旗舰店</span>
-                <span class="person">对接人:
-                  <em>大黄</em>
-                </span>
-                <span class="taskOrder">任务编号:
-                  <i>9901640082449467</i>
-                  <span class="link">[查看任务详情]</span>
-                </span>
-              </li>
-              <li style="width:20%">
-                <span class="taskType">任务包编号:
-                  <span>990484864986416</span>
-                </span>
-              </li>
-              <li style="width:20%">
-                <span class="onlineTime">提交时间:
-                  <span class="red">2017-11-14 12:23:00</span>
-                </span>
-              </li>
-            </ul>
-            <ul class="itemCont">
-              <li style="width:5%;border:none;margin-top:17px">
-                <img alt="" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg">
-              </li>
-              <li style="width:20%;margin-left:-80px">
-                <p>安卓数据线
-                  <span>商品链接</span>
-                </p>
-                <p>子任务编号:
-                  <i class="red">4696868146-51541</i>
-                </p>
-                <p>任务类型:
-                  <!-- <i class="red">图文好评</i>
-                         <i class="red">文字好评</i> -->
-                  <i class="red">默认好评</i>
-                </p>
-              </li>
-              <li style="width:30%">
-                <p>
-                  <span>姓名:
-                    <i class="red">黄军</i>
-                  </span>
-                  <span>订单金额:
-                    <i class="red">58</i>
-                  </span>
-                </p>
-                <p>京东订单编号:
-                  <span class="red">68489646146</span>
-                </p>
-                <p>京东用户名:
-                  <span class="red">测试一下看看多少字</span>
-                </p>
-                <p>手机号:
-                  <span class="red">15103541616</span>
-                </p>
-              </li>
-              <li class="center" style="width:20%">
-                <p class="taskState">子任务状态:</p>
-                <!-- <span class="tipSuccess lh60">已完成</span> -->
-                <span class="tipWait lh60">待下单</span>
-                <p>
-                  <el-checkbox v-model="checked">已联系做单</el-checkbox>
-                </p>
-              </li>
-              <li style="width:20%">
-                <p class="center">
-                  <span class="smButton">撤&nbsp;&nbsp;销</span>
-                </p>
-              </li>
-            </ul>
-          </div>
           <div class="pager">
-            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
+            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
             </el-pagination>
           </div>
-        </div>
+        </el-tabs>
       </div>
     </div>
   </div>
@@ -201,16 +205,19 @@ export default {
       select3: '',
       activeName: 'first',
       currentPage: 1,
+      pageSize: 5,
+      totalCount: '',
+      firstArr: [],
       checked: true,
       restaurants: []
     }
   },
+  created () {
+    this.first(1, this.pageSize)
+  },
   methods: {
     reset () {
       this.value = ''
-    },
-    handleClick (tab, event) {
-      console.log(tab, event)
     },
     handleSizeChange (val) {
       console.log(`每页 ${val} 条`)
@@ -239,6 +246,61 @@ export default {
     },
     handleSelect (item) {
       console.log(item)
+    },
+    first (pageNo, pageSize) {
+      this.$ajax.post('/api/order/search/getOrderListByCondition', {
+        pageNo: pageNo,
+        pageSize: pageSize
+      }).then((data) => {
+        console.log(data)
+        let res = data.data
+        this.totalCount = res.data.totalCount
+        if (res.code === '200') {
+          let arr = []
+          for (let word of res.data.buyerTaskRecordInfos) {
+            let goods = {
+              sellerShopName: word.sellerShopName || '暂无数据',
+              /* 平台对接人 */
+              operaterUserName: word.operaterUserName || '暂无数据',
+              /* 任务编号 */
+              buyerTaskRecordId: word.buyerTaskRecordId || '暂无数据',
+              /* 任务包 */
+              buyerTaskPackageId: word.buyerTaskPackageId || '暂无数据',
+              /* 提交时间 */
+              gmtCreate: word.gmtCreate || '暂无数据',
+              /* 商品名字 */
+              productName: word.productName || '暂无数据',
+              /* 商品链接 */
+              productUrl: word.productUrl || '暂无数据',
+              /* 子任务编号 */
+              sellerTaskDayId: word.sellerTaskDayId || '暂无数据',
+              /* 任务类型 */
+              sellerTaskType: word.sellerTaskType || '暂无数据',
+              /* 买家姓名 */
+              userName: word.userName || '暂无数据',
+              /* 订单金额 */
+              realOrderPrice: word.realOrderPrice || '暂无数据',
+              /* 京东订单编号 */
+              realOrderId: word.realOrderId || '暂无数据',
+              /* 京东用户名 */
+              jdNickName: word.jdNickName || '暂无数据',
+              telephone: word.telephone || '暂无数据',
+              taskStatus: word.taskStatus || '暂无数据',
+              isContact: word.isContact
+            }
+            arr.push(goods)
+          }
+          this.firstArr = arr
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          })
+        }
+      }).catch((error) => {
+        console.log(error)
+        // this.$message.error('网络错误，刷新下试试')
+      })
     }
   },
   mounted () {

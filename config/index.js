@@ -26,13 +26,13 @@ module.exports = {
   },
   dev: {
     env: require('./dev.env'),
-    port: process.env.PORT || 8887,
+    port: process.env.PORT || 8010,
     autoOpenBrowser: true,
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        target: 'http://182.61.29.51:8089',
+        target: 'http://182.61.24.42:8089',
         // target: 'http://182.61.24.42:8089',
         // target: 'http://116.62.136.130:8093',
         changeOrigin: true,

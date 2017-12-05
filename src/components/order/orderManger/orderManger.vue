@@ -78,13 +78,12 @@
             </div>
           </div>
         </el-col>
-        <el-button type="primary" style="margin-top:130px" @click="sureTask">确认发包</el-button>
       </el-row>
       <div class="line"></div>
       <div class="bottom">
         <div class="bottom_money">包单金额:&nbsp;&nbsp;
-          <span style="color:black;font-weight:600">678</span>元</div>
-        <el-checkbox v-model="checked" style="margin-top:27px" v-show="check">使用该商家的买手账号</el-checkbox>&nbsp;&nbsp;
+          <span style="color:black;font-weight:600">100</span>元</div>
+        <el-checkbox v-model="checked" style="margin-top:27px">是否Plus</el-checkbox>&nbsp;&nbsp;
         <el-button type="primary" style="margin-top:16px" @click="sureChoose">确认筛选</el-button>
       </div>
       <h4>第三步 订单分配</h4>
@@ -96,7 +95,7 @@
           </el-table-column>
           <el-table-column prop="wchat" label="微信号" align="center">
           </el-table-column>
-          <el-table-column prop="messg" label="对应平台管理员" align="center">
+          <el-table-column prop="messg" label="管理员手机号" align="center">
           </el-table-column>
           <el-table-column prop="plus" label="Plus状态" align="center">
           </el-table-column>
@@ -106,17 +105,15 @@
           </el-table-column>
           <el-table-column prop="money" label="京东本月累计金额" align="center">
           </el-table-column>
-          <el-table-column prop="stuts" label="任务状态" align="center">
+          <el-table-column align="center" label="操作">
             <template slot-scope="scope">
-              <el-tag :type="scope.row.stuts === '已分发' ? 'primary' : scope.row.stuts === '待分发' ?'success':'Danger'" close-transition>{{scope.row.stuts}}</el-tag>
+              <el-button @click="handleClick(scope.$index, scope.row)" type="text" size="small">待分发</el-button>
             </template>
-          </el-table-column>
-          <el-table-column prop="work" label="操作" align="center">
           </el-table-column>
         </el-table>
       </div>
       <div class="pager">
-        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
         </el-pagination>
       </div>
     </header>
@@ -128,6 +125,8 @@ export default {
   data () {
     return {
       currentPage: 1,
+      disabled: true,
+      totalCount: 0,
       input_1: '',
       input_2: '',
       input_3: '',
@@ -138,98 +137,29 @@ export default {
       taskData_2: {},
       taskData_3: {},
       taskData_4: {},
+      arr: [],
+      pageSize: 5,
       checked: false,
-      check: true,
-      tableData: [{
-        name: '王小虎',
-        phone: '15037183341',
-        wchat: '15037183341',
-        messg: '哈哈哈',
-        plus: '正式',
-        date: '2016-05-02',
-        city: '杭州',
-        money: '100.00',
-        stuts: '待分发',
-        work: '确认分发'
-      }, {
-        name: '王小虎',
-        phone: '15037183341',
-        wchat: '15037183341',
-        messg: '哈哈哈',
-        plus: '正式',
-        date: '2016-05-02',
-        city: '杭州',
-        money: '100.00',
-        stuts: '已分发',
-        work: '确认分发'
-      }, {
-        name: '王小虎',
-        phone: '15037183341',
-        wchat: '15037183341',
-        messg: '哈哈哈',
-        plus: '正式',
-        date: '2016-05-02',
-        city: '杭州',
-        money: '100.00',
-        stuts: '已分发',
-        work: '确认分发'
-      }]
+      tableData: [],
+      apiUrl: '/api/buyerAccount/getSelectableBuyerUserInfo'
     }
   },
   methods: {
     reset () {
       this.value = ''
     },
-    handleClick (tab, event) {
-      console.log(tab, event)
-    },
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
-    },
-    handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
-    },
-    downLoad () {
-      this.$ajax.get('/api/file/downloadTodayTaskFile', {
-      }).then((data) => {
-        window.open('http://182.61.29.51:8089/file/downloadTodayTaskFile')
-      }).catch((err) => {
-        this.$message.error(err)
-      })
-    },
-    // 当点击确认发包触发的事件
-    sureTask () {
-      if (this.input_1 === '' && this.input_2 === '' && this.input_3 === '' && this.input_4 === '' && this.input_5 === '') {
-        this.$message({
-          type: 'warning',
-          message: '操作失败,请至少添加一条任务!'
-        })
-        return false
-      }
-      let arr = []
-      if (this.input_1 !== '') {
-        arr.push(this.input_1)
-      }
-      if (this.input_2 !== '') {
-        arr.push(this.input_2)
-      }
-      if (this.input_3 !== '') {
-        arr.push(this.input_3)
-      }
-      if (this.input_4 !== '') {
-        arr.push(this.input_4)
-      }
-      if (this.input_5 !== '') {
-        arr.push(this.input_5)
-      }
-      this.$ajax.post('/api/seller/taskSearch/checkSellerTasksDuplicate', {
-        sellerTaskIds: arr
+    handleClick (index, seller) {
+      console.log(index, seller)
+      this.$ajax.post('/api/order/packageAssign', {
+        sellerTaskIds: this.arr,
+        plusType: seller.plus === '试用会员' ? '0' : '1',
+        buyerUserId: seller.sellerUserId
       }).then((data) => {
         let res = data.data
         if (res.code === '200') {
           this.$message({
-            type: 'success',
-            message: '任务发放成功'
+            type: 'sucess',
+            message: '分发成功'
           })
         } else {
           this.$message({
@@ -241,12 +171,119 @@ export default {
         this.$message.error(err)
       })
     },
-    // 当点击确认筛选的时候进行买家的筛选
+    handleSizeChange (val) {
+      // console.log(`每页 ${val} 条`)
+      this.getDatas(1, val)
+    },
+    handleCurrentChange (val) {
+      // console.log(`当前页: ${val}`)
+      this.getDatas(val, this.pageSize)
+    },
+    downLoad () {
+      this.$ajax.get('/api/file/downloadTodayTaskFile', {
+      }).then((data) => {
+        window.open('http://182.61.29.51:8089/file/downloadTodayTaskFile')
+      }).catch((err) => {
+        this.$message.error(err)
+      })
+    },
+    // 当点击确认校验的时候触发的事件
     sureChoose () {
-
+      if (this.input_1 === '' && this.input_2 === '' && this.input_3 === '' && this.input_4 === '' && this.input_5 === '') {
+        this.$message({
+          type: 'warning',
+          message: '操作失败,请至少添加一条任务!'
+        })
+        return false
+      }
+      for (let i = 0; i < this.arr.length; i++) {
+        for (let j = 0; j < this.arr.length; j++) {
+          if (this.arr[i] === this.arr[j]) {
+            this.input_1 = ''
+            this.input_2 = ''
+            this.input_3 = ''
+            this.input_4 = ''
+            this.input_5 = ''
+            this.arr = []
+          }
+        }
+      }
+      if (this.input_1 !== '') {
+        this.arr.push(this.input_1)
+      }
+      if (this.input_2 !== '') {
+        this.arr.push(this.input_2)
+      }
+      if (this.input_3 !== '') {
+        this.arr.push(this.input_3)
+      }
+      if (this.input_4 !== '') {
+        this.arr.push(this.input_4)
+      }
+      if (this.input_5 !== '') {
+        this.arr.push(this.input_5)
+      }
+      this.$ajax.post('/api/seller/taskSearch/checkSellerTasksDuplicate', {
+        sellerTaskIds: this.arr
+      }).then((data) => {
+        let res = data.data
+        if (res.code === '200') {
+          this.getDatas(1, this.pageSize)
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.message
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
+    },
+    // 当点击确认筛选的时候进行买家的筛选
+    getDatas (pageNo, pageSize) {
+      this.$ajax.post('/api/buyerAccount/getSelectableBuyerUserInfo', {
+        pageNo: pageNo,
+        pageSize: pageSize,
+        sellerTaskIds: this.arr,
+        type: 'JD',
+        isPlus: this.checked === true ? '1' : '0'
+      }).then((data) => {
+        console.log(data)
+        let res = data.data
+        this.totalCount = res.data.totalCount
+        if (res.code === '200') {
+          let arr = []
+          for (let word of res.data.buyerUsers) {
+            let obj = {
+              name: word.userName,
+              phone: word.telephone,
+              wchat: word.wechatNum || '暂无数据',
+              messg: word.operaterTelephone,
+              plus: word.jdPlusType === '0' ? '试用会员' : '正式会员',
+              date: word.jdPlusEndDate,
+              city: word.postCity,
+              money: word.jdMonthIncome || '暂无数据',
+              sellerUserId: word.buyerUserAccountId
+            }
+            arr.push(obj)
+          }
+          this.tableData = arr
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.message
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
     },
     // 任务一失焦的时候请求对应的接口
     taskOne () {
+      if (this.input_1 === '') {
+        this.taskData = {}
+        return false
+      }
       if (this.input_2 === this.input_1 || this.input_3 === this.input_1 || this.input_4 === this.input_1 || this.input_5 === this.input_1) {
         this.$message({
           type: 'warning',
@@ -273,6 +310,10 @@ export default {
       })
     },
     taskTwo () {
+      if (this.input_2 === '') {
+        this.taskData_1 = {}
+        return false
+      }
       if (this.input_3 === this.input_2 || this.input_4 === this.input_2 || this.input_5 === this.input_2 || this.input_1 === this.input_2) {
         this.$message({
           type: 'warning',
@@ -299,6 +340,10 @@ export default {
       })
     },
     taskThree () {
+      if (this.input_3 === '') {
+        this.taskData_2 = {}
+        return false
+      }
       if (this.input_4 === this.input_3 || this.input_5 === this.input_3 || this.input_1 === this.input_3 || this.input_2 === this.input_3) {
         this.$message({
           type: 'warning',
@@ -325,6 +370,10 @@ export default {
       })
     },
     taskFour () {
+      if (this.input_4 === '') {
+        this.taskData_3 = {}
+        return false
+      }
       if (this.input_1 === this.input_4 || this.input_4 === this.input_2 || this.input_4 === this.input_3 || this.input_5 === this.input_4) {
         this.$message({
           type: 'warning',
@@ -351,6 +400,10 @@ export default {
       })
     },
     taskFive () {
+      if (this.input_5 === '') {
+        this.taskData_4 = {}
+        return false
+      }
       if (this.input_1 === this.input_5 || this.input_5 === this.input_2 || this.input_5 === this.input_3 || this.input_5 === this.input_4) {
         this.$message({
           type: 'warning',
