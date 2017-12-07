@@ -474,14 +474,21 @@ export default {
       }).then((data) => {
         console.log(data)
         if (data.data.code === '200') {
-          let dateObj = data.data.data
-          let dateArr = []
-          for (let m of dateObj) {
+          let dateArr = data.data.data
+          let arrDay = []
+          let actualNumArr = []
+          let throwTimeArr = []
+          for (let m of dateArr) {
+            console.log(m)
             let date = m.time
             let formDate = date.substr(4, 2) + '-' + date.substr(6)
-            dateArr.push(formDate)
-            this.option.xAxis.date = dateArr
+            arrDay.push(formDate)
+            actualNumArr.push(m.actualNum)
+            throwTimeArr.push(m.throwTime)
           }
+          this.option.xAxis.data = arrDay
+          this.option.series[0].data = throwTimeArr
+          this.option.series[1].data = actualNumArr
           this.resizeCharts()
         } else {
           this.$message({
