@@ -161,6 +161,7 @@ export default {
             type: 'sucess',
             message: '分发成功'
           })
+          this.getDatas(1, this.pageSize)
         } else {
           this.$message({
             type: 'error',

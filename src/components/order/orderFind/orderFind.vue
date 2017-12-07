@@ -7,8 +7,8 @@
           <el-col :span="7">
             <div class="grid-content bg-purple">
               店铺渠道:
-              <el-select v-model="value1" placeholder="请选择" size="small">
-                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+              <el-select v-model="value1" placeholder="请选择" size="small" @change="change">
+                <el-option v-for="(item,index) in options" :key="index" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
             </div>
@@ -16,14 +16,14 @@
           <el-col :span="7">
             <div class="grid-content bg-purple">
               店铺名称:
-              <el-autocomplete class="inline-input" v-model="value2" :fetch-suggestions="querySearch" placeholder="请输入内容" :trigger-on-focus="false" @select="handleSelect" style="windth:240px;height:32px"></el-autocomplete>
+              <el-autocomplete style="windth:240px;height:32px" class="inline-input" v-model="state2" :fetch-suggestions="querySearch" placeholder="请输入内容" :trigger-on-focus="false" @select="handleSelect"></el-autocomplete>
             </div>
           </el-col>
-          <el-col :span="7">
+          <el-col :span="9">
             <div class="grid-content bg-purple">
               平台对接人:
-              <el-select v-model="value3" placeholder="请选择" size="small">
-                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+              <el-select v-model="item" placeholder="请选择" size="small" @focus="focus" value-key='operateUserAccountId'>
+                <el-option v-for="(item,index) in operateUserAccountName" :key="index" :label="item.userName" :value="item">
                 </el-option>
               </el-select>
             </div>
@@ -36,8 +36,8 @@
           <el-col :span="7">
             <div class="grid-content bg-purple">
               <el-input placeholder="请输入内容" v-model="input1" class="input-with-select">
-                <el-select v-model="select1" slot="prepend" placeholder="买家昵称" size="small">
-                  <el-option label="买家昵称" value="nick"></el-option>
+                <el-select v-model="select1" slot="prepend" placeholder="请选择" size="small">
+                  <el-option label="姓名" value="nick"></el-option>
                   <el-option label="买家微信号" value="wechat"></el-option>
                   <el-option label="买家手机号" value="telephone"></el-option>
                 </el-select>
@@ -47,7 +47,7 @@
           <el-col :span="7">
             <div class="grid-content bg-purple">
               <el-input placeholder="请输入内容" v-model="input2" class="input-with-select">
-                <el-select v-model="select2" slot="prepend" placeholder="任务包编号" size="small">
+                <el-select v-model="select2" slot="prepend" placeholder="请选择" size="small">
                   <el-option label="任务包编号" value="package"></el-option>
                   <el-option label="任务编号" value="task"></el-option>
                   <el-option label="子任务编号" value="subTask"></el-option>
@@ -57,14 +57,14 @@
             </div>
           </el-col>
           <el-col :span="9">
-            <div class="grid-content bg-purple bgColor">
-              <el-select v-model="select3" placeholder="分配时间" size="small">
+            <div class="grid-content bg-purple bgColor" style="margin-top:-2px">
+              <el-select v-model="select3" placeholder="请选择" size="small">
                 <el-option label="分配时间" value="allot"></el-option>
                 <el-option label="下单时间" value="order"></el-option>
                 <el-option label="评价时间" value="favor"></el-option>
                 <el-option label="撤销时间" value="cancel"></el-option>
               </el-select>
-              <el-date-picker v-model="value4" type="date" placeholder="选择日期">
+              <el-date-picker v-model="value4" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期" value-format='yyyy-MM-dd'>
               </el-date-picker>
             </div>
           </el-col>
@@ -73,103 +73,104 @@
       <div class="line"></div>
       <div class="btn">
         <el-button @click="reset">重置</el-button>
-        <el-button type="primary">搜索</el-button>
+        <el-button type="primary" @click="search">搜索</el-button>
       </div>
     </header>
     <div class="orderList">
       <div class="head">
-        <el-tabs v-model="activeName">
-          <el-tab-pane label="全部任务" name="first" @click="first">
-            <div class="list" v-for="(item,index) in firstArr" :key="index">
-              <div class="tables">
-                <div class="tableItem">
-                  <ul class="itemHead">
-                    <li style="width:60%">
-                      <span class="shopType"></span>
-                      <span>{{item.sellerShopName}}</span>
-                      <span class="person">对接人:
-                        <em>{{item.operaterUserName}}</em>
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+          <el-tab-pane label="全部" name="ALL"></el-tab-pane>
+          <el-tab-pane label="待下单" name="1"></el-tab-pane>
+          <el-tab-pane label="待商家审核" name="3"></el-tab-pane>
+          <el-tab-pane label="待评价" name="10"></el-tab-pane>
+          <el-tab-pane label="待审核评价" name="11"></el-tab-pane>
+          <div class="list" v-for="(item,index) in secondArr" :key="index">
+            <div class="tables">
+              <div class="tableItem">
+                <ul class="itemHead">
+                  <li style="width:60%">
+                    <span class="shopType"></span>
+                    <span>{{item.sellerShopName}}</span>
+                    <span class="person">对接人:
+                      <em>{{item.operaterUserName}}</em>
+                    </span>
+                    <span class="taskOrder">任务编号:
+                      <i>{{item.sellerTaskId}}</i>
+                      <span class="link" @click="taskDetail(index,secondArr)">[查看任务详情]</span>
+                    </span>
+                  </li>
+                  <li style="width:20%">
+                    <span class="taskType">任务包编号:
+                      <span>{{item.buyerTaskPackageId}}</span>
+                    </span>
+                  </li>
+                  <li style="width:20%">
+                    <span class="onlineTime">提交时间:
+                      <span class="red">{{item.gmtCreate}}</span>
+                    </span>
+                  </li>
+                </ul>
+                <ul class="itemCont">
+                  <li style="width:5%;border:none;margin-top:17px">
+                    <img alt="" width="30" height="30" :src="item.productPictureUrl">
+                  </li>
+                  <li style="width:25%;margin-left:-80px">
+                    <p>{{item.productName}}
+                      <span>
+                        <a :href="item.productUrl" style="color:#3377FF ">商品链接</a>
                       </span>
-                      <span class="taskOrder">任务编号:
-                        <i>{{item.buyerTaskRecordId}}</i>
-                        <span class="link">[查看任务详情]</span>
+                    </p>
+                    <p style="white-space:nowrap">订单编号:
+                      <i class="red">{{item.buyerTaskRecordId}}</i>
+                    </p>
+                    <p>任务类型:
+                      <i class="red" v-if="item.sellerTaskType===1">图文好评</i>
+                      <i class="red" v-else-if="item.sellerTaskType===2">文字好评</i>
+                      <i class="red" v-else>默认好评</i>
+                    </p>
+                  </li>
+                  <li class="border_line">
+                    <p>
+                      <span>姓名:
+                        <i class="red">{{item.userName}}</i>
                       </span>
-                    </li>
-                    <li style="width:20%">
-                      <span class="taskType">任务包编号:
-                        <span>{{item.buyerTaskPackageId}}</span>
+                      <span>订单金额:
+                        <i class="red">{{item.realOrderPrice}}</i>
                       </span>
-                    </li>
-                    <li style="width:20%">
-                      <span class="onlineTime">提交时间:
-                        <span class="red">{{item.gmtCreate}}</span>
-                      </span>
-                    </li>
-                  </ul>
-                  <ul class="itemCont">
-                    <li style="width:5%;border:none;margin-top:17px">
-                      <img alt="" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg">
-                    </li>
-                    <li style="width:20%;margin-left:-80px">
-                      <p>{{item.productName}}
-                        <span>{{item.productUrl}}</span>
-                      </p>
-                      <p>子任务编号:
-                        <i class="red">{{item.sellerTaskDayId}}</i>
-                      </p>
-                      <p>任务类型:
-                        <i class="red" v-if="item.sellerTaskType===1">图文好评</i>
-                        <i class="red" v-else-if="item.sellerTaskType===2">文字好评</i>
-                        <i class="red" v-else>默认好评</i>
-                      </p>
-                    </li>
-                    <li style="width:30%">
-                      <p>
-                        <span>姓名:
-                          <i class="red">{{item.userName}}</i>
-                        </span>
-                        <span>订单金额:
-                          <i class="red">{{item.realOrderPrice}}</i>
-                        </span>
-                      </p>
-                      <p>京东订单编号:
-                        <span class="red">{{item.realOrderId}}</span>
-                      </p>
-                      <p>京东用户名:
-                        <span class="red">{{item.jdNickName}}</span>
-                      </p>
-                      <p>手机号:
-                        <span class="red">{{item.telephone}}</span>
-                      </p>
-                    </li>
-                    <li class="center" style="width:20%">
-                      <p class="taskState">子任务状态:</p>
-                      <span class="tipSuccess lh60" v-if="item.taskStatus===1">已完成</span>
-                      <span class="tipWait lh60" v-else-if="item.taskStatus===2">待下单</span>
-                      <span class="tipWait lh60" v-else-if="item.taskStatus===3">已撤销</span>
-                      <span class="tipWait lh60" v-else-if="item.taskStatus===4">待商家审核</span>
-                      <span class="tipWait lh60" v-else>待评价</span>
-                      <p>
-                        <el-checkbox v-model="checked">已联系做单</el-checkbox>
-                      </p>
-                    </li>
-                    <li style="width:20%">
-                      <p class="center">
-                        <span class="smButton" v-if="item.taskStatus===2">撤&nbsp;&nbsp;销</span>
-                      </p>
-                    </li>
-                  </ul>
-                </div>
+                    </p>
+                    <p>京东订单编号:
+                      <span class="red">{{item.realOrderId}}</span>
+                    </p>
+                    <p>京东用户名:
+                      <span class="red">{{item.jdNickName}}</span>
+                    </p>
+                    <p>手机号:
+                      <span class="red">{{item.telephone}}</span>
+                    </p>
+                  </li>
+                  <li class="center" style="width:20%">
+                    <p class="taskState">子任务状态:</p>
+                    <span class="tipSuccess lh60" v-if="item.taskStatus==='20'">已完成</span>
+                    <span class="tipWait lh60" v-else-if="item.taskStatus==='1'">待下单</span>
+                    <span class="tipError lh60" v-else-if="item.taskStatus==='19'">已撤销</span>
+                    <span class="tipWait lh60" v-else-if="item.taskStatus==='3'">待商家审核</span>
+                    <span class="tipWait lh60" v-else-if="item.taskStatus==='10'">待评价</span>
+                    <span class="tipWait lh60" v-else-if="item.taskStatus==='11'">待审核评价</span>
+                    <p>
+                      <el-checkbox v-model="checked" v-if="item.taskStatus==='1'" disabled>已联系做单</el-checkbox>
+                    </p>
+                  </li>
+                  <li style="width:20%">
+                    <p style="text-align:center">
+                      <span class="smButton" v-if="item.taskStatus==='1'||item.taskStatus==='3'" @click="revocation(index,secondArr)">撤&nbsp;&nbsp;销</span>
+                    </p>
+                  </li>
+                </ul>
               </div>
             </div>
-          </el-tab-pane>
-          <el-tab-pane label="待审核" name="second"></el-tab-pane>
-          <el-tab-pane label="待上线" name="third"></el-tab-pane>
-          <el-tab-pane label="已上线" name="fourth"></el-tab-pane>
-          <el-tab-pane label="已完成任务" name="five"></el-tab-pane>
-          <el-tab-pane label="未支付任务" name="six"></el-tab-pane>
+          </div>
           <div class="pager">
-            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
+            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pageTotal">
             </el-pagination>
           </div>
         </el-tabs>
@@ -178,55 +179,209 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
+import { pageCommon } from '../../../assets/js/mixin'
 export default {
   name: 'orderFind',
+  mixins: [pageCommon],
   data () {
     return {
       options: [{
-        value: '选项1',
-        label: '黄金糕'
+        value: '0',
+        label: '京东'
       }, {
-        value: '选项2',
-        label: '双皮奶'
+        value: '1',
+        label: '淘宝'
       }, {
-        value: '选项3',
-        label: '蚵仔煎'
+        value: '2',
+        label: '天猫'
+      }, {
+        value: '3',
+        label: '全部'
       }],
-      value: '',
       value1: '',
-      value2: '',
-      value3: '',
-      value4: '',
-      input1: '',
-      input2: '',
-      input3: '',
-      select1: 'nick',
-      select2: 'package',
-      select3: '',
-      activeName: 'first',
-      currentPage: 1,
-      pageSize: 5,
-      totalCount: '',
+      item: '',
+      value4: [],
+      input1: null,
+      input2: null,
+      input3: null,
+      select1: null,
+      select2: null,
+      select3: null,
+      activeName: 'ALL',
+      state2: '',
+      shopNameId: null,
       firstArr: [],
+      secondArr: [],
       checked: true,
-      restaurants: []
+      restaurants: [],
+      shopNameArr: [],
+      operateUserAccountName: [],
+      currentPage: 1,
+      apiUrl: '/api/order/search/getOrderListByCondition'
     }
   },
-  created () {
-    this.first(1, this.pageSize)
+  computed: {
+    params () {
+      return {
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        sellerShopId: this.shopNameId,
+        taskStatus: this.activeName,
+        operateUserAccountId: this.item.operateUserAccountId || null,
+        buyerKeywordType: this.select1,
+        buyerKeyword: this.input1,
+        taskKeywordType: this.select2,
+        taskKeyword: this.input2,
+        timeType: this.select3,
+        startTime: this.value4[0],
+        endTime: this.value4[1]
+      }
+    }
   },
   methods: {
+    search () {
+      this.getTask()
+    },
     reset () {
       this.value = ''
+      this.value1 = ''
+      this.value3 = ''
+      this.input1 = ''
+      this.select1 = ''
+      this.input2 = ''
+      this.select2 = ''
+      this.select3 = ''
+      this.value4 = ''
+      this.state2 = ''
     },
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
+    handleClick (tab, event) {
+      this.getTask()
     },
-    handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+    change () {
+      this.$ajax.post('/api/order/search/getShopListByType', {
+        shopType: this.value1
+      }).then((data) => {
+        console.log(data)
+        let res = data.data
+        if (res.code === '200') {
+          let arr = []
+          for (let word of res.data) {
+            let obj = {
+              value: word.shopName,
+              shopNameId: word.shopId
+            }
+            arr.push(obj)
+          }
+          this.shopNameArr = arr
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.message
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
     },
+    // 当失焦的时候获取平台管理员的信息
+    focus () {
+      this.$ajax.post('/api/operateAccount/getOperatersOfPlatform', {
+      }).then((data) => {
+        console.log(data)
+        let res = data.data
+        if (res.code === '200') {
+          let arr = []
+          for (let word of res.data) {
+            let obj = {
+              userName: word.userName,
+              operateUserAccountId: word.operateUserAccountId
+            }
+            arr.push(obj)
+          }
+          this.operateUserAccountName = arr
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.message
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
+    },
+    // 当单机撤销的时候 进行撤销
+    revocation (index, secondArr) {
+      console.log(index, secondArr)
+      this.$ajax.post('/api/buyer/task/cancelTask', {
+        buyerTaskId: secondArr[index].buyerTaskRecordId
+      }).then((data) => {
+        console.log(data)
+        let res = data.data
+        if (res.code === '200') {
+          this.$message({
+            type: 'success',
+            message: '撤销成功'
+          })
+          this.getTask()
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.message
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
+    },
+    // 当点击查看任务详情触发的事件
+    taskDetail (index, secondArr) {
+      this.$router.push({ name: 'taskDetail', query: { sellerTaskId: secondArr[index].sellerTaskId } })
+    },
+    setList (data) {
+      let arr = []
+      for (let word of data) {
+        let goods = {
+          sellerShopName: word.sellerShopName || '暂无数据',
+          /* 平台对接人 */
+          operaterUserName: word.operaterUserName || '暂无数据',
+          /* 订单编号编号 */
+          buyerTaskRecordId: word.buyerTaskRecordId || '暂无数据',
+          /* 任务包 */
+          buyerTaskPackageId: word.buyerTaskPackageId || '暂无数据',
+          /* 提交时间 */
+          gmtCreate: word.gmtCreate || '暂无数据',
+          // 商家任务id
+          sellerTaskId: word.sellerTaskId,
+          // 任务图片链接
+          productPictureUrl: word.productPictureUrl,
+          /* 商品名字 */
+          productName: word.productName || '暂无数据',
+          /* 商品链接 */
+          productUrl: word.productUrl || '暂无数据',
+          /* 子任务编号 */
+          sellerTaskDayId: word.sellerTaskDayId || '暂无数据',
+          /* 任务类型 */
+          sellerTaskType: word.sellerTaskType || '暂无数据',
+          /* 买家姓名 */
+          userName: word.userName || '暂无数据',
+          /* 订单金额 */
+          realOrderPrice: word.realOrderPrice || '--',
+          /* 京东订单编号 */
+          realOrderId: word.realOrderId || '--',
+          /* 京东用户名 */
+          jdNickName: word.jdNickName || '暂无数据',
+          telephone: word.telephone || '暂无数据',
+          taskStatus: word.taskStatus || '暂无数据',
+          isContact: word.isContact === '1' ? this.checked = true : this.checked = false
+        }
+        arr.push(goods)
+      }
+      this.firstArr = arr
+      this.secondArr = arr
+    },
+    // 店铺的名称的一个筛选
     querySearch (queryString, cb) {
-      var restaurants = this.restaurants
+      var restaurants = this.shopNameArr
       var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
       // 调用 callback 返回建议列表的数据
       cb(results)
@@ -236,81 +391,19 @@ export default {
         return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) >= 0)
       }
     },
-    loadAll () {
-      return [
-        { 'value': '三全鲜食（北新泾店）' },
-        { 'value': '四全鲜食（北新泾店）' },
-        { 'value': '五全鲜食（北新泾店）' },
-        { 'value': '六全鲜食（北新泾店）' }
-      ]
-    },
     handleSelect (item) {
-      console.log(item)
-    },
-    first (pageNo, pageSize) {
-      this.$ajax.post('/api/order/search/getOrderListByCondition', {
-        pageNo: pageNo,
-        pageSize: pageSize
-      }).then((data) => {
-        console.log(data)
-        let res = data.data
-        this.totalCount = res.data.totalCount
-        if (res.code === '200') {
-          let arr = []
-          for (let word of res.data.buyerTaskRecordInfos) {
-            let goods = {
-              sellerShopName: word.sellerShopName || '暂无数据',
-              /* 平台对接人 */
-              operaterUserName: word.operaterUserName || '暂无数据',
-              /* 任务编号 */
-              buyerTaskRecordId: word.buyerTaskRecordId || '暂无数据',
-              /* 任务包 */
-              buyerTaskPackageId: word.buyerTaskPackageId || '暂无数据',
-              /* 提交时间 */
-              gmtCreate: word.gmtCreate || '暂无数据',
-              /* 商品名字 */
-              productName: word.productName || '暂无数据',
-              /* 商品链接 */
-              productUrl: word.productUrl || '暂无数据',
-              /* 子任务编号 */
-              sellerTaskDayId: word.sellerTaskDayId || '暂无数据',
-              /* 任务类型 */
-              sellerTaskType: word.sellerTaskType || '暂无数据',
-              /* 买家姓名 */
-              userName: word.userName || '暂无数据',
-              /* 订单金额 */
-              realOrderPrice: word.realOrderPrice || '暂无数据',
-              /* 京东订单编号 */
-              realOrderId: word.realOrderId || '暂无数据',
-              /* 京东用户名 */
-              jdNickName: word.jdNickName || '暂无数据',
-              telephone: word.telephone || '暂无数据',
-              taskStatus: word.taskStatus || '暂无数据',
-              isContact: word.isContact
-            }
-            arr.push(goods)
-          }
-          this.firstArr = arr
-        } else {
-          this.$message({
-            message: res.message,
-            type: 'warning'
-          })
-        }
-      }).catch((error) => {
-        console.log(error)
-        // this.$message.error('网络错误，刷新下试试')
-      })
+      this.shopNameId = item.shopNameId
     }
   },
   mounted () {
-    this.restaurants = this.loadAll()
+    this.restaurants = this.shopNameArr
   }
 }
 </script>
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .wrapOder
   padding 20px
+  min-width 1200px
   header
     background rgba(255, 255, 255, 1)
     padding 20px
@@ -383,9 +476,14 @@ export default {
           padding 20px
           li
             min-width 150px
-            border-right 1px solid #E5E5E5
+            // border-right 1px solid #E5E5E5
             &:last-child
               border none
+          .border_line
+            width 30%
+            margin-left 100px
+            border-left 1px solid #E5E5E5
+            border-right 1px solid #E5E5E5
           img
             float left
             width 60px
@@ -404,6 +502,7 @@ export default {
             line-height 60px
           .center
             text-align center
+            border-right 1px solid #E5E5E5
             .taskState
               margin-left -5px
   .red

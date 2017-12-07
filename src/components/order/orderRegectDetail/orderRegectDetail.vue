@@ -3,7 +3,7 @@
     <div class="orderList">
       <div class="head">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane label="待确认订单" name="first">
+          <el-tab-pane label="待确认订单" name="1">
             <div class="list">
               <div class="tables">
                 <div class="tableItem">
@@ -85,7 +85,7 @@
             </div>
           </el-tab-pane>
           <!-- 切换部分 -->
-          <el-tab-pane label="待确认评价" name="second">
+          <el-tab-pane label="待确认评价" name="2">
             <div class="list">
               <div class="tables">
                 <div class="tableItem">
@@ -163,13 +163,25 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
+import { pageCommon } from '../../../assets/js/mixin'
 export default {
+  mixins: [pageCommon],
   name: 'orderRegectDetail',
   data () {
     return {
-      activeName: 'first',
+      activeName: '1',
       currentPage: 1,
-      checked: true
+      checked: true,
+      apiUrl: '/api/platform/order/getOrderListByTaskStatus'
+    }
+  },
+  computed: {
+    params () {
+      return {
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        taskStatus: 1
+      }
     }
   },
   methods: {
@@ -184,6 +196,47 @@ export default {
     },
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`)
+    },
+    setList (data) {
+      let arr = []
+      for (let word of data) {
+        let goods = {
+          sellerShopName: word.sellerShopName || '暂无数据',
+          /* 平台对接人 */
+          operaterUserName: word.operaterUserName || '暂无数据',
+          /* 订单编号编号 */
+          buyerTaskRecordId: word.buyerTaskRecordId || '暂无数据',
+          /* 任务包 */
+          buyerTaskPackageId: word.buyerTaskPackageId || '暂无数据',
+          /* 提交时间 */
+          gmtCreate: word.gmtCreate || '暂无数据',
+          // 商家任务id
+          sellerTaskId: word.sellerTaskId,
+          // 任务图片链接
+          productPictureUrl: word.productPictureUrl,
+          /* 商品名字 */
+          productName: word.productName || '暂无数据',
+          /* 商品链接 */
+          productUrl: word.productUrl || '暂无数据',
+          /* 子任务编号 */
+          sellerTaskDayId: word.sellerTaskDayId || '暂无数据',
+          /* 任务类型 */
+          sellerTaskType: word.sellerTaskType || '暂无数据',
+          /* 买家姓名 */
+          userName: word.userName || '暂无数据',
+          /* 订单金额 */
+          realOrderPrice: word.realOrderPrice || '--',
+          /* 京东订单编号 */
+          realOrderId: word.realOrderId || '--',
+          /* 京东用户名 */
+          jdNickName: word.jdNickName || '暂无数据',
+          telephone: word.telephone || '暂无数据',
+          taskStatus: word.taskStatus || '暂无数据',
+          isContact: word.isContact === '1' ? this.checked = true : this.checked = false
+        }
+        arr.push(goods)
+      }
+      this.firstArr = arr
     }
   }
 }

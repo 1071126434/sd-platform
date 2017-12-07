@@ -45,7 +45,7 @@ export const pageCommon = {
         let mydata = response.data
         if (mydata.code === '200') {
           this.pageTotal = mydata.data.total || mydata.totalCount || mydata.data.totalCount
-          let myDatas = mydata.data.datas || mydata.data.userAccountDOList || mydata.data.buyers || mydata.data.sellers
+          let myDatas = mydata.data.datas || mydata.data.userAccountDOList || mydata.data.buyers || mydata.data.sellers || mydata.data.buyerTaskRecordInfos
           this.setList(myDatas)
         } else {
           this.$message.error(mydata.message)
