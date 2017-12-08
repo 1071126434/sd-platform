@@ -59,13 +59,13 @@
         </div>
         <ul class="connectDetail">
           <li>
-            <span></span>皇军</li>
+            <span class="userNameIcon"></span>{{ taskInfoObj.userName || '暂未填写用户名' }}</li>
           <li>
-            <span></span>{{ taskInfoObj.telephone || '暂未填写手机号码' }}</li>
+            <span class="iphoneIcon"></span>{{ taskInfoObj.telephone || '暂未填写手机号码' }}</li>
           <li>
-            <span></span>{{ taskInfoObj.email || '暂未填写邮箱地址' }}</li>
+            <span class="emailIcon"></span>{{ taskInfoObj.email || '暂未填写邮箱地址' }}</li>
           <li>
-            <span></span>{{ taskInfoObj.qqNum || '暂未填写QQ号码' }}</li>
+            <span class="qqNumIcon"></span>{{ taskInfoObj.qqNum || '暂未填写QQ号码' }}</li>
         </ul>
       </div>
     </div>
@@ -146,9 +146,9 @@
           </el-tab-pane>
           <el-tab-pane label="费用及增值服务" name="third">
             <h2 class="costSum">费用合计
-              <b>押金:
-                <span class="red">417.9</span>元&nbsp;&nbsp;&nbsp;&nbsp; 金币:
-                <span class="red">91.78</span>元
+              <b>本金冻结:
+                <span class="red">{{ benjin }}</span>元&nbsp;&nbsp;&nbsp;&nbsp; 佣金冻结:
+                <span class="red">{{ yongjin }}</span>元
               </b>
             </h2>
             <table class="costTab">
@@ -159,29 +159,29 @@
                 <th>合计</th>
               </tr>
               <tr>
-                <td>押金</td>
+                <td>本金冻结</td>
                 <td>
                   <div style="width:50%;margin:0 auto;">
-                    <p>商品: 9.00元*1件 / 单 * 25单</p>
-                    <p>运费备用金: 10.00元 / 单*25单</p>
+                    <p>商品: {{ totalPriceObj.productUnitPrice }}元*{{ totalPriceObj.numPerOrder }}件 / 单 * {{ totalPriceObj.totalNum }}单</p>
+                    <p>运费备用金: {{ totalPriceObj.postPrice }}元 / 单*{{ totalPriceObj.totalNum }}单</p>
                   </div>
                 </td>
-                <td>19.9元</td>
+                <td>{{ benjin }}元</td>
                 <td rowspan="2">
-                  <span class="red">91.78</span>元
+                  <span class="red">{{ totalPriceObj.totalPrice }}</span>元
                 </td>
               </tr>
               <tr>
-                <td>佣金</td>
+                <td>佣金冻结</td>
                 <td>
                   <div style="width:50%;margin:0 auto;">
-                    <p>基础佣金: 8.00元 / 单 * 20单</p>
-                    <p>其中:</p>
-                    <p style="color: #666666">图文好评: 8.00元 / 单 * 2单</p>
-                    <p style="color: #666666">纯文字好评: 6.00元 / 单 * 18单</p>
+                    <p>图文好评: {{ totalPriceObj.graphicFavorPrice }}元 / 单*{{ totalPriceObj.graphicFavorNum }}单</p>
+                    <p>纯文字好评: {{ totalPriceObj.wordFavorPrice }}元 / 单*{{ totalPriceObj.wordFavorNum }}单</p>
+                    <p>默认五星好评: {{ totalPriceObj.defaultFavorPrice }}元 / 单*{{ totalPriceObj.defaultFavorNum }}单</p>
+                    <p>plus会员: {{ totalPriceObj.plusPrice }}元 / 单*{{ totalPriceObj.plusNum }}单</p>
                   </div>
                 </td>
-                <td>19.9元</td>
+                <td>{{ yongjin }}元</td>
               </tr>
             </table>
           </el-tab-pane>
@@ -189,23 +189,26 @@
             <div style="margin:20px;">
               <el-tabs type="border-card">
                 <el-tab-pane label="买手列表">
-                  <el-table :data="tableData" style="width: 100%">
-                    <el-table-column prop="phone" align="center" label="买家手机号">
+                  <el-table :data="buyerListArr" style="width: 100%">
+                    <el-table-column prop="telephone" align="center" label="买家手机号">
                     </el-table-column>
                     <el-table-column prop="buyerName" align="center" label="买号">
                     </el-table-column>
-                    <el-table-column prop="taskWay" align="center" label="任务方式">
+                    <el-table-column prop="taskTypeDetail" align="center" label="任务方式">
                     </el-table-column>
-                    <el-table-column prop="process" align="center" label="进度">
+                    <el-table-column align="center" label="进度">
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.status == 1 ? '待下单' : scope.row.status == 2 ? '待修改' : scope.row.status == 3 ? '待审核' : scope.row.status == 4 ? '审核通过' : scope.row.status == 10 ? '待评价' : scope.row.status == 11 ? '待审核评价' : scope.row.status == 12 ? '评价被驳回' : scope.row.status == 13 ? '评价通过待返佣' : scope.row.status == 19 ? '已取消' : scope.row.status == 20 ? '已完成' : '其他状态' }}</span>
+                      </template>
                     </el-table-column>
-                    <el-table-column prop="platOrderNum" align="center" label="平台订单编号">
+                    <el-table-column prop="orderId" align="center" label="平台订单编号">
                     </el-table-column>
                   </el-table>
                 </el-tab-pane>
               </el-tabs>
             </div>
             <div class="pager">
-              <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
+              <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pageNo" :page-sizes="pageSizeArray" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pageTotal">
               </el-pagination>
             </div>
           </el-tab-pane>
@@ -229,9 +232,11 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
-let echarts = require('echarts')
+import echarts from 'echarts'
+import { pageCommon } from '../../assets/js/mixin'
 export default {
   name: 'taskDetail',
+  mixins: [pageCommon],
   data () {
     return {
       activeName: 'first',
@@ -245,6 +250,9 @@ export default {
       goodsInfoObj: {},
       // 获取使用份数
       orderTaskList: [],
+      totalPriceObj: {},
+      // 买手列表
+      buyerListArr: [],
       tableData: [{
         phone: '18655554444',
         buyerName: '王小虎',
@@ -334,15 +342,28 @@ export default {
             data: [1, 4, 2, 5, 3, 2, 9]
           }
         ]
-      }
+      },
+      apiUrl: '/api/seller/order/getBuyerListBy'
     }
   },
   computed: {
+    benjin: function () {
+      let benjin = 0
+      benjin = (this.totalPriceObj.productUnitPrice) * (this.totalPriceObj.numPerOrder) * (this.totalPriceObj.totalNum) + (this.totalPriceObj.postPrice) * (this.totalPriceObj.totalNum)
+      return benjin
+    },
+    yongjin: function () {
+      let yongjin = 0
+      yongjin = (this.totalPriceObj.graphicFavorPrice) * (this.totalPriceObj.graphicFavorNum) +
+        (this.totalPriceObj.wordFavorPrice) * (this.totalPriceObj.wordFavorNum) +
+        (this.totalPriceObj.defaultFavorPrice) * (this.totalPriceObj.defaultFavorNum) +
+        (this.totalPriceObj.plusPrice) * (this.totalPriceObj.plusNum)
+      return yongjin
+    },
     newSearchWordList: function () {
       if (this.goodsInfoObj.searchWordList) {
         let str = this.goodsInfoObj.searchWordList
         let arr = JSON.parse(str)
-        console.log(arr)
         return arr
       }
     },
@@ -357,6 +378,11 @@ export default {
           this.option.xAxis.date = obj.dateArr
         }
         return obj
+      }
+    },
+    params () {
+      return {
+        sellerTaskId: this.$route.query.sellerTaskId
       }
     }
   },
@@ -422,21 +448,15 @@ export default {
       console.log(tab, event)
       if (this.activeName === 'second') {
         this.getOrderNum()
+      } else if (this.activeName === 'third') {
+        this.getPriceTotal()
       }
-    },
-    // 分页
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
-    },
-    handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
     },
     // 获取任务详情信息
     getTaskInfo () {
       this.$ajax.post('/api/platform/task/getTaskDetail', {
         sellerTaskId: this.$route.query.sellerTaskId
       }).then((data) => {
-        // console.log(data)
         if (data.data.code === '200') {
           this.taskInfoObj = data.data.data
         } else {
@@ -454,7 +474,6 @@ export default {
       this.$ajax.post('/api/platform/task/getTaskProductInfo', {
         sellerTaskId: this.$route.query.sellerTaskId
       }).then((data) => {
-        console.log(data)
         if (data.data.code === '200') {
           this.goodsInfoObj = data.data.data
         } else {
@@ -472,14 +491,12 @@ export default {
       this.$ajax.post('/api/platform/task/getTrailList', {
         sellerTaskId: this.$route.query.sellerTaskId
       }).then((data) => {
-        console.log(data)
         if (data.data.code === '200') {
           let dateArr = data.data.data
           let arrDay = []
           let actualNumArr = []
           let throwTimeArr = []
           for (let m of dateArr) {
-            console.log(m)
             let date = m.time
             let formDate = date.substr(4, 2) + '-' + date.substr(6)
             arrDay.push(formDate)
@@ -499,6 +516,28 @@ export default {
       }).catch((err) => {
         console.log(err)
       })
+    },
+    // 获取增值服务价格信息
+    getPriceTotal () {
+      this.$ajax.post('/api/platform/task/getTaskCost', {
+        sellerTaskId: this.$route.query.sellerTaskId
+      }).then((data) => {
+        console.log(data)
+        if (data.data.code === '200') {
+          this.totalPriceObj = data.data.data
+        } else {
+          this.$message({
+            type: 'warning',
+            message: data.data.message
+          })
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
+    },
+    // 获取买手列表
+    setList (data) {
+      this.buyerListArr = data
     },
     // 自适应折线图
     resizeCharts () {
@@ -644,7 +683,6 @@ export default {
             float left
             width 20px
             height 20px
-            background red
             margin-top 8px
             margin-right 16px
   .cont

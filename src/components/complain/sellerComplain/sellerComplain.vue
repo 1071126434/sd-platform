@@ -3,21 +3,21 @@
     <div class="tab">
       <div class="inp">
         <div class="search">
-          <el-input placeholder="请输入姓名/手机号">
-            <el-button slot="append" icon="el-icon-search" class="primary"></el-button>
+          <el-input v-model="phone" placeholder="请输入手机号">
+            <el-button slot="append" @click="getTask" icon="el-icon-search" class="primary"></el-button>
           </el-input>
         </div>
       </div>
       <div class="nav">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane label="未受理" name="first"></el-tab-pane>
-          <el-tab-pane label="处理中" name="second"></el-tab-pane>
-          <el-tab-pane label="已处理" name="third"></el-tab-pane>
+          <el-tab-pane label="未受理" name="0"></el-tab-pane>
+          <el-tab-pane label="处理中" name="1"></el-tab-pane>
+          <el-tab-pane label="已处理" name="2"></el-tab-pane>
         </el-tabs>
       </div>
       <div class="tabCont">
-        <el-table :data="tableData">
-          <el-table-column prop="sellerPhone" align="center" label="商家联系方式">
+        <el-table :data="complainList">
+          <el-table-column prop="complainPhone" align="center" label="商家联系方式">
           </el-table-column>
           <el-table-column prop="complainReason" align="center" label="投诉原因">
             <template slot-scope="scope">
@@ -26,52 +26,58 @@
               </el-tooltip>
             </template>
           </el-table-column>
-          <el-table-column prop="complainCommon" align="center" label="投诉备注">
+          <el-table-column prop="complainComment" align="center" label="投诉备注">
             <template slot-scope="scope">
-              <el-tooltip class="item" effect="dark" :content="scope.row.complainCommon" placement="top">
-                <span class="overElipes">{{ scope.row.complainCommon }}</span>
+              <el-tooltip class="item" effect="dark" :content="scope.row.complainComment" placement="top">
+                <span class="overElipes">{{ scope.row.complainComment }}</span>
               </el-tooltip>
             </template>
           </el-table-column>
-          <el-table-column prop="dealOptionIn" align="center" label="处理意见(对内)">
+          <el-table-column prop="dealResultIn" align="center" label="处理意见(对内)">
             <template slot-scope="scope">
-              <el-tooltip class="item" effect="dark" :content="scope.row.dealOptionIn" placement="top">
-                <span class="overElipes">{{ scope.row.dealOptionIn }}</span>
+              <el-tooltip class="item" effect="dark" :content="scope.row.dealResultIn || '暂无'" placement="top">
+                <span class="overElipes">{{ scope.row.dealResultIn || '暂无' }}</span>
               </el-tooltip>
             </template>
           </el-table-column>
-          <el-table-column prop="dealOptionOut" align="center" label="处理意见(对外)">
+          <el-table-column prop="dealComment" align="center" label="处理意见(对外)">
             <template slot-scope="scope">
-              <el-tooltip class="item" effect="dark" :content="scope.row.dealOptionOut" placement="top">
-                <span class="overElipes">{{ scope.row.dealOptionOut }}</span>
+              <el-tooltip class="item" effect="dark" :content="scope.row.dealComment || '暂无'" placement="top">
+                <span class="overElipes">{{ scope.row.dealComment || '暂无' }}</span>
               </el-tooltip>
             </template>
           </el-table-column>
-          <el-table-column prop="applyTime" align="center" :label="activeName == 'first' ? '申请时间' : activeName == 'second' ? '受理时间' : '完成时间'">
+          <el-table-column prop="time" align="center" :label="activeName == '0' ? '申请时间' : activeName == '1' ? '受理时间' : '完成时间'">
           </el-table-column>
-          <el-table-column v-if="activeName!='first'" prop="operateMember" align="center" label="操作人">
-          </el-table-column>
-          <el-table-column prop="operate" align="center" label="操作">
+          <el-table-column v-if="activeName!='0'" prop="operateUserName" align="center" label="操作人">
             <template slot-scope="scope">
-              <el-button @click="lookDetail(scope.row)" type="text" size="small">{{ activeName === 'third' ? '查看' : '去处理' }}</el-button>
+              <span>{{ scope.row.operateUserName || '未知' }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="操作">
+            <template slot-scope="scope">
+              <el-button @click="lookDetail(scope.row)" type="text" size="small">{{ activeName === '2' ? '查看' : '去处理' }}</el-button>
             </template>
           </el-table-column>
         </el-table>
       </div>
       <div class="pager">
-        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pageNo" :page-sizes="pageSizeArray" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pageTotal">
         </el-pagination>
       </div>
     </div>
   </div>
 </template>
 <script type="text/ecmascript-6">
+import { pageCommon } from '../../../assets/js/mixin'
 export default {
   name: 'sellerComplain',
+  mixins: [pageCommon],
   data () {
     return {
-      activeName: 'first',
-      currentPage: 1,
+      activeName: '0',
+      complainList: [],
+      phone: '',
       tableData: [{
         sellerPhone: '18655554444',
         complainReason: '八个字八个字',
@@ -80,22 +86,31 @@ export default {
         dealOptionOut: '--',
         applyTime: '2017-11-17 19:20:56',
         operateMember: '疯狂到哈倒萨'
-      }]
+      }],
+      apiUrl: '/api/platform/complain/getComplainListByStatusSellerPhone'
+    }
+  },
+  computed: {
+    params () {
+      return {
+        phone: this.phone,
+        status: this.activeName,
+        pageNo: this.pageNo,
+        pageSize: this.pageSize
+      }
     }
   },
   methods: {
     handleClick (tab, event) {
-      console.log(tab, event)
+      // console.log(tab, event)
+      this.getTask()
     },
     lookDetail (row) {
       console.log(row)
-      this.$router.push({ name: 'sellerComplainDetail' })
+      this.$router.push({ name: 'sellerComplainDetail', query: { messageComplainId: row.messageComplainId } })
     },
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
-    },
-    handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+    setList (data) {
+      this.complainList = data
     }
   }
 }
