@@ -139,6 +139,7 @@ export default {
     linkAccount () {
       this.uploaded = false
       this.showAlert = false
+      this.getTask()
     },
     uploadSuccess (response, file, fileList) {
       if (response.code === '200') {
