@@ -15,6 +15,7 @@
         <div v-if="taskInfoObj.status==6" class="toDo error">未通过</div>
         <div v-if="taskInfoObj.status==7" class="toDo success">已撤销</div>
         <div v-if="taskInfoObj.status==8" class="toDo doing">进行中</div>
+        <div v-if="taskInfoObj.status==9" class="toDo error">已终止</div>
         <div v-if="taskInfoObj.status==20" class="toDo success">已完成</div>
         <div v-if="taskInfoObj.status==21" class="toDo success">已结束</div>
         <h2>任务状态</h2>
@@ -198,7 +199,7 @@
                     </el-table-column>
                     <el-table-column align="center" label="进度">
                       <template slot-scope="scope">
-                        <span>{{ scope.row.status == 1 ? '待下单' : scope.row.status == 2 ? '待修改' : scope.row.status == 3 ? '待审核' : scope.row.status == 4 ? '审核通过' : scope.row.status == 10 ? '待评价' : scope.row.status == 11 ? '待审核评价' : scope.row.status == 12 ? '评价被驳回' : scope.row.status == 13 ? '评价通过待返佣' : scope.row.status == 19 ? '已取消' : scope.row.status == 20 ? '已完成' : '其他状态' }}</span>
+                        <span>{{ scope.row.status == 1 ? '待下单' : scope.row.status == 2 ? '待修改' : scope.row.status == 3 ? '待审核' : scope.row.status == 4 ? '审核通过' : scope.row.status == 5 ? '已下单' : scope.row.status == 6 ? '被驳回' : scope.row.status == 7 ? '被驳回' : scope.row.status == 10 ? '待评价' : scope.row.status == 11 ? '待审核评价' : scope.row.status == 12 ? '评价被驳回' : scope.row.status == 13 ? '评价通过待返佣' : scope.row.status == 19 ? '已取消' : scope.row.status == 20 ? '已完成' : '其他状态' }}</span>
                       </template>
                     </el-table-column>
                     <el-table-column prop="orderId" align="center" label="平台订单编号">
@@ -604,17 +605,22 @@ export default {
         color #ffffff
       .toDo
         background #5DC0FF
-        box-shadow 0 1px 5px #4DB7FF
+        box-shadow 0 1px 5px #5DC0FF
       .success
         background #029E4A
+        box-shadow 0 1px 5px #029E4A
       .error
         background #FF2933
+        box-shadow 0 1px 5px #FF2933
       .wait
         background #FFAD33
+        box-shadow 0 1px 5px #FFAD33
       .doing
         background #3377FF
+        box-shadow 0 1px 5px #3377FF
       .gray
         background #ededed
+        box-shadow 0 1px 5px #ededed
       h2
         font-size 16px
         color #333333

@@ -50,7 +50,7 @@
         <div class="tableItem" v-for="(item, index) in orderListArr" :key="index">
           <ul class="itemHead">
             <li>
-              <span class="shopType"></span>
+              <span class="shopType" :class="{'jdIcon': item.shopType==0, 'taobaoIcon': item.shopType==1, 'tianmaoIcon': item.shopType==2}"></span>
               <span class="shopName">{{ item.shopName }}</span>
               <span class="taskOrder">任务编号: {{ item.sellerTaskId }}
                 <span class="link" @click="lookDetail(item.sellerTaskId)">[查看任务详情]</span>
@@ -101,6 +101,7 @@
               <span v-if="item.taskStatus==6" class="tipError lh60">未通过</span>
               <span v-if="item.taskStatus==7" class="tipError lh60">已撤销</span>
               <span v-if="item.taskStatus==8" class="tipDoing lh60">进行中</span>
+              <span v-if="item.taskStatus==9" class="tipError lh60">已终止</span>
               <span v-if="item.taskStatus==20" class="tipSuccess lh60">已完成</span>
               <span v-if="item.taskStatus==21" class="tipSuccess lh60">已结束</span>
             </li>
@@ -109,7 +110,7 @@
                 <p class="center" v-if="item.taskStatus==4">
                   <span class="smButton greenBg" @click="lookDetail(item.sellerTaskId)">去审核</span>
                 </p>
-                <p class="center" v-if="item.taskStatus!=7 && item.taskStatus!=20 && item.taskStatus!=21" :class="{'lh60': !(item.taskStatus==4)}">
+                <p class="center" v-if="item.taskStatus!=7 && item.taskStatus!=9 && item.taskStatus!=20 && item.taskStatus!=21" :class="{'lh60': !(item.taskStatus==4)}">
                   <span class="smButton" @click="callBack(item.sellerTaskId)">撤&nbsp;&nbsp;销</span>
                 </p>
               </div>
@@ -265,7 +266,6 @@ export default {
             float left
             width 16px
             height 16px
-            background red
           .shopName
             display inline-block
             width 120px
