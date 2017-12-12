@@ -277,7 +277,7 @@ export default {
     // 充值银行卡的信息获取
     bankInfo () {
       this.$ajax.post('/api/config/bankCard/getListByType', {
-        type: 1
+        type: 0
       }).then((data) => {
         console.log(data)
         let res = data.data

@@ -1,12 +1,14 @@
 <template>
   <div class="wrap">
     <header>
-      <el-tabs v-model="activeName2" type="card">
+      <el-tabs v-model="activeName2" type="card" @tab-click="handleClicks">
         <el-tab-pane label="卖家充值申请" name="first">
           <div class="top">
-            <el-input placeholder="请输入申请的卡号" v-model="input5" class="input-with-select">
-              <el-button type="primary" slot="append" icon="el-icon-search"></el-button>
-            </el-input>
+            <el-select placeholder="收款卡卡号" v-model="input5" class="input-with-select" value-key="bankCardId">
+              <el-option v-for="(input5,index) in options" :key="index" :label="input5.cardNo" :value="input5">
+              </el-option>
+            </el-select>
+            <el-button type="primary" slot="append" icon="el-icon-search" @click="searchBankNum"></el-button>
           </div>
           <div class="line"></div>
           <div class="accountTab">
@@ -33,8 +35,8 @@
               </el-table-column>
               <el-table-column align="center" label="操作">
                 <template slot-scope="scope">
-                  <el-button @click="handleClick(scope.row)" type="text" size="small">确认到账</el-button>
-                  <el-button @click="handleNoClickNo(scope.row)" type="text" size="small">未到账</el-button>
+                  <el-button @click="handleClick(scope.$index, scope.row)" type="text" size="small">确认到账</el-button>
+                  <el-button @click="handleNoClickNo(scope.$index, scope.row)" type="text" size="small">未到账</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -44,17 +46,17 @@
           <div class="second_top">
             <div class="Stime">
               申请时间：
-              <el-date-picker v-model="value3" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
+              <el-date-picker v-model="value3" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format='yyyy-MM-dd'>
               </el-date-picker>
             </div>
             <div class="search">
               <el-input placeholder="请输入姓名/手机号" v-model="input6" class="input-with-select">
-                <el-button slot="append" icon="el-icon-search"></el-button>
+                <el-button slot="append" icon="el-icon-search" @click="searchTime"></el-button>
               </el-input>
             </div>
-            <div class="excel">
+            <!-- <div class="excel">
               <el-button>导出excel</el-button>
-            </div>
+            </div> -->
           </div>
           <!-- 展示内容部分 -->
           <div class="accountTab">
@@ -73,7 +75,7 @@
               </el-table-column>
               <el-table-column align="center" label="状态">
                 <template slot-scope="scope">
-                  <span class="tipSmall" :class="scope.row.JDStatus==='已到账' ? 'tipSuccess' : scope.row.JDStatus==='未到账' ? 'tipWait' : 'tipError'">{{scope.row.JDStatus}}</span>
+                  <span class="tipSmall" :class="scope.row.JDStatus==='已到账' ? 'tipSuccess' : scope.row.JDStatus==='未到账' ? 'tipError' : 'tipDoing'">{{scope.row.JDStatus}}</span>
                 </template>
               </el-table-column>
               <el-table-column prop="time" align="center" label="确认时间">
@@ -103,15 +105,8 @@ export default {
       currentPage: 1,
       pageSize: 5,
       totalCount: 0,
-      tableData: [{
-        payWater: '55616156156156156',
-        phone: '18655554444',
-        payNum: '100.00',
-        remark: '备注一下',
-        collectionBank: '545565695685856',
-        moneyBank: '186669985665687',
-        creatTime: '2017-11-15 20:30:30'
-      }],
+      tableData: [],
+      options: [],
       tableDataBuy: [{
         orderTask: '55616156156156156',
         phone: '18655554444',
@@ -127,20 +122,43 @@ export default {
   },
   created () {
     this.sercherOne(1, this.pageSize)
+    this.platformBankNum()
   },
   methods: {
+    handleClicks () {
+      if (this.activeName2 === 'first') {
+        this.sercherOne(1, this.pageSize)
+      } else if (this.activeName2 === 'second') {
+        this.sellerRecord(1, this.pageSize)
+      }
+    },
+    // 卖家充值申请的搜索
+    searchBankNum () {
+      this.sercherOne(1, this.pageSize)
+    },
+    // 卖家充值记录的搜索
+    searchTime () {
+      this.sellerRecord(1, this.pageSize)
+    },
     handleClick (val) {
+      console.log(this.tableData[val])
       this.$confirm('此操作将确认卖家充值到账, 是否继续?', '确认卖家充值到账?', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'success'
       }).then(() => {
         this.$ajax.post('/api/sellerorder/updateApplysPass', {
+          sellerChargeApplyIds: [this.tableData[val].chargeApplyId],
+          platformBankCardId: this.input5
         }).then((data) => {
           console.log(data)
           let res = data.data
-          this.totalCount = res.data.totalCount
           if (res.code === '200') {
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+            this.sercherOne(1, this.pageSize)
           } else {
             this.$message({
               message: res.message,
@@ -150,40 +168,61 @@ export default {
         }).catch(() => {
           this.$message.error('网络错误，刷新下试试')
         })
-        this.$message({
-          type: 'success',
-          message: '操作成功!'
-        })
-      }).catch(() => {
+      }).catch((error) => {
+        console.log(error)
       })
     },
     handleSizeChange (val) {
-      // console.log(`每页 ${val} 条`)
-      this.sercherOne(1, val)
+      if (this.activeName2 === 'first') {
+        this.sercherOne(1, val)
+      } else if (this.activeName2 === 'second') {
+        this.sellerRecord(1, val)
+      }
     },
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
-      this.sercherOne(val, this.pageSize)
+      if (this.activeName2 === 'first') {
+        this.sercherOne(val, this.pageSize)
+      } else if (this.activeName2 === 'second') {
+        this.sellerRecord(val, this.pageSize)
+      }
     },
-    handleNoClick (val) {
+    handleNoClickNo (val) {
       this.$confirm('此操作将确认卖家充值未到账, 是否继续?', '确认卖家充值未到账?', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '操作成功!'
+        this.$ajax.post('/api/sellerorder/updateApplysReject', {
+          sellerChargeApplyIds: [this.tableData[val].chargeApplyId]
+        }).then((data) => {
+          console.log(data)
+          let res = data.data
+          if (res.code === '200') {
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+            this.sercherOne(1, this.pageSize)
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'warning'
+            })
+          }
+        }).catch(() => {
+          this.$message.error('网络错误，刷新下试试')
         })
-      }).catch(() => {
+      }).catch((error) => {
+        console.log(error)
       })
     },
-    // 卖家充值申请的列表
+    // 卖家充值申请
     sercherOne (pageNo, pageSize) {
       this.$ajax.post('/api/sellerorder/getChargeApplysByConditions', {
         statusList: ['0'],
         pageNo: pageNo,
-        pageSize: pageSize
+        pageSize: pageSize,
+        platformBankCardId: this.input5.bankCardId
       }).then((data) => {
         console.log(data)
         let res = data.data
@@ -198,7 +237,8 @@ export default {
               remark: word.memo,
               collectionBank: word.platformBankCardNo,
               moneyBank: word.sellerBankCardNo,
-              creatTime: word.gmtCreate
+              creatTime: word.gmtCreate,
+              chargeApplyId: word.chargeApplyId
             }
             arr.push(goods)
           }
@@ -211,6 +251,76 @@ export default {
         }
       }).catch(() => {
         this.$message.error('网络错误，刷新下试试')
+      })
+    },
+    // 卖家充值记录
+    sellerRecord (pageNo, pageSize) {
+      console.log(this.value3)
+      this.$ajax.post('/api/sellerorder/getChargeApplysByConditions', {
+        statusList: ['1', '2'],
+        pageNo: pageNo,
+        pageSize: pageSize,
+        startTime: this.value3 ? this.value3[0] : '',
+        endTime: this.value3 ? this.value3[1] : '',
+        sellerTelephoneOrName: this.input6
+      }).then((data) => {
+        console.log(data)
+        let res = data.data
+        this.totalCount = res.data.totalCount
+        if (res.code === '200') {
+          let arr = []
+          for (let word of res.data.chargeApplys) {
+            let goods = {
+              phone: word.sellerTelephone,
+              moneyNum: word.chargeAmount,
+              remark: word.memo,
+              sBank: word.platformBankCardNo,
+              dBank: word.sellerBankCardNo,
+              creatTime: word.gmtCreate,
+              orderTask: word.chargeApplyId,
+              JDStatus: word.status === '0' ? '未到账' : word.status === '1' ? '已到账' : '进行中',
+              time: word.gmtModify,
+              person: word.platformBankCardUserName
+            }
+            arr.push(goods)
+          }
+          this.tableDataBuy = arr
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          })
+        }
+      }).catch(() => {
+        this.$message.error('网络错误，刷新下试试')
+      })
+    },
+    // 获取收款卡的卡号
+    platformBankNum () {
+      this.$ajax.post('/api/config/bankCard/getListByType', {
+        type: 0
+      }).then((data) => {
+        console.log(data)
+        let res = data.data
+        if (res.code === '200') {
+          let arr = []
+          for (let word of res.data) {
+            let goods = {
+              bankCardId: word.bankCardId,
+              cardNo: word.cardNo
+            }
+            arr.push(goods)
+          }
+          this.options = arr
+        } else {
+          this.$message({
+            message: data.data.message,
+            type: 'warning'
+          })
+        }
+      }).catch((err) => {
+        console.log(err)
+        this.$message.error('未知错误！')
       })
     }
   }
