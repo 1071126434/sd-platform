@@ -34,14 +34,10 @@
               <el-table-column align="center" label="操作">
                 <template slot-scope="scope">
                   <el-button @click="handleClick(scope.row)" type="text" size="small">确认到账</el-button>
-                  <el-button @click="handleNoClick(scope.row)" type="text" size="small">未到账</el-button>
+                  <el-button @click="handleNoClickNo(scope.row)" type="text" size="small">未到账</el-button>
                 </template>
               </el-table-column>
             </el-table>
-            <div class="pager">
-              <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
-              </el-pagination>
-            </div>
           </div>
         </el-tab-pane>
         <el-tab-pane label="卖家充值记录" name="second">
@@ -85,13 +81,12 @@
               <el-table-column prop="person" align="center" label="操作人">
               </el-table-column>
             </el-table>
-            <!-- 分页 -->
-            <div class="pager">
-              <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
-              </el-pagination>
-            </div>
           </div>
         </el-tab-pane>
+        <div class="pager">
+          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size='pageSize' layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
+          </el-pagination>
+        </div>
       </el-tabs>
     </header>
   </div>
@@ -106,6 +101,8 @@ export default {
       activeName2: 'first',
       input5: '',
       currentPage: 1,
+      pageSize: 5,
+      totalCount: 0,
       tableData: [{
         payWater: '55616156156156156',
         phone: '18655554444',
@@ -128,6 +125,9 @@ export default {
       }]
     }
   },
+  created () {
+    this.sercherOne(1, this.pageSize)
+  },
   methods: {
     handleClick (val) {
       this.$confirm('此操作将确认卖家充值到账, 是否继续?', '确认卖家充值到账?', {
@@ -135,6 +135,21 @@ export default {
         cancelButtonText: '取消',
         type: 'success'
       }).then(() => {
+        this.$ajax.post('/api/sellerorder/updateApplysPass', {
+        }).then((data) => {
+          console.log(data)
+          let res = data.data
+          this.totalCount = res.data.totalCount
+          if (res.code === '200') {
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'warning'
+            })
+          }
+        }).catch(() => {
+          this.$message.error('网络错误，刷新下试试')
+        })
         this.$message({
           type: 'success',
           message: '操作成功!'
@@ -143,10 +158,12 @@ export default {
       })
     },
     handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
+      // console.log(`每页 ${val} 条`)
+      this.sercherOne(1, val)
     },
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`)
+      this.sercherOne(val, this.pageSize)
     },
     handleNoClick (val) {
       this.$confirm('此操作将确认卖家充值未到账, 是否继续?', '确认卖家充值未到账?', {
@@ -159,6 +176,41 @@ export default {
           message: '操作成功!'
         })
       }).catch(() => {
+      })
+    },
+    // 卖家充值申请的列表
+    sercherOne (pageNo, pageSize) {
+      this.$ajax.post('/api/sellerorder/getChargeApplysByConditions', {
+        statusList: ['0'],
+        pageNo: pageNo,
+        pageSize: pageSize
+      }).then((data) => {
+        console.log(data)
+        let res = data.data
+        this.totalCount = res.data.totalCount
+        if (res.code === '200') {
+          let arr = []
+          for (let word of res.data.chargeApplys) {
+            let goods = {
+              payWater: word.chargeApplyId,
+              phone: word.sellerTelephone,
+              payNum: word.chargeAmount,
+              remark: word.memo,
+              collectionBank: word.platformBankCardNo,
+              moneyBank: word.sellerBankCardNo,
+              creatTime: word.gmtCreate
+            }
+            arr.push(goods)
+          }
+          this.tableData = arr
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          })
+        }
+      }).catch(() => {
+        this.$message.error('网络错误，刷新下试试')
       })
     }
   }

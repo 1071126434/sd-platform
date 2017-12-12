@@ -50,7 +50,7 @@
           </li>
           <li>
             <strong>0</strong>分
-            <p>用户行为分</p>
+            <p>扣除用户行为分</p>
           </li>
         </ul>
       </div>

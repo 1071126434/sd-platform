@@ -69,7 +69,7 @@
               <el-option v-for="(item, index) in wechatArr" :label="item.wechatNum" :value="item.operateWechatId" :key="index"></el-option>
             </el-select>
           </el-form-item>
-          <p style="margin-top:-20px;margin-left:100px;color:#898989">该商家及邀请来的买家添加该账号以便管理</p>
+          <p style="margin-top:-20px;margin-left:100px;color:#898989;padding-bottom:20px;font-size:12px">该商家及邀请来的买家添加该账号以便管理</p>
           <el-form-item label="商家来源" :label-width="formLabelWidth">
             <el-input v-model="source" auto-complete="off"></el-input>
           </el-form-item>

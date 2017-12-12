@@ -1,12 +1,12 @@
 <template>
   <div class="wrap">
     <header>
-      <p class="top">卖家账号/账号详情</p>
+      <p class="top">商家账号/账号详情</p>
       <el-row type="flex" class="row-bg" justify="space-between">
         <el-col :span="6" style="flex:1">
           <div class="grid-content bg-purple">
             <h4>
-              <span>卖家基本信息</span>
+              <span>商家基本信息</span>
             </h4>
             <div class="phone">
               <i class="el-icon-mobile-phone"></i>
@@ -32,7 +32,7 @@
         <el-col :span="6" style="flex:1;margin-left:20px;margin-right:20px">
           <div class="grid-content bg-purple">
             <h4 style="background:rgba(64,182,255,1)">
-              <span>卖家账号信息</span>
+              <span>商家账号信息</span>
             </h4>
             <ul class="left">
               <li><img width="80" height="80" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1510814036177&di=09d6409601464ce6f36b31b6adfc3d57&imgtype=0&src=http%3A%2F%2Fimg2.cxtuku.com%2F00%2F10%2F55%2Fs04761a14185.jpg" alt=""></li>
