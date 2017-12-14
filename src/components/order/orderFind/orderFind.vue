@@ -233,8 +233,8 @@ export default {
         taskKeywordType: this.select2,
         taskKeyword: this.input2,
         timeType: this.select3,
-        startTime: this.value4[0],
-        endTime: this.value4[1]
+        startTime: this.value4 ? this.value4[0] : '',
+        endTime: this.value4 ? this.value4[1] : ''
       }
     }
   },
