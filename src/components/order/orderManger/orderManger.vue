@@ -56,11 +56,11 @@
             <el-input v-model="input_4" placeholder="请输入内容" style="width:90%;margin-top:8px" @blur="taskFour"></el-input>
             <div class="Surtask">
               <p>剩余任务量</p>
-              <span>{{taskData_3.leftNum||0}}</span>单
+              <span>{{ taskData_3.leftNum||0 }}</span>单
             </div>
             <div class="surMoney">
               <p>剩余任务金额</p>
-              <span>{{taskData_3.sprice||0}}</span>元
+              <span>{{ taskData_3.sprice||0 }}</span>元
             </div>
           </div>
         </el-col>
