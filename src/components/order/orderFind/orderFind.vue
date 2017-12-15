@@ -89,7 +89,7 @@
               <div class="tableItem">
                 <ul class="itemHead">
                   <li style="width:60%">
-                    <span class="shopType"></span>
+                    <span class="shopType jdIcon"></span>
                     <span>{{item.sellerShopName}}</span>
                     <span class="person">对接人:
                       <em>{{item.operaterUserName}}</em>
@@ -466,7 +466,6 @@ export default {
             float left
             width 16px
             height 16px
-            background red
           .person
             margin-left 66px
           .taskOrder

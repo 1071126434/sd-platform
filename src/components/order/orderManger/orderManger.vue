@@ -269,6 +269,11 @@ export default {
             arr.push(obj)
           }
           this.tableData = arr
+          this.input_1 = ''
+          this.input_2 = ''
+          this.input_3 = ''
+          this.input_4 = ''
+          this.input_5 = ''
         } else {
           this.$message({
             type: 'error',
