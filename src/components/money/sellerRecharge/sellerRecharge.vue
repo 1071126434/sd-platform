@@ -329,6 +329,7 @@ export default {
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .wrap
   padding 20px
+  min-width 1000px
   header
     background rgba(255, 255, 255, 1)
     padding 20px

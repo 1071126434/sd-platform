@@ -21,7 +21,7 @@
                       <span class="taskOrder">任务类型:
                         <i class="red" v-if="item.sellerTaskType==='2'">图文好评</i>
                         <i class="red" v-else-if="item.sellerTaskType==='1'">文字好评</i>
-                        <i class="red" v-else>默认好评</i>
+                        <i class="red" v-else-if="item.sellerTaskType==='0'">默认好评</i>
                       </span>
                     </li>
                     <li style="width:25%">
@@ -54,31 +54,30 @@
                         <i class="red">{{item.realOrderId}}</i>
                       </p>
                     </li>
-                    <li style="width:40%:padding-right:40px" class="borderRest">
+                    <li style="width:30%:padding-right:40px" class="borderRest">
                       <p v-if="item.sellerTaskType==='1'">
                         <span>文字好评好评</span>&nbsp;&nbsp; |&nbsp;&nbsp;
-                        <i>东西很不错,下次继续光顾分发万福金安开发垃圾</i>
+                        <i>{{item.sellerFavor}}</i>
                       </p>
                       <p v-if="item.sellerTaskType==='0'">
                         <i>五星好评</i>
                       </p>
-                      <div v-if="item.sellerTaskType==='2'">
+                      <div v-if="item.sellerTaskType==='2'" class="midd">
                         <p>
                           <span>图文好评</span>&nbsp;&nbsp; |&nbsp;&nbsp;
-                          <i>东西很不错,下次继续光顾分发万福金安开发垃圾</i>
+                          <i>{{item.sellerFavor}}</i>
                         </p>
-                        <p>
-                          <img style=" margin-right:10px " alt=" " src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg ">
-                          <img style="margin-right:10px " alt=" " src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg ">
-                          <img alt=" " src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg ">
+                        <p v-for="(itemObj,index) in JSON.parse(item.sellerPicUrls)" :key="index" class="allPic" @click="lookImg(itemObj)">
+                          <img style=" margin-right:10px " alt=" " :src="itemObj">
+                          <!-- <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1513512835319&di=b1c02f7d62cb4788e16ae8fe4ef8f4fb&imgtype=0&src=http%3A%2F%2Fpic.qiantucdn.com%2F58pic%2F14%2F31%2F78%2F00H58PIC3iE_1024.png" alt=""> -->
                         </p>
                       </div>
                     </li>
-                    <li style="width:60px;border-right:1px solid #e5e5e5;margin-left:60px ">
-                      <img class="taskImg " src="https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=499534944,3745393208&fm=173&s=F0B58B7467D353D0480EFDD6030070BA&w=640&h=448&img.JPEG " alt=" ">
-                      <span>评价截图</span>
+                    <li style="width:10%;border-right:1px solid #e5e5e5;margin-left:60px ">
+                      <img class="taskImg " :src="JSON.parse(item.evaluatePicId)" alt=" " @click="lookImg(JSON.parse(item.evaluatePicId) || '')">
+                      <span class=" evaluatePic ">评价截图</span>
                     </li>
-                    <li class="center styles " style="width:20% ">
+                    <li class="center styles " style="width:25% ">
                       <p class="taskState ">驳回原因:
                         <span>{{item.rejectReson}}</span>
                       </p>
@@ -96,27 +95,40 @@
             </el-pagination>
           </div>
         </el-tabs>
+        <div v-show="showLookImg ">
+          <lookImg :imgUrl="lookImgUrl " @close="showLookImg=false "></lookImg>
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script type="text/ecmascript-6">
+import LookImg from '../../../base/lookImg/lookImg'
 export default {
   name: 'orderRegectDetail',
+  components: {
+    LookImg
+  },
   data () {
     return {
       activeName: '2',
       currentPage: 1,
       checked: true,
-      pageSize: 50,
+      pageSize: 5,
       totalCount: 0,
-      tableData: []
+      tableData: [],
+      lookImgUrl: '',
+      showLookImg: false
     }
   },
   created () {
     this.sercherOne(1, this.pageSize)
   },
   methods: {
+    lookImg (url) {
+      this.showLookImg = true
+      this.lookImgUrl = url
+    },
     reset () {
       this.value = ''
     },
@@ -150,7 +162,7 @@ export default {
               // 对应管理员
               operaterUserName: word.operaterUserName,
               platformWechatNum: word.platformWechatNum,
-              sellerTaskType: word.sellerTaskType,
+              sellerTaskType: word.buyerFavorType,
               isContact: word.isContact === '0' ? this.checked = false : this.checked = true,
               productUrl: word.productUrl,
               // 买家信息
@@ -162,10 +174,12 @@ export default {
               favorTime: word.favorTime,
               gmtCreate: word.gmtCreate,
               rejectReson: word.rejectReson || '暂无数据',
-              solution: word.solution || '暂无数据',
+              solution: word.memo || '暂无数据',
               realOrderPicId: word.realOrderPicId,
               wechatNum: word.wechatNum,
-              evaluatePicId: word.evaluatePicId
+              evaluatePicId: word.evaluatePicId,
+              sellerPicUrls: word.sellerPicUrls,
+              sellerFavor: word.sellerFavor
             }
             arr.push(goods)
           }
@@ -186,14 +200,18 @@ export default {
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .wrap
   padding 20px
+  min-width 1100px
   .orderList
     background rgba(255, 255, 255, 1)
     padding 20px
     margin-top 20px
-    .head, padding 20px, background #ffffff, .btns
-      margin-top 20px
-      display flex
-      justify-content flex-start
+    .head
+      padding 20px
+      background #ffffff
+      .btns
+        margin-top 20px
+        display flex
+        justify-content flex-start
       .select
         margin-left 25px
         margin-right 20px
@@ -243,7 +261,8 @@ export default {
           .borderRest
             border-left 1px solid #e5e5e5
             border-right 1px solid #e5e5e5
-            padding-right 10px
+            padding-right 5%
+            padding-left 5%
           img
             float left
             width 60px
@@ -271,6 +290,14 @@ export default {
           .taskImg
             height 107px
             margin-top 10px
+          .evaluatePic
+            margin-top 10px
+            display inline-block
+            margin-left 5px
+        .midd
+          width 200px    
+          .allPic
+            display inline-block
   .red
     color #FC1733
   .link

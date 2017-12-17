@@ -109,7 +109,7 @@
     <!-- 批量通过的弹窗 -->
     <el-dialog title="请选择打款卡号" :visible.sync="dialogFormBank" :modal-append-to-body=false>
       <el-form>
-        <el-form-item label="活动区域">
+        <el-form-item label="信息">
           <el-select v-model="bankName" placeholder="请选择">
             <el-option v-for="(item,index) in bankList" :key="index" :label="item.bankName+' '+item.cardNo+' '+item.userName" :value="item.bankCarId"></el-option>
           </el-select>
@@ -123,7 +123,7 @@
     <!-- 当点击单个确认的弹窗 -->
     <el-dialog title="请选择打款卡号" :visible.sync="dialogFormBankOne" :modal-append-to-body=false>
       <el-form>
-        <el-form-item label="活动区域">
+        <el-form-item label="信息">
           <el-select v-model="bankName" placeholder="请选择">
             <el-option v-for="(item,index) in bankList" :key="index" :label="item.bankName+' '+item.cardNo+' '+item.userName" :value="item.bankCarId"></el-option>
           </el-select>
@@ -304,7 +304,7 @@ export default {
     },
     sureBankOne () {
       this.$ajax.post('/api/withdrawApply/updateApplysPass', {
-        comment: '',
+        comment: '本金提现',
         operateUserAccountId: this.userInfo.operateUserAccountId,
         operateUserName: this.userInfo.userName,
         applyIds: [this.withdrawApply_sure],
@@ -317,7 +317,7 @@ export default {
             message: res.message,
             type: 'success'
           })
-          this.dialogFormBankOne = true
+          this.dialogFormBankOne = false
           this.buyerData(1, this.pageSize)
         } else {
           this.$message({
@@ -450,7 +450,7 @@ export default {
               JDStatus: word.status === '1' ? '成功' : '失败',
               sBank: word.bankCardName,
               dBank: word.platformBankCardName || '--',
-              time: word.gmtCreate,
+              time: word.gmtModify,
               person: word.modifiedOperaterName
             }
             arr.push(goods)
