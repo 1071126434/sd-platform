@@ -3,234 +3,188 @@
     <div class="orderList">
       <div class="head">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane label="待确认订单" name="1">
-            <div class="list">
+          <el-tab-pane label="待确认订单" name='1'>
+            <div class="list" v-for="(item,index) in tableData" :key="index">
               <div class="tables">
                 <div class="tableItem">
                   <ul class="itemHead">
-                    <li style="width:30%">
-                      <span class="shopType"></span>
-                      <span>升达旗舰店</span>
+                    <li style="width:20%">
+                      <span class="shopType jdIcon"></span>
+                      <span>{{item.sellerShopName}}</span>
                     </li>
-                    <li style="width:50%">
-                      <span class="taskOrder">子任务编号:
-                        <i>9901640082449467</i>
+                    <li style="width:35%">
+                      <span class="taskOrder">任务编号:
+                        <i>{{item.sellerTaskId}}</i>
                       </span>
-                      </l>
-                      <li style="width:20%">
-                        <el-checkbox v-model="checked">已联系做单</el-checkbox>
-                      </li>
+                    </li>
+                    <li style="width:30%">
+                      <span class="taskOrder">对应管理员:
+                        <i>{{item.operaterUserName}}</i>
+                        <i>{{item.platformWechatNum}}</i>
+                      </span>
+                    </li>
+                    <li style="width:10%">
+                      <el-checkbox v-model="checked" disabled>已联系做单</el-checkbox>
+                    </li>
                   </ul>
                   <ul class="itemCont">
                     <li style="width:5%;border:none;margin-top:17px">
-                      <img alt="" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg">
+                      <img alt="" :src='item.productPictureUrl'>
                     </li>
                     <li style="width:30%;margin-left:-80px">
-                      <p>安卓数据线
-                        <span>商品链接</span>
+                      <p>{{item.productName}}
+                        <a :href="item.productUrl">商品链接</a>
                       </p>
-                      <p>子任务编号:
-                        <i class="red">4696868146-51541</i>
+                      <p>订单编号:
+                        <i class="red">{{item.buyerTaskRecordId}}</i>
                       </p>
                       <p>任务类型:
-                        <!-- <i class="red">图文好评</i>
-                         <i class="red">文字好评</i> -->
-                        <i class="red">默认好评</i>
+                        <i class="red" v-if="item.sellerTaskType==='2'">图文好评</i>
+                        <i class="red" v-else-if="item.sellerTaskType==='1'">文字好评</i>
+                        <i class="red" v-else>默认好评</i>
                       </p>
                     </li>
                     <li style="width:60px;border:none;margin-left:40px">
-                      <img class="taskImg" src="https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=499534944,3745393208&fm=173&s=F0B58B7467D353D0480EFDD6030070BA&w=640&h=448&img.JPEG" alt="">
+                      <img class="taskImg" :src="JSON.parse(item.realOrderPicId)" alt="">
                     </li>
                     <li style="width:30%;margin-left:-90px">
                       <p>
                         <span>姓名:
-                          <i class="red">黄军</i>&nbsp;&nbsp;&nbsp;&nbsp;
+                          <i class="red">{{item.userName}}</i>&nbsp;&nbsp;&nbsp;&nbsp;
                         </span>
                         <span>订单金额:
-                          <i class="red">58</i>
+                          <i class="red">{{item.realOrderPrice}}</i>
                         </span>
                       </p>
                       <p>京东订单编号:
-                        <span class="red">68489646146</span>
+                        <span class="red">{{item.realOrderId}}</span>
                       </p>
                       <p>京东用户名:
-                        <span class="red">测试一下看看多少字</span>
+                        <span class="red">{{item.jdNickName}}</span>
                       </p>
                       <p>手机号:
-                        <span class="red">15103541616</span>
+                        <span class="red">{{item.telephone}}</span>
                       </p>
                       <p>微信号:
-                        <span class="red">15103541616</span>
+                        <span class="red">{{item.wechatNum}}</span>
                       </p>
                     </li>
                     <li class="center styles" style="width:30%">
                       <span class="onlineTime">驳回时间:
-                        <span class="red">2017-11-14 12:23:00</span>
+                        <span class="red">{{item.favorTime}}</span>
                       </span>
                       <p class="taskState">驳回原因:
-                        <span>卧槽</span>
+                        <span>{{item.rejectReson}}</span>
                       </p>
                       <p class="taskState">备注:
-                        <span>卧槽</span>
+                        <span>{{item.solution}}</span>
                       </p>
-
                     </li>
                   </ul>
-                </div>
-                <div class="pager">
-                  <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
-                  </el-pagination>
                 </div>
               </div>
             </div>
           </el-tab-pane>
           <!-- 切换部分 -->
-          <el-tab-pane label="待确认评价" name="2">
-            <div class="list">
-              <div class="tables">
-                <div class="tableItem">
-                  <ul class="itemHead">
-                    <li style="width:30%">
-                      <span style="margin-left:20px">安卓数据线</span>
-                    </li>
-                    <li style="width:30%">
-                      <span class="taskOrder">子任务编号:
-                        <i>9901640082449467</i>
-                      </span>
-                      </l>
-                      <li style="width:25%">
-                        <span class="taskOrder">任务类型:
-                          <i>默认好评</i>
-                          <!-- <i>图文好评</i>
-                          <i>纯文好评</i> -->
-                        </span>
-                      </li>
-                      <li style="width:15%">
-                        <span class="onlineTime">提交时间:
-                          <span class="red">2017-11-14 12:23:00</span>
-                        </span>
-                      </li>
-                  </ul>
-                  <ul class="itemCont">
-                    <li style="width:5%;border:none;margin-top:17px">
-                      <img alt="" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg">
-                    </li>
-                    <li style="width:25%;margin-left:-80px">
-                      <p>姓名:
-                        <span>黄军</span>
-                      </p>
-                      <p>淘宝/天猫用户名:
-                        <i class="red">呵呵到达刀锋</i>
-                      </p>
-                      <p>手机号:
-                        <i class="red">150371833551</i>
-                      </p>
-                    </li>
-                    <li style="width:40%">
-                      <p>
-                        <!-- <span>图文好评</span>&nbsp;&nbsp; |&nbsp;&nbsp;  -->
-                        <span>文字好评好评</span>&nbsp;&nbsp; |&nbsp;&nbsp;
-                        <i>东西很不错,下次继续光顾分发万福金安开发垃圾</i>
-                      </p>
-                      <!-- <p>
-                        <img style="margin-right:10px" alt="" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg">
-                        <img style="margin-right:10px" alt="" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg">
-                        <img alt="" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg">
-                      </p> -->
-
-                    </li>
-                    <li style="width:60px;border:none;margin-left:60px">
-                      <img class="taskImg" src="https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=499534944,3745393208&fm=173&s=F0B58B7467D353D0480EFDD6030070BA&w=640&h=448&img.JPEG" alt="">
-                    </li>
-                    <li class="center styles" style="width:10%;margin-left:-90px">
-                      <p class="taskState">淘宝/天猫订单编号:
-                      </p>
-                      <span class="red">145616516315665</span>
-                      <el-button type="primary">去审核</el-button>
-                    </li>
-                  </ul>
-                </div>
-                <div class="pager">
-                  <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
-                  </el-pagination>
-                </div>
-              </div>
-            </div>
-          </el-tab-pane>
+          <div class="pager">
+            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size='pageSize' layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
+            </el-pagination>
+          </div>
         </el-tabs>
       </div>
     </div>
   </div>
 </template>
 <script type="text/ecmascript-6">
-import { pageCommon } from '../../../assets/js/mixin'
 export default {
-  mixins: [pageCommon],
   name: 'orderRegectDetail',
   data () {
     return {
       activeName: '1',
       currentPage: 1,
       checked: true,
-      apiUrl: '/api/platform/order/getOrderListByTaskStatus'
+      pageSize: 5,
+      totalCount: 0,
+      tableData: []
     }
   },
-  computed: {
-    params () {
-      return {
-        pageNo: this.pageNo,
-        pageSize: this.pageSize,
-        taskStatus: '1'
-      }
-    }
+  created () {
+    this.sercherOne(1, this.pageSize)
   },
   methods: {
     reset () {
       this.value = ''
     },
-    handleClick (tab, event) {
-      console.log(tab, event)
+    handleSizeChange (val) {
+      if (this.activeName2 === 'first') {
+        this.sercherOne(1, val)
+      } else if (this.activeName2 === 'second') {
+        this.sellerRecord(1, val)
+      }
     },
-    setList (data) {
-      // let arr = []
-      // for (let word of data) {
-      //   let goods = {
-      //     sellerShopName: word.sellerShopName || '暂无数据',
-      //     /* 平台对接人 */
-      //     operaterUserName: word.operaterUserName || '暂无数据',
-      //     /* 订单编号编号 */
-      //     buyerTaskRecordId: word.buyerTaskRecordId || '暂无数据',
-      //     /* 任务包 */
-      //     buyerTaskPackageId: word.buyerTaskPackageId || '暂无数据',
-      //     /* 提交时间 */
-      //     gmtCreate: word.gmtCreate || '暂无数据',
-      //     // 商家任务id
-      //     sellerTaskId: word.sellerTaskId,
-      //     // 任务图片链接
-      //     productPictureUrl: word.productPictureUrl,
-      //     /* 商品名字 */
-      //     productName: word.productName || '暂无数据',
-      //     /* 商品链接 */
-      //     productUrl: word.productUrl || '暂无数据',
-      //     /* 子任务编号 */
-      //     sellerTaskDayId: word.sellerTaskDayId || '暂无数据',
-      //     /* 任务类型 */
-      //     sellerTaskType: word.sellerTaskType || '暂无数据',
-      //     /* 买家姓名 */
-      //     userName: word.userName || '暂无数据',
-      //     /* 订单金额 */
-      //     realOrderPrice: word.realOrderPrice || '--',
-      //     /* 京东订单编号 */
-      //     realOrderId: word.realOrderId || '--',
-      //     /* 京东用户名 */
-      //     jdNickName: word.jdNickName || '暂无数据',
-      //     telephone: word.telephone || '暂无数据',
-      //     taskStatus: word.taskStatus || '暂无数据',
-      //     isContact: word.isContact === '1' ? this.checked = true : this.checked = false
-      //   }
-      //   arr.push(goods)
-      // }
-      // this.firstArr = arr
+    handleCurrentChange (val) {
+      if (this.activeName2 === 'first') {
+        this.sercherOne(val, this.pageSize)
+      } else if (this.activeName2 === 'second') {
+        this.sellerRecord(val, this.pageSize)
+      }
+    },
+    handleClick (tab, event) {
+      if (this.activeName2 === '1') {
+        this.sercherOne(1, this.pageSize)
+      } else if (this.activeName2 === '2') {
+        this.sellerRecord(1, this.pageSize)
+      }
+    },
+    sercherOne (pageNo, pageSize) {
+      this.$ajax.post('/api/order/search/getOrderListByTaskStatus', {
+        taskStatus: ['6', '7'],
+        pageNo: pageNo,
+        pageSize: pageSize
+      }).then((data) => {
+        console.log(data)
+        let res = data.data
+        this.totalCount = res.data.totalCount
+        if (res.code === '200') {
+          let arr = []
+          for (let word of res.data.buyerTaskRecordInfos) {
+            let goods = {
+              productPictureUrl: word.productPictureUrl,
+              sellerShopName: word.sellerShopName,
+              sellerTaskId: word.sellerTaskId,
+              buyerTaskRecordId: word.buyerTaskRecordId,
+              // 对应管理员
+              operaterUserName: word.operaterUserName,
+              platformWechatNum: word.platformWechatNum,
+              sellerTaskType: word.sellerTaskType,
+              isContact: word.isContact === '0' ? this.checked = false : this.checked = true,
+              remark: word.memo,
+              productName: word.productName,
+              productUrl: word.productUrl,
+              // 买家信息
+              userName: word.userName,
+              realOrderPrice: word.realOrderPrice,
+              realOrderId: word.realOrderId,
+              jdNickName: word.jdNickName,
+              telephone: word.telephone,
+              favorTime: word.favorTime,
+              rejectReson: word.rejectReson || '暂无数据',
+              solution: word.solution || '暂无数据',
+              realOrderPicId: word.realOrderPicId,
+              wechatNum: word.wechatNum
+            }
+            arr.push(goods)
+          }
+          this.tableData = arr
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          })
+        }
+      }).catch(() => {
+        this.$message.error('网络错误，刷新下试试')
+      })
     }
   }
 }
@@ -281,7 +235,6 @@ export default {
             float left
             width 16px
             height 16px
-            background red
           .person
             margin-left 66px
           .taskOrder
