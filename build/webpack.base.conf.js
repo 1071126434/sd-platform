@@ -77,6 +77,6 @@ module.exports = {
     'vuex': 'Vuex',
     'axios': 'axios',
     'element-ui': 'ELEMENT',
-    'echarts': 'Echarts'
+    'echarts': 'echarts'
   }
 }
