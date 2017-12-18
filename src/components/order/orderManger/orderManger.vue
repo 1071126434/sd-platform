@@ -111,8 +111,10 @@
             </template>
           </el-table-column>
         </el-table>
+        <Nocont v-if="this.tableData.length===0"></Nocont>
       </div>
-      <div class="pager">
+
+      <div class="pager" v-if="this.tableData.length!==0">
         <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
         </el-pagination>
       </div>
@@ -120,8 +122,12 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
+import Nocont from '../../../base/noCont/noCont'
 export default {
   name: 'orderManger',
+  components: {
+    Nocont
+  },
   data () {
     return {
       currentPage: 1,

@@ -2,7 +2,7 @@
   <div class="wrap">
     <div class="orderList">
       <div class="head">
-        <el-tabs v-model="activeName" @tab-click="handleClick">
+        <el-tabs v-model="activeName">
           <el-tab-pane label="待确认订单" name='1'>
             <div class="list" v-for="(item,index) in tableData" :key="index">
               <div class="tables">
@@ -29,7 +29,7 @@
                   </ul>
                   <ul class="itemCont">
                     <li style="width:5%;border:none;margin-top:17px">
-                      <img alt="" :src='item.productPictureUrl'>
+                      <img alt="" :src='item.productPictureUrl' @click="lookImg(item.productPictureUrl || '')">
                     </li>
                     <li style="width:30%;margin-left:-80px">
                       <p>{{item.productName}}
@@ -45,7 +45,7 @@
                       </p>
                     </li>
                     <li style="width:60px;border:none;margin-left:40px">
-                      <img class="taskImg" :src="JSON.parse(item.realOrderPicId)" alt="">
+                      <img class="taskImg" :src="JSON.parse(item.realOrderPicId)" alt="" @click="lookImg(JSON.parse(item.realOrderPicId) || '')">
                     </li>
                     <li style="width:30%;margin-left:-90px">
                       <p>
@@ -84,20 +84,30 @@
                 </div>
               </div>
             </div>
+            <noCont v-if="tableData.length===0"></noCont>
           </el-tab-pane>
           <!-- 切换部分 -->
-          <div class="pager">
+          <div class="pager" v-if="showPager">
             <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size='pageSize' layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
             </el-pagination>
           </div>
         </el-tabs>
+        <div v-show="showLookImg ">
+          <lookImg :imgUrl="lookImgUrl " @close="showLookImg=false "></lookImg>
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script type="text/ecmascript-6">
+import NoCont from '../../../base/noCont/noCont'
+import LookImg from '../../../base/lookImg/lookImg'
 export default {
   name: 'orderRegectDetail',
+  components: {
+    LookImg,
+    NoCont
+  },
   data () {
     return {
       activeName: '1',
@@ -105,36 +115,36 @@ export default {
       checked: true,
       pageSize: 5,
       totalCount: 0,
-      tableData: []
+      tableData: [],
+      lookImgUrl: '',
+      showLookImg: false
+    }
+  },
+  computed: {
+    showPager: function () {
+      if (this.tableData.length !== 0) {
+        return true
+      } else {
+        return false
+      }
     }
   },
   created () {
     this.sercherOne(1, this.pageSize)
   },
   methods: {
+    lookImg (url) {
+      this.showLookImg = true
+      this.lookImgUrl = url
+    },
     reset () {
       this.value = ''
     },
     handleSizeChange (val) {
-      if (this.activeName2 === 'first') {
-        this.sercherOne(1, val)
-      } else if (this.activeName2 === 'second') {
-        this.sellerRecord(1, val)
-      }
+      this.sercherOne(1, val)
     },
     handleCurrentChange (val) {
-      if (this.activeName2 === 'first') {
-        this.sercherOne(val, this.pageSize)
-      } else if (this.activeName2 === 'second') {
-        this.sellerRecord(val, this.pageSize)
-      }
-    },
-    handleClick (tab, event) {
-      if (this.activeName2 === '1') {
-        this.sercherOne(1, this.pageSize)
-      } else if (this.activeName2 === '2') {
-        this.sellerRecord(1, this.pageSize)
-      }
+      this.sercherOne(val, this.pageSize)
     },
     sercherOne (pageNo, pageSize) {
       this.$ajax.post('/api/order/search/getOrderListByTaskStatus', {

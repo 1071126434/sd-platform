@@ -2,7 +2,7 @@
   <div class="wrap">
     <div class="orderList">
       <div class="head">
-        <el-tabs v-model="activeName" @tab-click="handleClick">
+        <el-tabs v-model="activeName">
           <!-- 切换部分 -->
           <el-tab-pane label="评价驳回" name="2">
             <div class="list" v-for="(item,index) in tableData" :key="index">
@@ -89,8 +89,9 @@
                 </div>
               </div>
             </div>
+            <noCont v-if="tableData.length===0"></noCont>
           </el-tab-pane>
-          <div class="pager ">
+          <div class="pager " v-if="showPage">
             <el-pagination @size-change="handleSizeChange " @current-change="handleCurrentChange " :current-page="currentPage " :page-sizes="[5, 10, 15, 20] " :page-size='pageSize' layout="total, sizes, prev, pager, next, jumper " :total="totalCount ">
             </el-pagination>
           </div>
@@ -104,10 +105,12 @@
 </template>
 <script type="text/ecmascript-6">
 import LookImg from '../../../base/lookImg/lookImg'
+import NoCont from '../../../base/noCont/noCont'
 export default {
   name: 'orderRegectDetail',
   components: {
-    LookImg
+    LookImg,
+    NoCont
   },
   data () {
     return {
@@ -119,6 +122,15 @@ export default {
       tableData: [],
       lookImgUrl: '',
       showLookImg: false
+    }
+  },
+  computed: {
+    showPager: function () {
+      if (this.tableData.length !== 0) {
+        return true
+      } else {
+        return false
+      }
     }
   },
   created () {
@@ -137,9 +149,6 @@ export default {
     },
     handleCurrentChange (val) {
       this.sercherOne(val, this.pageSize)
-    },
-    handleClick (tab, event) {
-      this.sercherOne(1, this.pageSize)
     },
     sercherOne (pageNo, pageSize) {
       this.$ajax.post('/api/order/search/getOrderListByTaskStatus', {
@@ -295,7 +304,7 @@ export default {
             display inline-block
             margin-left 5px
         .midd
-          width 200px    
+          width 200px
           .allPic
             display inline-block
   .red

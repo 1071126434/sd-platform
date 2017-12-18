@@ -169,7 +169,8 @@
               </div>
             </div>
           </div>
-          <div class="pager">
+          <noCont v-if="secondArr.length===0"></noCont>
+          <div class="pager" v-if="secondArr.length!==0">
             <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pageTotal">
             </el-pagination>
           </div>
@@ -180,9 +181,13 @@
 </template>
 <script type="text/ecmascript-6">
 import { pageCommon } from '../../../assets/js/mixin'
+import NoCont from '../../../base/noCont/noCont'
 export default {
   name: 'orderFind',
   mixins: [pageCommon],
+  components: {
+    NoCont
+  },
   data () {
     return {
       options: [{

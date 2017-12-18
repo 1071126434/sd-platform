@@ -58,6 +58,7 @@
               <el-button @click="allSure(applyIdsNumChoose)">批量确认</el-button>
             </div>
           </div>
+          <Nocont v-if="this.tableDataBuy.length===0"></Nocont>
         </el-tab-pane>
         <el-tab-pane label="买家提现记录" name="second">
           <div class="buyerTop">
@@ -98,9 +99,10 @@
               </el-table-column>
             </el-table>
           </div>
+          <Nocont v-if="this.tableDataBuyList.length===0"></Nocont>
         </el-tab-pane>
         <!-- 分页 -->
-        <div class="pager" style="clear:both">
+        <div class="pager" style="clear:both" v-if="showPager">
           <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
           </el-pagination>
         </div>
@@ -150,8 +152,12 @@
 </template>
 <script type="text/ecmascript-6">
 import { mapGetters } from 'vuex'
+import Nocont from '../../../base/noCont/noCont'
 export default {
   name: 'buyerApply',
+  components: {
+    Nocont
+  },
   data () {
     return {
       activeName2: 'first',
@@ -185,7 +191,16 @@ export default {
   computed: {
     ...mapGetters([
       'userInfo',
-      'userToken'])
+      'userToken']),
+    showPager: function () {
+      if (this.activeName2 === 'first' && this.tableDataBuy.length !== 0) {
+        return true
+      } else if (this.activeName2 === 'second' && this.tableDataBuyList.length !== 0) {
+        return true
+      } else {
+        return false
+      }
+    }
   },
   created () {
     this.buyerData(1, this.pageSize)

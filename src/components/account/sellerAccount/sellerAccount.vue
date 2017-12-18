@@ -36,7 +36,8 @@
             </template>
           </el-table-column>
         </el-table>
-        <div class="pager">
+        <noCont v-if="this.tableData.length===0"></noCont>
+        <div class="pager" v-if="this.tableData.length!==0">
           <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pageNo" :page-sizes="pageSizeArray" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pageTotal">
           </el-pagination>
         </div>
@@ -78,7 +79,7 @@
               <el-option v-for="(item, index) in bankArr" :label="item.bankName+' '+item.cardNo+' '+item.userName" :value="item.bankCarId" :key="index"></el-option>
             </el-select>
           </el-form-item>
-          <p style="margin-top:-20px;margin-left:100px;color:#898989">该商户充值会向本银行卡转账</p>
+          <p style="margin-top:-20px;margin-left:100px;color:#898989;font-size:12px">该商户充值会向本银行卡转账</p>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -91,10 +92,14 @@
 <script type="text/ecmascript-6">
 import { pageCommon } from '../../../assets/js/mixin'
 import { mapGetters } from 'vuex'
+import noCont from '../../../base/noCont/noCont'
 import md5 from 'md5'
 export default {
   mixins: [pageCommon],
   name: 'sellerAccount',
+  components: {
+    noCont
+  },
   data () {
     return {
       input5_1: '',

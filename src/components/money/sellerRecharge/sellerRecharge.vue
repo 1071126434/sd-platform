@@ -41,6 +41,7 @@
               </el-table-column>
             </el-table>
           </div>
+          <noCont v-if="this.tableData===0"></noCont>
         </el-tab-pane>
         <el-tab-pane label="卖家充值记录" name="second">
           <div class="second_top">
@@ -85,7 +86,8 @@
             </el-table>
           </div>
         </el-tab-pane>
-        <div class="pager">
+        <noCont v-if="this.tableDataBuy===0"></noCont>
+        <div class="pager" v-if="noContPage">
           <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size='pageSize' layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
           </el-pagination>
         </div>
@@ -94,8 +96,12 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
+import noCont from '../../../base/noCont/noCont'
 export default {
   name: 'sellerRecharge',
+  components: {
+    noCont
+  },
   data () {
     return {
       value3: '',
@@ -118,6 +124,17 @@ export default {
         time: '2017-11-15 20:30:30',
         person: '展示'
       }]
+    }
+  },
+  computed: {
+    noContPage: function () {
+      if (this.activeName2 === 'first' && this.tableData.length !== 0) {
+        return true
+      } else if (this.activeName2 === 'second' && this.tableDataBuy.length !== 0) {
+        return true
+      } else {
+        return false
+      }
     }
   },
   created () {
