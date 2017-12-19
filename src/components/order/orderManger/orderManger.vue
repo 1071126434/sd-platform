@@ -82,8 +82,7 @@
       <div class="line"></div>
       <div class="bottom">
         <div class="bottom_money">包单金额:&nbsp;&nbsp;
-          <span style="color:black;font-weight:600">100</span>元</div>
-        <el-checkbox v-model="checked" style="margin-top:27px">是否Plus</el-checkbox>&nbsp;&nbsp;
+          <span style="color:black;font-weight:600">{{this.totalAdd||0}}</span>元</div>
         <el-button type="primary" style="margin-top:16px" @click="sureChoose">确认筛选</el-button>
       </div>
       <h4>第三步 订单分配</h4>
@@ -107,7 +106,7 @@
           </el-table-column>
           <el-table-column align="center" label="操作">
             <template slot-scope="scope">
-              <el-button @click="handleClick(scope.$index, scope.row)" type="text" size="small">待分发</el-button>
+              <el-button @click="handleClick(scope.$index, scope.row)" type="text" size="small" :disabled="waiteing">待分发</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -143,11 +142,53 @@ export default {
       taskData_2: {},
       taskData_3: {},
       taskData_4: {},
-      arr: [],
       pageSize: 5,
       checked: false,
       tableData: [],
-      apiUrl: '/api/buyerAccount/getSelectableBuyerUserInfo'
+      apiUrl: '/api/buyerAccount/getSelectableBuyerUserInfo',
+      waiteing: false,
+      isJDPlus: ''
+    }
+  },
+  // 此数据用计算属性来处理
+  computed: {
+    sendArr: function () {
+      let arr = []
+      if (this.input_1 !== '') {
+        arr.push(this.input_1)
+      }
+      if (this.input_2 !== '') {
+        arr.push(this.input_2)
+      }
+      if (this.input_3 !== '') {
+        arr.push(this.input_3)
+      }
+      if (this.input_4 !== '') {
+        arr.push(this.input_4)
+      }
+      if (this.input_5 !== '') {
+        arr.push(this.input_5)
+      }
+      return arr
+    },
+    totalAdd: function () {
+      let number = 0
+      if (this.taskData.sprice) {
+        number += this.taskData.sprice
+      }
+      if (this.taskData_1.sprice) {
+        number += this.taskData_1.sprice
+      }
+      if (this.taskData_2.sprice) {
+        number += this.taskData_2.sprice
+      }
+      if (this.taskData_3.sprice) {
+        number += this.taskData_3.sprice
+      }
+      if (this.taskData_4.sprice) {
+        number += this.taskData_4.sprice
+      }
+      return number
     }
   },
   methods: {
@@ -156,9 +197,10 @@ export default {
     },
     handleClick (index, seller) {
       console.log(index, seller)
+      this.waiteing = true
       this.$ajax.post('/api/order/packageAssign', {
-        sellerTaskIds: this.arr,
-        plusType: seller.plus === '试用会员' ? '0' : '1',
+        sellerTaskIds: this.sendArr,
+        plusType: this.isJDPlus,
         buyerUserId: seller.sellerUserId
       }).then((data) => {
         let res = data.data
@@ -167,6 +209,7 @@ export default {
             type: 'sucess',
             message: '分发成功'
           })
+          this.waiteing = false
           this.getDatas(1, this.pageSize)
         } else {
           this.$message({
@@ -196,6 +239,7 @@ export default {
     },
     // 当点击确认校验的时候触发的事件
     sureChoose () {
+      console.log(this.sendArr)
       if (this.input_1 === '' && this.input_2 === '' && this.input_3 === '' && this.input_4 === '' && this.input_5 === '') {
         this.$message({
           type: 'warning',
@@ -203,38 +247,14 @@ export default {
         })
         return false
       }
-      for (let i = 0; i < this.arr.length; i++) {
-        for (let j = 0; j < this.arr.length; j++) {
-          if (this.arr[i] === this.arr[j]) {
-            this.input_1 = ''
-            this.input_2 = ''
-            this.input_3 = ''
-            this.input_4 = ''
-            this.input_5 = ''
-            this.arr = []
-          }
-        }
-      }
-      if (this.input_1 !== '') {
-        this.arr.push(this.input_1)
-      }
-      if (this.input_2 !== '') {
-        this.arr.push(this.input_2)
-      }
-      if (this.input_3 !== '') {
-        this.arr.push(this.input_3)
-      }
-      if (this.input_4 !== '') {
-        this.arr.push(this.input_4)
-      }
-      if (this.input_5 !== '') {
-        this.arr.push(this.input_5)
-      }
+      // 后台校验输入的数据是否正确
       this.$ajax.post('/api/seller/taskSearch/checkSellerTasksDuplicate', {
-        sellerTaskIds: this.arr
+        sellerTaskIds: this.sendArr
       }).then((data) => {
         let res = data.data
         if (res.code === '200') {
+          this.isJDPlus = res.data.isJDPlus
+          // 校验无误的时候开始筛选列表
           this.getDatas(1, this.pageSize)
         } else {
           this.$message({
@@ -251,9 +271,9 @@ export default {
       this.$ajax.post('/api/buyerAccount/getSelectableBuyerUserInfo', {
         pageNo: pageNo,
         pageSize: pageSize,
-        sellerTaskIds: this.arr,
+        sellerTaskIds: this.sendArr,
         type: 'JD',
-        isPlus: this.checked === true ? '1' : '0'
+        isPlus: this.isJDPlus
       }).then((data) => {
         console.log(data)
         let res = data.data
@@ -266,8 +286,8 @@ export default {
               phone: word.telephone,
               wchat: word.wechatNum || '暂无数据',
               messg: word.operaterTelephone,
-              plus: word.jdPlusType === '0' ? '试用会员' : '正式会员',
-              date: word.jdPlusEndDate,
+              plus: word.jdPlusType === '0' ? '试用会员' : word.jdPlusType === '1' ? '正式会员' : '--',
+              date: word.jdPlusEndDate || '--',
               city: word.postCity,
               money: word.jdMonthIncome || '暂无数据',
               sellerUserId: word.buyerUserAccountId
@@ -275,11 +295,12 @@ export default {
             arr.push(obj)
           }
           this.tableData = arr
-          this.input_1 = ''
-          this.input_2 = ''
-          this.input_3 = ''
-          this.input_4 = ''
-          this.input_5 = ''
+          if (this.tableData.length === 0) {
+            this.$message({
+              type: 'warning',
+              message: '暂无匹配的买家'
+            })
+          }
         } else {
           this.$message({
             type: 'error',
@@ -316,6 +337,7 @@ export default {
             sellerTaskId: res.data[0].sellerTaskId
           }
           this.taskData = obj
+          // console.log(this.totalAdd)
         }
       }).catch((err) => {
         this.$message.error(err)

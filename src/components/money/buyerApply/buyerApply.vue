@@ -463,7 +463,7 @@ export default {
               moneyNum: word.actualAmount,
               remark: word.comment || '无',
               JDStatus: word.status === '1' ? '成功' : '失败',
-              sBank: word.bankCardName,
+              sBank: word.bankName + word.userName + word.bankCardNo,
               dBank: word.platformBankCardName || '--',
               time: word.gmtModify,
               person: word.modifiedOperaterName
@@ -625,6 +625,7 @@ export default {
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .wrap
   padding 20px
+  min-width 1200px
   header
     background rgba(255, 255, 255, 1)
     padding 20px
