@@ -2,7 +2,7 @@
   <div class="wrap">
     <header>
       <el-tabs v-model="activeName2" type="card" @tab-click="handleClicks">
-        <el-tab-pane label="卖家充值申请" name="first">
+        <el-tab-pane label="商家家充值申请" name="first">
           <div class="top">
             <el-select placeholder="收款卡卡号" v-model="input5" class="input-with-select" value-key="bankCardId">
               <el-option v-for="(input5,index) in options" :key="index" :label="input5.cardNo" :value="input5">
@@ -41,9 +41,9 @@
               </el-table-column>
             </el-table>
           </div>
-          <noCont v-if="this.tableData===0"></noCont>
+          <noCont v-if="this.tableData.length===0"></noCont>
         </el-tab-pane>
-        <el-tab-pane label="卖家充值记录" name="second">
+        <el-tab-pane label="商家充值记录" name="second">
           <div class="second_top">
             <div class="Stime">
               申请时间：
@@ -297,7 +297,7 @@ export default {
               orderTask: word.chargeApplyId,
               JDStatus: word.status === '0' ? '未到账' : word.status === '1' ? '已到账' : '进行中',
               time: word.gmtModify,
-              person: word.platformBankCardUserName
+              person: word.sellerBankCardUserName
             }
             arr.push(goods)
           }
