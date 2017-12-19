@@ -15,7 +15,7 @@
           </li>
           <li>{{ userInfoObj.userName }}</li>
           <li>
-            <b></b>
+            <b class="iphoneIcon"></b>
             <span>{{ userInfoObj.telephone }}</span>
           </li>
           <li>
@@ -49,10 +49,26 @@
             <p>接单</p>
           </li>
           <li>
-            <strong>0</strong>分
-            <p>扣除用户行为分</p>
+            <strong>{{ userInfoObj.userScore }}</strong>分
+            <p>用户行为分</p>
+            <span class="link" @click="showScore=true">扣除分数</span>
           </li>
         </ul>
+        <div>
+          <el-dialog title="修改用户行为分" :append-to-body="true" :visible.sync="showScore" width="40%">
+            <ul class="editCont" style="padding:0 20px;">
+              <li style="height: 40px;line-height:40px;">
+                <span style="display: inline-block;width:80px;">设置分数: </span>
+                <el-input v-model="deleScore" style="width:340px" type="number" placeholder="请输入内容"></el-input>
+                <p style="padding-left:80px">当前分数: {{ leastScore }}</p>
+              </li>
+            </ul>
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="showScore = false">取 消</el-button>
+              <el-button type="primary" @click="deleScorePost">确 定</el-button>
+            </span>
+          </el-dialog>
+        </div>
       </div>
     </div>
     <div class="tab">
@@ -251,6 +267,9 @@ export default {
       activeName: 'first',
       addInivite: false,
       editPLUS: false,
+      // 显示扣除份数弹框
+      showScore: false,
+      deleScore: 0,
       addClass: '',
       addInivitePhone: '',
       isPlus: '0',
@@ -271,9 +290,23 @@ export default {
       }
     }
   },
+  computed: {
+    leastScore: function () {
+      let allScore = this.userInfoObj.userScore
+      // allScore = allScore - this.deleScore
+      // if (allScore > 12) {
+      //   this.$message({
+      //     type: 'warning',
+      //     message: '请输入合理的分数!'
+      //   })
+      //   this.deleScore = 0
+      //   allScore = this.userInfoObj.userScore
+      // }
+      return allScore
+    }
+  },
   methods: {
     handleClick (tab, event) {
-      console.log(tab, event)
       if (tab.name === 'second') {
         if (this.userInfoObj.parentUserId && this.userInfoObj.parentUserType) {
           let parentUserId = this.userInfoObj.parentUserId
@@ -295,6 +328,29 @@ export default {
       console.log(`当前页: ${val}`)
       this.pageNo = val
       this.getRelativeList()
+    },
+    // 扣除用户行为分
+    deleScorePost () {
+      this.$ajax.post('/api/buyerAccount/deductScore', {
+        buyerUserId: this.userInfoObj.buyerUserAccountId,
+        score: this.deleScore
+      }).then((data) => {
+        if (data.data.code === '200') {
+          this.$message({
+            message: '设置成功!',
+            type: 'success'
+          })
+          this.showScore = false
+          this.getUserInfo()
+        } else {
+          this.$message({
+            message: data.data.message,
+            type: 'warning'
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
     },
     // 获取用户信息
     getUserInfo (isLook) {
@@ -453,6 +509,7 @@ export default {
     color #FC1733
   .link
     color #1D6AE7
+    cursor pointer
   .nav
     height 36px
     span
@@ -493,7 +550,6 @@ export default {
             display inline-block
             width 20px
             height 20px
-            background red
             vertical-align middle
           span
             margin-left 10px
