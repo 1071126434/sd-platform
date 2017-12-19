@@ -145,9 +145,21 @@ export default {
       margin auto
       width 120px
       height 120px
-      background url('./logo.png') rgba(255, 255, 255, 0.5) center no-repeat
+      // background url('./logo.png') rgba(255, 255, 255, 0.5) center no-repeat
       background-size 70px 70px
       background-color #ff3344
+      &:after
+        content 'Y'
+        color #ffffff
+        position absolute
+        top 0
+        bottom 0
+        right 0
+        left 0
+        margin auto
+        font-size 70px
+        line-height 120px
+        text-align center
     h1
       font-size 30px
       font-weight 500
