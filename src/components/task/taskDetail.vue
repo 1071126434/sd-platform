@@ -116,7 +116,7 @@
                   <li v-for="(item, index) in newSearchWordList" :key="index">
                     <h3>搜索关键词{{ index+1 }}：{{ item.keyword }}</h3>
                     <p>
-                      <span>排序方式:</span>{{ item.sortClass == 0 ? '综合排序' : '其他' }}</p>
+                      <span>排序方式:</span>{{ item.sortClass || '其他' }}</p>
                     <p>
                       <span>价格区间:</span>{{ item.priceLow }}-{{ item.priceHigh }}元</p>
                     <p>

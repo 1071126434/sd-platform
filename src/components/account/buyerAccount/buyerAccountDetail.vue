@@ -115,23 +115,23 @@
                   <ul class="editCont" style="padding:0 20px;">
                     <li style="height: 40px;line-height:40px;">
                       <span style="display: inline-block;width:120px;">是否是会员: </span>
-                      <el-radio v-model="isPlus" label="0">是</el-radio>
-                      <el-radio v-model="isPlus" label="1">否</el-radio>
+                      <el-radio v-model="isPlus" label="0">否</el-radio>
+                      <el-radio v-model="isPlus" label="1">是</el-radio>
                     </li>
                     <li style="height: 40px;line-height:40px;">
                       <span style="display: inline-block;width:120px;">会员类型: </span>
-                      <el-radio v-model="plusType" label="0">临时</el-radio>
-                      <el-radio v-model="plusType" label="1">永久</el-radio>
+                      <el-radio v-model="plusType" label="0">试用</el-radio>
+                      <el-radio v-model="plusType" label="1">正式</el-radio>
                     </li>
                     <li style="height: 40px;line-height:40px;">
                       <span style="display: inline-block;width:120px;">会员到期时间: </span>
-                      <el-date-picker v-model="plusTime" type="date" placeholder="选择日期" :picker-options="pickerOptions">
+                      <el-date-picker v-model="plusTime" type="date" placeholder="选择日期" format="yyyy-MM-dd" :picker-options="pickerOptions">
                       </el-date-picker>
                     </li>
                   </ul>
                   <span slot="footer" class="dialog-footer">
                     <el-button @click="editPLUS = false">取 消</el-button>
-                    <el-button type="primary" @click="editPLUS = false">确 定</el-button>
+                    <el-button type="primary" @click="editPlusPost">确 定</el-button>
                   </span>
                 </el-dialog>
               </li>
@@ -195,7 +195,7 @@
                 </span>
               </el-dialog>
               <ul v-if="showTop">
-                <li>{{ topInfoObj.userName }}
+                <li>{{ topInfoObj.userName || '暂无姓名' }}
                   <span>{{ userInfoObj.parentUserType == 2 ? '(管理员)' : userInfoObj.parentUserType == 1 ? '(员工)' : '(买家)' }}</span>
                   <span v-if="userInfoObj.parentUserType == 1" class="link" style="font-size:12px;cursor:pointer;" @click="toDetail(userInfoObj.parentUserId)">查看详情</span>
                 </li>
@@ -209,7 +209,7 @@
               <b>{{ userInfoObj.userName }}
                 <span style="color:#929292;">{{ userInfoObj.buyerType == 0 ? '(买家)' : '(员工)' }}</span>
               </b>
-              <el-button @click="confirmAlert(3)" v-if="userInfoObj.buyerType == 0">标记为源头帐号</el-button>
+              <el-button @click="confirmAlert(3)" v-if="userInfoObj.buyerType == 0" :disabled="userInfoObj.isInviteable==1">{{ userInfoObj.isInviteable==1 ? '已是源头帐号' : '标记为源头帐号' }}</el-button>
             </div>
             <div class="next" v-if="userInfoObj.parentUserType != 0">
               <h2>下一级</h2>
@@ -329,6 +329,38 @@ export default {
       this.pageNo = val
       this.getRelativeList()
     },
+    // 修改plus到期时间
+    editPlusPost () {
+      if (!this.plusTime) {
+        this.$message({
+          message: '请填写到期时间',
+          type: 'warning'
+        })
+      } else {
+        this.$ajax.post('/api/buyerAccount/fixJDPlus', {
+          buyerUserAccountId: this.userInfoObj.buyerUserAccountId,
+          isJDPlus: this.isPlus,
+          JDPlusType: this.plusType,
+          JDPlusEndDate: this.plusTime
+        }).then((data) => {
+          if (data.data.code === '200') {
+            this.$message({
+              message: '设置成功!',
+              type: 'success'
+            })
+            this.editPLUS = false
+            this.getUserInfo()
+          } else {
+            this.$message({
+              message: data.data.message,
+              type: 'warning'
+            })
+          }
+        }).catch((err) => {
+          this.$message.error(err)
+        })
+      }
+    },
     // 扣除用户行为分
     deleScorePost () {
       this.$ajax.post('/api/buyerAccount/deductScore', {
@@ -407,7 +439,6 @@ export default {
         pageSize: this.pageSize,
         pageNo: this.pageNo
       }).then((data) => {
-        console.log(data)
         if (data.data.code === '200') {
           this.nextBuyerList = data.data.data.buyerUsers
           this.totalCount = data.data.data.totalCount
@@ -429,9 +460,23 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '操作成功!'
+          this.$ajax.post('/api/buyerAccount/passConfirm', {
+            buyerUserAccountId: this.userInfoObj.buyerUserAccountId
+          }).then((data) => {
+            if (data.data.code === '200') {
+              this.$message({
+                type: 'success',
+                message: '操作成功!'
+              })
+              this.getUserInfo()
+            } else {
+              this.$message({
+                message: data.data.message,
+                type: 'warning'
+              })
+            }
+          }).catch((err) => {
+            this.$message.error(err)
           })
         }).catch(() => {
           this.$message({
@@ -445,9 +490,23 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '操作成功!'
+          this.$ajax.post('/api/buyerAccount/confirmAddWechat', {
+            buyerUserAccountId: this.userInfoObj.buyerUserAccountId
+          }).then((data) => {
+            if (data.data.code === '200') {
+              this.$message({
+                type: 'success',
+                message: '操作成功!'
+              })
+              this.getUserInfo()
+            } else {
+              this.$message({
+                message: data.data.message,
+                type: 'warning'
+              })
+            }
+          }).catch((err) => {
+            this.$message.error(err)
           })
         }).catch(() => {
           this.$message({
@@ -461,9 +520,23 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '操作成功!'
+          this.$ajax.post('/api/buyerAccount/changeInviteable', {
+            buyerUserAccountId: this.userInfoObj.buyerUserAccountId
+          }).then((data) => {
+            if (data.data.code === '200') {
+              this.$message({
+                type: 'success',
+                message: '操作成功!'
+              })
+              this.getUserInfo()
+            } else {
+              this.$message({
+                message: data.data.message,
+                type: 'warning'
+              })
+            }
+          }).catch((err) => {
+            this.$message.error(err)
           })
         }).catch(() => {
           this.$message({
