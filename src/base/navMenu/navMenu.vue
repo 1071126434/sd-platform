@@ -7,7 +7,7 @@
     <div class="router">
       <div class="routerBox" v-for="(item,index) in menus" :key="index" ref="routerBox" @click="setRouterActive">
         <div class="routerHeader" :class="{'routerHeaderActive':isActive===index}">
-          <span class="icon" :class="item.icon"></span>
+          <span class="icon iconfont" :class="item.icon"></span>
           <span class="text">{{item.header}}</span>
         </div>
         <router-link tag="div" class="routerLine" v-for="(line,lineIndex) in item.lines" :key="lineIndex" :to="{name:line.link}" ref="routerLine">
@@ -31,7 +31,7 @@ export default {
       get () {
         return [
           {
-            icon: 'el-icon-menu',
+            icon: 'icon-renwuguanli',
             header: '任务管理',
             routerHead: 'task',
             lines: [
@@ -43,7 +43,7 @@ export default {
             ]
           },
           {
-            icon: 'el-icon-menu',
+            icon: 'icon-coupons-',
             header: '订单管理',
             routerHead: 'order',
             lines: [
@@ -66,7 +66,7 @@ export default {
             ]
           },
           {
-            icon: 'el-icon-menu',
+            icon: 'icon-Finance-',
             header: '资金管理',
             routerHead: 'money',
             lines: [
@@ -82,7 +82,7 @@ export default {
             ]
           },
           {
-            icon: 'el-icon-menu',
+            icon: 'icon-zhanghaoguanli-',
             header: '帐号管理',
             routerHead: 'account',
             lines: [
@@ -98,7 +98,7 @@ export default {
             ]
           },
           {
-            icon: 'el-icon-menu',
+            icon: 'icon-complaint-',
             header: '投诉处理',
             routerHead: 'complain',
             lines: [
@@ -166,7 +166,7 @@ export default {
         .icon
           text-align center
           position absolute
-          top 14px
+          top 0
           left 20px
       .routerLine
         position relative
