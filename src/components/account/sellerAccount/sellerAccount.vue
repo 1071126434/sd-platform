@@ -91,7 +91,7 @@
 </template>
 <script type="text/ecmascript-6">
 import { pageCommon } from '../../../assets/js/mixin'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import noCont from '../../../base/noCont/noCont'
 import md5 from 'md5'
 export default {
@@ -144,13 +144,16 @@ export default {
     ...mapGetters([
       'userInfo'
     ])
-
   },
   methods: {
     handleClick (index, seller) {
       console.log(index, seller)
+      this.setSellerInfo(seller)
       this.$router.push({ name: 'sellerAccountDetail', query: { sellerUserId: seller.sellerUserid, severName: seller.admin, adminWechat: seller.adminWecht } })
     },
+    ...mapActions([
+      'setSellerInfo'
+    ]),
     // 搜索
     btn_search () {
       this.getTask()
@@ -173,7 +176,13 @@ export default {
           inviter: word.inviterName || '暂无数据',
           admin: word.operateUserName || '暂无数据',
           adminWecht: word.operateWechatNum || '暂无数据',
-          sellerUserid: word.sellerUserId || '暂无数据'
+          sellerUserid: word.sellerUserId || '暂无数据',
+          availableCapitalAmount: word.availableCapitalAmount,
+          availableCommissionAmount: word.availableCommissionAmount,
+          avatarPicId: word.avatarPicId,
+          bankCardNo: word.bankCardNo,
+          cardUserName: word.cardUserName,
+          bankName: word.bankName
         }
         arr.push(goods)
       }
