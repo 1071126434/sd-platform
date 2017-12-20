@@ -28,13 +28,13 @@
         <h2 class="title">买家帐号信息</h2>
         <ul>
           <li>
-            <strong>0</strong>
+            <strong>{{ userMoneyObj.availableCapitalAmount }}</strong>
             <p>本金余额
-              <span class="link">提前支取</span>
+              <span class="link" @click="withdrawMoney">提前支取</span>
             </p>
           </li>
           <li>
-            <strong>0</strong>
+            <strong>{{ userMoneyObj.availableCommissionAmount }}</strong>
             <p>佣金余额</p>
           </li>
         </ul>
@@ -176,11 +176,11 @@
                   <li style="margin-bottom:20px">
                     <span style="display:inline-block;width:100px;text-align:right;margin-right:10px;">邀请人类别: </span>
                     <el-select style="width:400px" v-model="addClass" placeholder="请选择">
-                      <el-option label="一类" value="0" style="width:400px">
+                      <el-option label="买手" value="0" style="width:400px">
                       </el-option>
-                      <el-option label="二类" value="1" style="width:400px">
+                      <el-option label="员工" value="1" style="width:400px">
                       </el-option>
-                      <el-option label="三类" value="2" style="width:400px">
+                      <el-option label="管理员" value="2" style="width:400px">
                       </el-option>
                     </el-select>
                   </li>
@@ -191,7 +191,7 @@
                 </ul>
                 <span slot="footer" class="dialog-footer">
                   <el-button @click="addInivite = false">取 消</el-button>
-                  <el-button type="primary" @click="addInivite = false">确 定</el-button>
+                  <el-button type="primary" @click="addInivitePost">确 定</el-button>
                 </span>
               </el-dialog>
               <ul v-if="showTop">
@@ -281,6 +281,8 @@ export default {
       topInfoObj: {},
       // 用户信息
       userInfoObj: {},
+      // 用户资金
+      userMoneyObj: {},
       // 下一级买家列表
       nextBuyerList: [],
       pickerOptions: { // 时间筛选
@@ -320,12 +322,10 @@ export default {
       }
     },
     handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
       this.pageSize = val
       this.getRelativeList()
     },
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
       this.pageNo = val
       this.getRelativeList()
     },
@@ -550,10 +550,68 @@ export default {
     toDetail (id) {
       this.$router.push({ name: 'buyerAccountDetail', query: { id: id } })
       this.getUserInfo(this.$route.query.id)
+    },
+    // 添加邀请人
+    addInivitePost () {
+      if (this.addClass === '') {
+        this.$message({
+          type: 'warning',
+          message: '请选择邀请人类型!'
+        })
+      } else if (this.parentTelephone === '') {
+        this.$message({
+          type: 'warning',
+          message: '请填写邀请人手机号码!'
+        })
+      } else {
+        this.$ajax.post('/api/buyerAccount/fillInviterInfo', {
+          buyerUserAccountId: this.userInfoObj.buyerUserAccountId,
+          parentType: this.addClass,
+          parentTelephone: this.parentTelephone
+        }).then((data) => {
+          if (data.data.code === '200') {
+            this.$message({
+              type: 'success',
+              message: '添加成功!'
+            })
+            this.getTopInfo(this.userInfoObj.parentUserId, this.userInfoObj.parentUserType)
+            this.addInivite = false
+          } else {
+            this.$message({
+              message: data.data.message,
+              type: 'warning'
+            })
+          }
+        }).catch((err) => {
+          this.$message.error(err)
+        })
+      }
+    },
+    // 获取买家资金
+    getBuyerMoney () {
+      this.$ajax.post('/api/userFund/getBuyerUserFund', {
+        buyerUserAccountId: this.storageUserInfo.buyerUserAccountId
+      }).then((data) => {
+        if (data.data.code === '200') {
+          this.userMoneyObj = data.data.data
+        } else {
+          this.$message({
+            message: data.data.message,
+            type: 'warning'
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
+    },
+    // 提前支取资金
+    withdrawMoney () {
+
     }
   },
   mounted () {
     this.getUserInfo()
+    this.getBuyerMoney()
   }
 }
 </script>

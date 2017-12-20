@@ -137,7 +137,6 @@ export default {
   },
   methods: {
     handleClick (row) {
-      console.log(row)
       window.sessionStorage.setItem('clickUserInfo', JSON.stringify(row))
       this.$router.push({ name: 'buyerAccountDetail' })
     },
