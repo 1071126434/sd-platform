@@ -128,7 +128,7 @@ export default {
         pageNo: pageNo,
         pageSize: pageSize
       }).then((data) => {
-        console.log(data)
+        // console.log(data)
         let res = data.data
         this.totalCount = res.data.totalCount
         if (res.code === '200') {
@@ -161,7 +161,7 @@ export default {
         pageNo: pageNo,
         pageSize: pageSize
       }).then((data) => {
-        console.log(data)
+        // console.log(data)
         let res = data.data
         this.totalCount = res.data.totalCount
         if (res.code === '200') {
@@ -194,7 +194,7 @@ export default {
         pageNo: pageNo,
         pageSize: pageSize
       }).then((data) => {
-        console.log(data)
+        // console.log(data)
         let res = data.data
         this.totalCount = res.data.totalCount
         if (res.code === '200') {

@@ -147,7 +147,7 @@ export default {
   },
   methods: {
     handleClick (index, seller) {
-      console.log(index, seller)
+      // console.log(index, seller)
       this.setSellerInfo(seller)
       this.$router.push({ name: 'sellerAccountDetail', query: { sellerUserId: seller.sellerUserid, severName: seller.admin, adminWechat: seller.adminWecht } })
     },
@@ -168,7 +168,7 @@ export default {
       for (let word of data) {
         let goods = {
           phone: word.telephone || '暂无数据',
-          shopName: word.firstShopName || '暂无数据',
+          shopName: word.firstShopName || '暂无店铺',
           state: word.status === '1' ? '正常' : '冻结',
           all: word.sellerShopNum || 0,
           loginTime: word.lastLoginTime || '暂无数据',
@@ -208,7 +208,7 @@ export default {
         sellerSourceChannel: this.source,
         platformChargeBankCardId: this.bank
       }).then((data) => {
-        console.log(data)
+        // console.log(data)
         let res = data.data
         if (res.code === '200') {
           this.$message({
@@ -238,7 +238,7 @@ export default {
       this.$ajax.post('/api/platform/wechat/getListByOperateUserId', {
         operateUserId: this.adminName
       }).then((data) => {
-        console.log(data)
+        // console.log(data)
         let res = data.data
         if (res.code === '200') {
           let arr = []
@@ -266,7 +266,7 @@ export default {
     adminName_1 () {
       this.$ajax.post('/api/operateAccount/getOperatersOfPlatform', {
       }).then((data) => {
-        console.log(data)
+        // console.log(data)
         let res = data.data
         if (res.code === '200') {
           let arr = []
@@ -293,7 +293,7 @@ export default {
       this.$ajax.post('/api/config/bankCard/getListByType', {
         type: 0
       }).then((data) => {
-        console.log(data)
+        // console.log(data)
         let res = data.data
         if (res.code === '200') {
           let arr = []

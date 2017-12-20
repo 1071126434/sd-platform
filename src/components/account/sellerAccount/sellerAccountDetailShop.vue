@@ -55,13 +55,15 @@ export default {
   },
   methods: {
     handleClick (row) {
-      console.log(row)
+      // console.log(row)
     },
     handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
+      // console.log(`每页 ${val} 条`)
+      this.shopList(1, val)
     },
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+      // console.log(`当前页: ${val}`)
+      this.shopList(val, this.pageSize)
     },
     shopList (pageNo, pageSize) {
       this.$ajax.post('/api/seller/shop/getShopListBySellerUserIdByOperate', {

@@ -196,7 +196,7 @@ export default {
       this.value = ''
     },
     handleClick (index, seller) {
-      console.log(index, seller)
+      // console.log(index, seller)
       this.waiteing = true
       this.$ajax.post('/api/order/packageAssign', {
         sellerTaskIds: this.sendArr,
@@ -239,7 +239,7 @@ export default {
     },
     // 当点击确认校验的时候触发的事件
     sureChoose () {
-      console.log(this.sendArr)
+      // console.log(this.sendArr)
       if (this.input_1 === '' && this.input_2 === '' && this.input_3 === '' && this.input_4 === '' && this.input_5 === '') {
         this.$message({
           type: 'warning',
@@ -275,7 +275,7 @@ export default {
         type: 'JD',
         isPlus: this.isJDPlus
       }).then((data) => {
-        console.log(data)
+        // console.log(data)
         let res = data.data
         this.totalCount = res.data.totalCount
         if (res.code === '200') {
@@ -286,7 +286,7 @@ export default {
               phone: word.telephone,
               wchat: word.wechatNum || '暂无数据',
               messg: word.operaterTelephone,
-              plus: word.jdPlusType === '0' ? '试用会员' : word.jdPlusType === '1' ? '正式会员' : '--',
+              plus: this.isJDPlus === '0' ? '--' : '正式会员',
               date: word.jdPlusEndDate || '--',
               city: word.postCity,
               money: word.jdMonthIncome || '暂无数据',
@@ -338,6 +338,12 @@ export default {
           }
           this.taskData = obj
           // console.log(this.totalAdd)
+          if (obj.leftNum <= 0) {
+            this.$message({
+              type: 'warning',
+              message: '该任务当天余量为0,请更换'
+            })
+          }
         }
       }).catch((err) => {
         this.$message.error(err)
