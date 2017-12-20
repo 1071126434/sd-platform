@@ -1,8 +1,8 @@
 <template>
   <div class="wrap">
     <header>
-      <el-tabs v-model="activeName2" type="card" @tab-click="handleClickTab">
-        <el-tab-pane label="买家本金提现申请" name="first">
+      <el-tabs v-model="activeName2" @tab-click="handleClickTab">
+        <el-tab-pane label="买家提现申请" name="first">
           <div class="top">
             <div class="purple_2">
               申请时间:
