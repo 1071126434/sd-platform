@@ -1,8 +1,8 @@
 <template>
   <div class="wrap">
     <header>
-      <el-tabs v-model="activeName2" type="card" @tab-click="handleClicks">
-        <el-tab-pane label="商家家充值申请" name="first">
+      <el-tabs v-model="activeName2" @tab-click="handleClicks">
+        <el-tab-pane label="商家充值申请" name="first">
           <div class="top">
             <el-select placeholder="收款卡卡号" v-model="input5" class="input-with-select" value-key="bankCardId">
               <el-option v-for="(input5,index) in options" :key="index" :label="input5.cardNo" :value="input5">
