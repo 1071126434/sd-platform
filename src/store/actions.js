@@ -1,5 +1,5 @@
 import * as types from './mutation-types'
-import { setUserInfoStorage, setUserTokenStorage } from '../assets/js/cache'
+import { setUserInfoStorage, setUserTokenStorage, setSellerInfoStorage } from '../assets/js/cache'
 export const setUserInfo = function ({ commit }, query) {
   commit(types.SET_USER_INFO, setUserInfoStorage(query))
 }
@@ -11,4 +11,7 @@ export const clearUserInfo = function ({ commit }, query) {
 }
 export const setErrorTimeList = function ({ commit }, query) {
   commit(types.ERROR_TIME_LIST, query)
+}
+export const setSellerInfo = function ({ commit }, query) {
+  commit(types.SET_SELLER_INFO, setSellerInfoStorage(query))
 }

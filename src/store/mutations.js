@@ -15,6 +15,9 @@ const mutations = {
   },
   [types.ERROR_TIME_LIST] (state, arr) {
     state.errorTimeList = arr
+  },
+  [types.SET_SELLER_INFO] (state, query) {
+    state.sellerInfo = query
   }
 }
 export default mutations

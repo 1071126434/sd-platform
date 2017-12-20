@@ -1,8 +1,9 @@
-import { loadUserInfo, loadUserToken } from '../assets/js/cache'
+import { loadUserInfo, loadUserToken, loadSellerInfo } from '../assets/js/cache'
 const state = {
   userInfo: loadUserInfo(),
   userToken: loadUserToken(),
   // userAccountId: null,
-  errorTimeList: []
+  errorTimeList: [],
+  sellerInfo: loadSellerInfo()
 }
 export default state

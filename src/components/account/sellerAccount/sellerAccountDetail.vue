@@ -10,21 +10,21 @@
             </h4>
             <div class="phone">
               <i class="el-icon-mobile-phone"></i>
-              <span>{{obj.phone}}</span>
+              <span>{{this.sellerInfo.phone}}</span>
               <!-- <span class="vip">普通会员</span> -->
             </div>
             <div class="wchat">
               服务人微信号:
-              <span>{{this.$route.query.adminWechat}}</span>
+              <span>{{this.sellerInfo.adminWecht}}</span>
               <em class="yaoPerson">邀请人:
-                <span>{{obj.inviterName}}</span>
+                <span>{{this.sellerInfo.inviter}}</span>
               </em>
             </div>
             <div class="tab">
               <el-switch v-model="value3" active-text="成为联盟商家">
               </el-switch>
               <em class="service">服务人:
-                <span>{{this.$route.query.severName}}</span>
+                <span>{{this.sellerInfo.admin}}</span>
               </em>
             </div>
           </div>
@@ -35,13 +35,13 @@
               <span>商家账号信息</span>
             </h4>
             <ul class="left">
-              <li><img width="80" height="80" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1510814036177&di=09d6409601464ce6f36b31b6adfc3d57&imgtype=0&src=http%3A%2F%2Fimg2.cxtuku.com%2F00%2F10%2F55%2Fs04761a14185.jpg" alt=""></li>
+              <li><img width="80" height="80" :src="this.sellerInfo.avatarPicId||this.srcPic" alt=""></li>
               <li class="pricMoney">
-                <span>0</span>
+                <span>{{this.sellerInfo.availableCapitalAmount}}</span>
                 <p>本金</p>
               </li>
               <li class="pricMon">
-                <span>0</span>
+                <span>{{this.sellerInfo.availableCommissionAmount}}</span>
                 <p>联盟佣金</p>
               </li>
             </ul>
@@ -52,11 +52,11 @@
             <h4 style="background:rgba(255,51,65,1)">
               <span>商家关联银行卡</span>
             </h4>
-            <h5>平台卡号</h5>
+            <h5>卡号</h5>
             <p class="bank">
-              <span>小智</span>&nbsp;&nbsp;
-              <i>招商</i>&nbsp;&nbsp;
-              <em>5164681435616851316513568</em>
+              <span>{{this.sellerInfo.cardUserName}}</span>&nbsp;&nbsp;
+              <i>{{this.sellerInfo.bankName}}</i>&nbsp;&nbsp;
+              <em>{{this.sellerInfo.bankCardNo}}</em>
             </p>
           </div>
         </el-col>
@@ -75,6 +75,7 @@
 <script type="text/ecmascript-6">
 import ShopAdmin from './sellerAccountDetailShop'
 import RecomAdmin from './sellerAccountDetailRecom'
+import { mapGetters } from 'vuex'
 export default {
   components: {
     ShopAdmin,
@@ -85,6 +86,7 @@ export default {
     return {
       obj: {},
       value3: true,
+      srcPic: 'http://bj.bcebos.com/v1/scalp/1508758557625c601fdea9f4b5fdf805d07334d1aff77u%3D2738007598%2C2643466217%26fm%3D27%26gp%3D0.jpg',
       activeName: 'shopAdmin',
       elTabs: [
         {
@@ -98,28 +100,10 @@ export default {
       ]
     }
   },
-  created () {
-    this.$ajax.post('/api/sellerAccout/getSellerBySellerUserId', {
-      sellerUserId: this.$route.query.sellerUserId
-    }).then((data) => {
-      console.log(data)
-      let res = data.data
-      if (res.code === '200') {
-        let obj = {
-          phone: res.data.telephone,
-          severWechat: res.data.wechatNum,
-          inviterName: res.data.inviterName
-        }
-        this.obj = obj
-      } else {
-        this.$message({
-          message: res.message,
-          type: 'warning'
-        })
-      }
-    }).catch(() => {
-      this.$message.error('网络错误，刷新下试试')
-    })
+  computed: {
+    ...mapGetters([
+      'sellerInfo'
+    ])
   },
   methods: {
     handleClick (tab, event) {
@@ -133,7 +117,7 @@ export default {
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .wrap
   padding 20px
-  min-width 1000px
+  min-width 1150px
   header
     // background rgba(255, 255, 255, 1)
     // padding 20px
@@ -184,7 +168,7 @@ export default {
         li
           float left
         .pricMoney
-          margin-left 46px
+          margin-left 20px
           margin-top 33px
           color rgba(153, 153, 153, 1)
           border-right 1px solid rgba(204, 204, 204, 1)

@@ -3,7 +3,8 @@ import storage from 'good-storage'
 const USER_INFO_KEY = '__userInfo__'
 const USER_TOKEN_KEY = '__userToken__'
 const ERROR_TIME = '__errorTime__'
-  // 设置个人信息
+const SELLER_INFO_KEY = '__sellerInfo__'
+// 设置个人信息
 export function setUserInfoStorage (userInfo) {
   storage.session.set(USER_INFO_KEY, userInfo)
   return userInfo
@@ -14,6 +15,14 @@ export function clearUserInfo () {
 }
 export function loadUserInfo () {
   return storage.session.get(USER_INFO_KEY, [])
+}
+// 设置卖家信息
+export function setSellerInfoStorage (sellerInfo) {
+  storage.session.set(SELLER_INFO_KEY, sellerInfo)
+  return sellerInfo
+}
+export function loadSellerInfo () {
+  return storage.session.get(SELLER_INFO_KEY, [])
 }
 // 设置用户登录token
 export function setUserTokenStorage (userToken) {

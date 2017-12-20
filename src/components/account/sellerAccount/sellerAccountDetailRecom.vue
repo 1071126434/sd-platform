@@ -71,6 +71,7 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
+import { mapGetters } from 'vuex'
 export default {
   name: 'sellerAccountDeatailRecom',
   data () {
@@ -83,6 +84,11 @@ export default {
       tableDataBuy: [],
       tableDataAdmin: []
     }
+  },
+  computed: {
+    ...mapGetters([
+      'sellerInfo'
+    ])
   },
   created () {
     this.sercherOne(1, this.pageSize)
@@ -118,7 +124,7 @@ export default {
     },
     sercherOne (pageNo, pageSize) {
       this.$ajax.post('/api/buyerAccount/getEmployeeListBySellerUserId', {
-        sellerUserId: this.$route.query.sellerUserId,
+        sellerUserId: this.sellerInfo.sellerUserid,
         pageNo: pageNo,
         pageSize: pageSize
       }).then((data) => {
@@ -151,7 +157,7 @@ export default {
     },
     sercherTwo (pageNo, pageSize) {
       this.$ajax.post('/api/buyerAccount/getBuyerListBySellerUserId', {
-        sellerUserId: this.$route.query.sellerUserId,
+        sellerUserId: this.sellerInfo.sellerUserid,
         pageNo: pageNo,
         pageSize: pageSize
       }).then((data) => {
@@ -184,7 +190,7 @@ export default {
     },
     sercherThree (pageNo, pageSize) {
       this.$ajax.post('/api/sellerManagerAccount/getManagerListBySellerUserId', {
-        sellerUserId: this.$route.query.sellerUserId,
+        sellerUserId: this.sellerInfo.sellerUserid,
         pageNo: pageNo,
         pageSize: pageSize
       }).then((data) => {
@@ -195,11 +201,11 @@ export default {
           let arr = []
           for (let word of res.data.managers) {
             let goods = {
-              name: word.userName,
+              name: word.userName || '--',
               number: word.telephone,
               numberType: word.buyerType === '1' ? '管理员账号' : '管理员账号',
               admin: word.sellerManagerId || '--',
-              JDStatus: word.atatus === '1' ? '正常' : '冻结',
+              JDStatus: word.status === '1' ? '正常' : '冻结',
               time: word.gmtCreate
             }
             arr.push(goods)
