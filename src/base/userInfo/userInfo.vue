@@ -7,7 +7,7 @@
       <span class="text">{{ user.userPhone }}</span>
     </div>
     <div class="logout" @click="logout">
-      <span class="icon el-icon-upload2"></span>
+      <span class="icon iconfont icon-quit-"></span>
       <span class="text">退出</span>
     </div>
   </div>
@@ -85,4 +85,6 @@ export default {
     margin-left 28px
     .text
       margin-left 12px
+    .icon
+      vertical-align middle
 </style>
