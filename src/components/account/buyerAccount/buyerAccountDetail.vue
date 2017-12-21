@@ -30,8 +30,23 @@
           <li>
             <strong>{{ userMoneyObj.availableCapitalAmount }}</strong>
             <p>本金余额
-              <span class="link" @click="withdrawMoney">提前支取</span>
+              <span class="link" @click="showWithdraw=true">提前支取</span>
             </p>
+            <div>
+              <el-dialog title="提前支取本金金额" :append-to-body="true" :visible.sync="showWithdraw" width="40%">
+                <ul class="editCont" style="padding:0 20px;">
+                  <li style="height: 40px;line-height:40px;">
+                    <span style="display: inline-block;width:80px;">支取金额: </span>
+                    <el-input v-model="withdrawMoneyNum" style="width:340px" type="number" placeholder="请输入内容"></el-input>
+                    <p style="padding-left:80px">剩余金额: {{ leastMoney }}</p>
+                  </li>
+                </ul>
+                <span slot="footer" class="dialog-footer">
+                  <el-button @click="showWithdraw = false">取 消</el-button>
+                  <el-button type="primary" @click="withdrawPost">确 定</el-button>
+                </span>
+              </el-dialog>
+            </div>
           </li>
           <li>
             <strong>{{ userMoneyObj.availableCommissionAmount }}</strong>
@@ -283,6 +298,9 @@ export default {
       userInfoObj: {},
       // 用户资金
       userMoneyObj: {},
+      // 提前支取
+      withdrawMoneyNum: 0,
+      showWithdraw: false,
       // 下一级买家列表
       nextBuyerList: [],
       pickerOptions: { // 时间筛选
@@ -305,6 +323,11 @@ export default {
       //   allScore = this.userInfoObj.userScore
       // }
       return allScore
+    },
+    leastMoney: function () {
+      let allMoney = this.userMoneyObj.availableCapitalAmount
+      allMoney = allMoney - this.withdrawMoneyNum
+      return allMoney
     }
   },
   methods: {
@@ -605,8 +628,27 @@ export default {
       })
     },
     // 提前支取资金
-    withdrawMoney () {
-
+    withdrawPost () {
+      this.$ajax.post('/api/withdrawApply/createBuyerApply', {
+        userId: this.userInfoObj.buyerUserAccountId,
+        withdrawAmount: this.withdrawMoneyNum
+      }).then((data) => {
+        if (data.data.code === '200') {
+          this.$message({
+            message: '支取成功!',
+            type: 'success'
+          })
+          this.getBuyerMoney()
+          this.showWithdraw = false
+        } else {
+          this.$message({
+            message: data.data.message,
+            type: 'warning'
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
     }
   },
   mounted () {

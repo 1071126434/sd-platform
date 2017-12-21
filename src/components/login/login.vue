@@ -14,12 +14,12 @@
           <img src="./logoInPng.jpg" alt="">
         </div>
         <div class="inputs">
-          <span class="iconfont icon-user"></span>
+          <span class="iconfont icon-zhanghaoguanli-"></span>
           <input type="text" class="userName" @focus="waringText=''" v-model="username" placeholder="请输入姓名">
           <span></span>
         </div>
         <div class="inputs pass">
-          <span class="iconfont icon-lock"></span>
+          <span class="iconfont icon-zhanghaoguanli-"></span>
           <input v-show="canSeePass" v-model="password" @focus="waringText=''" type="text" class="passWord" placeholder="请输入密码">
           <input v-show="!canSeePass" v-model="password" @focus="waringText=''" type="password" class="passWord" placeholder="请输入密码">
           <span class="iconfont eyes" :class="{ 'icon-no-see': !canSeePass, 'icon-see':  canSeePass }" @click="canSeePass = !canSeePass"></span>
