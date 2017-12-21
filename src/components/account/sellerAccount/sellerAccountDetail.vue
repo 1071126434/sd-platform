@@ -10,14 +10,14 @@
             </h4>
             <div class="phone">
               <i class="el-icon-mobile-phone"></i>
-              <span>{{this.sellerInfo.phone}}</span>
+              <span>{{this.sellerInfo.phone||'暂无'}}</span>
               <!-- <span class="vip">普通会员</span> -->
             </div>
             <div class="wchat">
               服务人微信号:
-              <span>{{this.sellerInfo.adminWecht}}</span>
+              <span>{{this.sellerInfo.adminWecht||'暂无'}}</span>
               <em class="yaoPerson">邀请人:
-                <span>{{this.sellerInfo.inviter}}</span>
+                <span>{{this.sellerInfo.inviter||'暂无'}}</span>
               </em>
             </div>
             <div class="tab">
@@ -35,7 +35,7 @@
               <span>商家账号信息</span>
             </h4>
             <ul class="left">
-              <li><img width="80" height="80" :src="this.sellerInfo.avatarPicId||this.srcPic" alt=""></li>
+              <li><img width="80" height="80" src="../../../assets/images/gold.png" alt=""></li>
               <li class="pricMoney">
                 <span>{{this.sellerInfo.availableCapitalAmount}}</span>
                 <p>本金</p>
@@ -54,7 +54,7 @@
             </h4>
             <h5>卡号</h5>
             <p class="bank">
-              <span>{{this.sellerInfo.cardUserName}}</span>&nbsp;&nbsp;
+              <span>{{this.sellerInfo.cardUserName||'暂未绑定银行卡'}}</span>&nbsp;&nbsp;
               <i>{{this.sellerInfo.bankName}}</i>&nbsp;&nbsp;
               <em>{{this.sellerInfo.bankCardNo}}</em>
             </p>
@@ -86,7 +86,6 @@ export default {
     return {
       obj: {},
       value3: true,
-      srcPic: 'http://bj.bcebos.com/v1/scalp/1508758557625c601fdea9f4b5fdf805d07334d1aff77u%3D2738007598%2C2643466217%26fm%3D27%26gp%3D0.jpg',
       activeName: 'shopAdmin',
       elTabs: [
         {
@@ -168,7 +167,7 @@ export default {
         li
           float left
         .pricMoney
-          margin-left 20px
+          margin-left 50px
           margin-top 33px
           color rgba(153, 153, 153, 1)
           border-right 1px solid rgba(204, 204, 204, 1)

@@ -230,12 +230,13 @@ export default {
       this.getDatas(val, this.pageSize)
     },
     downLoad () {
-      this.$ajax.get('/api/file/downloadTodayTaskFile', {
-      }).then((data) => {
-        window.open('http://182.61.29.51:8089/file/downloadTodayTaskFile')
-      }).catch((err) => {
-        this.$message.error(err)
-      })
+      window.open('/api/file/downloadTodayTaskFile')
+      // this.$ajax.get('/api/file/downloadTodayTaskFile', {
+      // }).then((data) => {
+      //   // window.open('http://182.61.29.51:8089/file/downloadTodayTaskFile')
+      // }).catch((err) => {
+      //   this.$message.error(err)
+      // })
     },
     // 当点击确认校验的时候触发的事件
     sureChoose () {
@@ -341,7 +342,7 @@ export default {
           if (obj.leftNum <= 0) {
             this.$message({
               type: 'warning',
-              message: '该任务当天余量为0,请更换'
+              message: '该任务当天余量为0,请更换任务'
             })
           }
         }
@@ -374,6 +375,12 @@ export default {
             sellerTaskId: res.data[0].sellerTaskId
           }
           this.taskData_1 = obj
+          if (obj.leftNum <= 0) {
+            this.$message({
+              type: 'warning',
+              message: '该任务当天余量为0,请更换任务'
+            })
+          }
         }
       }).catch((err) => {
         this.$message.error(err)
@@ -404,6 +411,12 @@ export default {
             sellerTaskId: res.data[0].sellerTaskId
           }
           this.taskData_2 = obj
+          if (obj.leftNum <= 0) {
+            this.$message({
+              type: 'warning',
+              message: '该任务当天余量为0,请更换任务'
+            })
+          }
         }
       }).catch((err) => {
         this.$message.error(err)
@@ -434,6 +447,12 @@ export default {
             sellerTaskId: res.data[0].sellerTaskId
           }
           this.taskData_3 = obj
+          if (obj.leftNum <= 0) {
+            this.$message({
+              type: 'warning',
+              message: '该任务当天余量为0,请更换任务'
+            })
+          }
         }
       }).catch((err) => {
         this.$message.error(err)
@@ -464,6 +483,12 @@ export default {
             sellerTaskId: res.data[0].sellerTaskId
           }
           this.taskData_4 = obj
+          if (obj.leftNum <= 0) {
+            this.$message({
+              type: 'warning',
+              message: '该任务当天余量为0,请更换任务'
+            })
+          }
         }
       }).catch((err) => {
         this.$message.error(err)

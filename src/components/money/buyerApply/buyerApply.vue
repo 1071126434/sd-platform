@@ -531,6 +531,28 @@ export default {
     },
     // 设置导出状态的接口
     exportData () {
+      let params = (this.applyIdsNum).join(',')
+      if (this.applyIdsNum.length === 0) {
+        this.$message({
+          message: '请至少选择一条数据',
+          type: 'warning'
+        })
+        return false
+      }
+      window.open('/api/file/buyerWithdrawList?list=' + params)
+      this.allState()
+      // console.log(this.applyIdsNum)
+      // let params = (this.applyIdsNum).join(',')
+      // this.$ajax.get('/api/file/buyerWithdrawList?list=' + params, {
+      //   }).then((data) => {
+      //     window.open('http://182.61.29.51:8089/file/downloadTodayTaskFile')
+      //     this.allState()
+      //   }).catch(() => {
+      //     this.$message.error('网络错误，刷新下试试')
+      //   })
+    },
+    // 批量导出的状态修改
+    allState () {
       this.$ajax.post('/api/withdrawApply/updateApplysExport', {
         comment: '',
         operateUserAccountId: this.userInfo.operateUserAccountId,

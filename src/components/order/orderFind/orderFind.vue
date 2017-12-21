@@ -456,9 +456,9 @@ export default {
       div
         text-align center
     .tables
-      padding 12px 20px
+      // padding 12px 20px
       .tableItem
-        border 1px solid #40B6FF
+        border 1px solid rgba(223, 240, 253, 0.6)
         margin-bottom 12px
         .itemHead
           display flex
