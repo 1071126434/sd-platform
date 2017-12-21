@@ -13,7 +13,23 @@ const defaultRouter = [{
 
 Vue.use(Router)
 
-export default new Router({
-  routes: [...defaultRouter, ...error, ...home, ...login, ...reg],
-  mode: 'history'
+const routes = [...defaultRouter, ...error, ...home, ...login, ...reg]
+let router = new Router({
+  routes,
+  mode: 'history',
+  scrollBehavior (to, from, savedPosition) {
+    return { x: 0, y: 0 }
+  }
 })
+
+// 设置title
+router.beforeEach((to, from, next) => {
+  if (to.meta.title || to.params.message) {
+    document.title = to.meta.title || to.params.message.title
+  } else {
+    document.title = 'SD项目平台端'
+  }
+  next()
+})
+
+export default router

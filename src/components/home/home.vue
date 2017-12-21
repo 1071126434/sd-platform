@@ -51,6 +51,6 @@ export default {
     .routerContainer
       flex 1
       overflow hidden
-      overflow-y auto
+      overflow auto
       background $bg-container
 </style>
