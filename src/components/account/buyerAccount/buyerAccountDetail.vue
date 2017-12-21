@@ -66,7 +66,7 @@
           <li>
             <strong>{{ userInfoObj.userScore }}</strong>分
             <p>用户行为分</p>
-            <span class="link" @click="showScore=true">扣除分数</span>
+            <span class="link" @click="showScore=true">设置分数</span>
           </li>
         </ul>
         <div>
