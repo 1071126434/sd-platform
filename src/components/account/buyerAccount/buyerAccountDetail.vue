@@ -117,7 +117,7 @@
                   <b>{{ userInfoObj.jdPlusType == '' ? '非会员' : userInfoObj.jdPlusType == 0 ? '临时会员' : '正式会员' }}</b>
                 </p>
                 <p>plus会员到期时间:
-                  <b>{{ userInfoObj.jdPlusEndDate || '暂无' }}</b>
+                  <b>{{ userInfoObj.jdPlusEndDate.split(' ')[0] || '暂无' }}</b>
                 </p>
               </li>
               <li>
