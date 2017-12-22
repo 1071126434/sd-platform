@@ -116,7 +116,6 @@ export default {
       this.$ajax.post('/api/platform/complain/getComplainDetail', {
         messageComplainId: this.$route.query.messageComplainId
       }).then((data) => {
-        console.log(data)
         if (data.data.code === '200') {
           let res = data.data.data
           this.complainDetailObj = res

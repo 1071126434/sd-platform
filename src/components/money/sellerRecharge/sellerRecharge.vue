@@ -158,7 +158,6 @@ export default {
       this.sellerRecord(1, this.pageSize)
     },
     handleClick (val) {
-      // console.log(this.tableData[val])
       this.$confirm('此操作将确认卖家充值到账, 是否继续?', '确认卖家充值到账?', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -168,7 +167,6 @@ export default {
           sellerChargeApplyIds: [this.tableData[val].chargeApplyId],
           platformBankCardId: this.input5
         }).then((data) => {
-          // console.log(data)
           let res = data.data
           if (res.code === '200') {
             this.$message({
@@ -212,7 +210,6 @@ export default {
         this.$ajax.post('/api/sellerorder/updateApplysReject', {
           sellerChargeApplyIds: [this.tableData[val].chargeApplyId]
         }).then((data) => {
-          // console.log(data)
           let res = data.data
           if (res.code === '200') {
             this.$message({
@@ -241,7 +238,6 @@ export default {
         pageSize: pageSize,
         platformBankCardId: this.input5.bankCardId
       }).then((data) => {
-        // console.log(data)
         let res = data.data
         this.totalCount = res.data.totalCount
         if (res.code === '200') {
@@ -272,7 +268,6 @@ export default {
     },
     // 卖家充值记录
     sellerRecord (pageNo, pageSize) {
-      // console.log(this.value3)
       this.$ajax.post('/api/sellerorder/getChargeApplysByConditions', {
         statusList: ['1', '2'],
         pageNo: pageNo,
@@ -281,7 +276,6 @@ export default {
         endTime: this.value3 ? this.value3[1] : '',
         sellerTelephoneOrName: this.input6
       }).then((data) => {
-        // console.log(data)
         let res = data.data
         this.totalCount = res.data.totalCount
         if (res.code === '200') {
@@ -317,7 +311,6 @@ export default {
       this.$ajax.post('/api/config/bankCard/getListByType', {
         type: 0
       }).then((data) => {
-        // console.log(data)
         let res = data.data
         if (res.code === '200') {
           let arr = []

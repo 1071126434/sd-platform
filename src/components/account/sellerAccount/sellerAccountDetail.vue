@@ -107,7 +107,6 @@ export default {
   methods: {
     handleClick (tab, event) {
       this.activeName = tab.name
-      // console.log(this.activeName)
     }
   }
 

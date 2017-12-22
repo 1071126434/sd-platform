@@ -418,7 +418,6 @@ export default {
       this.$ajax.post('/api/buyerAccount/getUserInfoByUserId', {
         buyerUserAccountId: id
       }).then((data) => {
-        console.log(data)
         if (data.data.code === '200') {
           this.userInfoObj = data.data.data
         } else {
@@ -442,7 +441,6 @@ export default {
       this.$ajax.post(api, {
         sellerManagerId: id
       }).then((data) => {
-        console.log(data)
         if (data.data.code === '200') {
           this.topInfoObj = data.data.data
         } else {
