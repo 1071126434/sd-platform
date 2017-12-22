@@ -107,11 +107,9 @@ export default {
   },
   methods: {
     handleClick (tab, event) {
-      // console.log(tab, event)
       this.getTask()
     },
     lookDetail (row) {
-      console.log(row)
       this.$router.push({ name: 'sellerComplainDetail', query: { messageComplainId: row.messageComplainId } })
     },
     setList (data) {

@@ -266,7 +266,6 @@ export default {
       this.$ajax.post('/api/order/search/getShopListByType', {
         shopType: this.value1
       }).then((data) => {
-        console.log(data)
         let res = data.data
         if (res.code === '200') {
           let arr = []
@@ -292,7 +291,6 @@ export default {
     focus () {
       this.$ajax.post('/api/operateAccount/getOperatersOfPlatform', {
       }).then((data) => {
-        console.log(data)
         let res = data.data
         if (res.code === '200') {
           let arr = []
@@ -316,11 +314,9 @@ export default {
     },
     // 当单机撤销的时候 进行撤销
     revocation (index, secondArr) {
-      console.log(index, secondArr)
       this.$ajax.post('/api/buyer/task/cancelTask', {
         buyerTaskId: secondArr[index].buyerTaskRecordId
       }).then((data) => {
-        console.log(data)
         let res = data.data
         if (res.code === '200') {
           this.$message({

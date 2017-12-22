@@ -196,7 +196,6 @@ export default {
       this.value = ''
     },
     handleClick (index, seller) {
-      // console.log(index, seller)
       this.waiteing = true
       this.$ajax.post('/api/order/packageAssign', {
         sellerTaskIds: this.sendArr,
@@ -222,11 +221,9 @@ export default {
       })
     },
     handleSizeChange (val) {
-      // console.log(`每页 ${val} 条`)
       this.getDatas(1, val)
     },
     handleCurrentChange (val) {
-      // console.log(`当前页: ${val}`)
       this.getDatas(val, this.pageSize)
     },
     downLoad () {
@@ -240,7 +237,6 @@ export default {
     },
     // 当点击确认校验的时候触发的事件
     sureChoose () {
-      // console.log(this.sendArr)
       if (this.input_1 === '' && this.input_2 === '' && this.input_3 === '' && this.input_4 === '' && this.input_5 === '') {
         this.$message({
           type: 'warning',
@@ -276,7 +272,6 @@ export default {
         type: 'JD',
         isPlus: this.isJDPlus
       }).then((data) => {
-        // console.log(data)
         let res = data.data
         this.totalCount = res.data.totalCount
         if (res.code === '200') {
@@ -338,7 +333,6 @@ export default {
             sellerTaskId: res.data[0].sellerTaskId
           }
           this.taskData = obj
-          // console.log(this.totalAdd)
           if (obj.leftNum <= 0) {
             this.$message({
               type: 'warning',

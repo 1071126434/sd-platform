@@ -162,7 +162,6 @@ export default {
   },
   methods: {
     setList (data) {
-      console.log(data)
       this.orderListArr = data
     },
     search () {
@@ -204,8 +203,6 @@ export default {
       this.$router.push({ name: 'taskDetail', query: { sellerTaskId: sellerTaskId } })
     },
     handleClick (tab, event) {
-      console.log(tab, event)
-      // this.taskStatus = tab.name
       this.getTask()
     },
     filter (val) {

@@ -216,7 +216,6 @@ export default {
     },
     // 单个选触发的事件
     handSelect (index, val) {
-      console.log(index)
       let arr = []
       let arr1 = []
       for (let word of index) {
@@ -237,7 +236,6 @@ export default {
     },
     // 全选触发的事件
     selectAll (val) {
-      console.log(val)
       let arr = []
       let arr1 = []
       for (let word of val) {
@@ -255,7 +253,6 @@ export default {
     handleClick (tab) {
       this.withdrawApply_1 = tab.withdrawApplyId
       this.dialogFormVisible_1 = true
-      console.log(tab)
     },
     sure_1 () {
       this.$ajax.post('/api/withdrawApply/updateApplysStop', {
@@ -264,7 +261,6 @@ export default {
         operateUserName: this.userInfo.userName,
         applyIds: [this.withdrawApply_1]
       }).then((data) => {
-        console.log(data)
         let res = data.data
         if (res.code === '200') {
           this.$message({
@@ -292,7 +288,6 @@ export default {
         operateUserName: this.userInfo.userName,
         applyIds: [tab.withdrawApplyId]
       }).then((data) => {
-        console.log(data)
         let res = data.data
         if (res.code === '200') {
           this.$message({
@@ -325,7 +320,6 @@ export default {
         applyIds: [this.withdrawApply_sure],
         platformBankCardId: this.bankName
       }).then((data) => {
-        console.log(data)
         let res = data.data
         if (res.code === '200') {
           this.$message({
@@ -347,7 +341,6 @@ export default {
     // 当点击单个进行确认结束
     // 单个取消的开始
     handleClickNoPass (val) {
-      console.log(val)
       this.$confirm('此操作将取消用户申请, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -359,7 +352,6 @@ export default {
           operateUserName: this.userInfo.userName,
           applyIds: [val.withdrawApplyId]
         }).then((data) => {
-          console.log(data)
           let res = data.data
           if (res.code === '200') {
             this.$message({
@@ -386,7 +378,6 @@ export default {
     },
     // 单个取消的结束
     handleSizeChange (val) {
-      // console.log(`每页 ${val} 条`)
       if (this.activeName2 === 'first') {
         this.buyerData(1, val)
       } else if (this.activeName2 === 'second') {
@@ -409,7 +400,6 @@ export default {
         startTime: this.value4 ? this.value4[0] : '',
         endTime: this.value4 ? this.value4[1] : ''
       }).then((data) => {
-        console.log(data)
         let res = data.data
         this.totalCount = res.data.totalCount
         if (res.code === '200') {
@@ -451,7 +441,6 @@ export default {
         endTime: this.value3 ? this.value3[1] : '',
         buyerTelephoneOrName: this.input5
       }).then((data) => {
-        console.log(data)
         let res = data.data
         this.totalCount = res.data.totalCount
         if (res.code === '200') {
@@ -510,7 +499,6 @@ export default {
         applyIds: this.applyIdsNum,
         platformBankCardId: this.bankName
       }).then((data) => {
-        console.log(data)
         let res = data.data
         if (res.code === '200') {
           this.$message({
@@ -541,7 +529,6 @@ export default {
       }
       window.open('/api/file/buyerWithdrawList?list=' + params)
       this.allState()
-      // console.log(this.applyIdsNum)
       // let params = (this.applyIdsNum).join(',')
       // this.$ajax.get('/api/file/buyerWithdrawList?list=' + params, {
       //   }).then((data) => {
@@ -559,7 +546,6 @@ export default {
         operateUserName: this.userInfo.userName,
         applyIds: this.applyIdsNum
       }).then((data) => {
-        console.log(data)
         let res = data.data
         if (res.code === '200') {
           this.$message({
@@ -586,7 +572,6 @@ export default {
         operateUserName: this.userInfo.userName,
         applyIds: this.applyIdsNum
       }).then((data) => {
-        console.log(data)
         let res = data.data
         if (res.code === '200') {
           this.$message({
@@ -617,7 +602,6 @@ export default {
       this.$ajax.post('/api/config/bankCard/getListByType', {
         type: 0
       }).then((data) => {
-        console.log(data)
         let res = data.data
         if (res.code === '200') {
           let arr = []

@@ -154,7 +154,6 @@ export default {
       }
     },
     setList (data) {
-      console.log(data)
       let arr = []
       for (let i of data) {
         let obj = {
@@ -183,7 +182,6 @@ export default {
       this.$ajax.post('/api/platform/wechat/getListByOperateUserId', {
         operateUserId: this.userInfo.operateUserAccountId
       }).then((data) => {
-        console.log(data)
         if (data.data.code === '200') {
           this.weChatList = data.data.data
         } else {

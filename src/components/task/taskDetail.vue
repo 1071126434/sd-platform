@@ -446,7 +446,6 @@ export default {
       }
     },
     handleClick (tab, event) {
-      console.log(tab, event)
       if (this.activeName === 'second') {
         this.getOrderNum()
       } else if (this.activeName === 'third') {
@@ -523,7 +522,6 @@ export default {
       this.$ajax.post('/api/platform/task/getTaskCost', {
         sellerTaskId: this.$route.query.sellerTaskId
       }).then((data) => {
-        console.log(data)
         if (data.data.code === '200') {
           this.totalPriceObj = data.data.data
         } else {

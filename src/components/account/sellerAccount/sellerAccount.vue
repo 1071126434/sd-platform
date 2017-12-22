@@ -147,7 +147,6 @@ export default {
   },
   methods: {
     handleClick (index, seller) {
-      // console.log(index, seller)
       this.setSellerInfo(seller)
       this.$router.push({ name: 'sellerAccountDetail', query: { sellerUserId: seller.sellerUserid, severName: seller.admin, adminWechat: seller.adminWecht } })
     },
@@ -208,7 +207,6 @@ export default {
         sellerSourceChannel: this.source,
         platformChargeBankCardId: this.bank
       }).then((data) => {
-        // console.log(data)
         let res = data.data
         if (res.code === '200') {
           this.$message({
@@ -238,7 +236,6 @@ export default {
       this.$ajax.post('/api/platform/wechat/getListByOperateUserId', {
         operateUserId: this.adminName
       }).then((data) => {
-        // console.log(data)
         let res = data.data
         if (res.code === '200') {
           let arr = []
@@ -266,7 +263,6 @@ export default {
     adminName_1 () {
       this.$ajax.post('/api/operateAccount/getOperatersOfPlatform', {
       }).then((data) => {
-        // console.log(data)
         let res = data.data
         if (res.code === '200') {
           let arr = []
@@ -293,7 +289,6 @@ export default {
       this.$ajax.post('/api/config/bankCard/getListByType', {
         type: 0
       }).then((data) => {
-        // console.log(data)
         let res = data.data
         if (res.code === '200') {
           let arr = []
