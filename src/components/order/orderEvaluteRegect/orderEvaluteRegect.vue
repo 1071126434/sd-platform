@@ -91,7 +91,7 @@
             </div>
             <noCont v-if="tableData.length===0"></noCont>
           </el-tab-pane>
-          <div class="pager " v-if="showPage">
+          <div class="pager " v-if="showPager">
             <el-pagination @size-change="handleSizeChange " @current-change="handleCurrentChange " :current-page="currentPage " :page-sizes="[5, 10, 15, 20] " :page-size='pageSize' layout="total, sizes, prev, pager, next, jumper " :total="totalCount ">
             </el-pagination>
           </div>
