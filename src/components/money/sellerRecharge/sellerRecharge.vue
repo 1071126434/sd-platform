@@ -40,8 +40,8 @@
                 </template>
               </el-table-column>
             </el-table>
+            <noCont v-if="this.tableData.length===0"></noCont>
           </div>
-          <noCont v-if="this.tableData.length===0"></noCont>
         </el-tab-pane>
         <el-tab-pane label="商家充值记录" name="second">
           <div class="second_top">
@@ -85,8 +85,9 @@
               </el-table-column>
             </el-table>
           </div>
+          <noCont v-if="this.tableDataBuy.length===0"></noCont>
         </el-tab-pane>
-        <noCont v-if="this.tableDataBuy===0"></noCont>
+        <!-- <noCont v-if="this.tableDataBuy.length===0"></noCont> -->
         <div class="pager" v-if="noContPage">
           <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size='pageSize' layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
           </el-pagination>
@@ -314,12 +315,14 @@ export default {
         let res = data.data
         if (res.code === '200') {
           let arr = []
-          for (let word of res.data) {
-            let goods = {
-              bankCardId: word.bankCardId,
-              cardNo: word.cardNo
+          if (res.data) {
+            for (let word of res.data) {
+              let goods = {
+                bankCardId: word.bankCardId,
+                cardNo: word.cardNo
+              }
+              arr.push(goods)
             }
-            arr.push(goods)
           }
           this.options = arr
         } else {

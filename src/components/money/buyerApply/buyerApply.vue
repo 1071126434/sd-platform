@@ -404,6 +404,7 @@ export default {
         this.totalCount = res.data.totalCount
         if (res.code === '200') {
           let arr = []
+          // if (res.data) {
           for (let word of res.data.withdrawApplys) {
             let goods = {
               phone: word.userTelephone,
@@ -419,6 +420,7 @@ export default {
             }
             arr.push(goods)
           }
+          // }
           this.tableDataBuy = arr
         } else {
           this.$message({
@@ -605,14 +607,16 @@ export default {
         let res = data.data
         if (res.code === '200') {
           let arr = []
-          for (let word of res.data) {
-            let goods = {
-              bankName: word.bankName,
-              cardNo: word.cardNo,
-              userName: word.userName,
-              bankCarId: word.bankCardId
+          if (res.data) {
+            for (let word of res.data) {
+              let goods = {
+                bankName: word.bankName,
+                cardNo: word.cardNo,
+                userName: word.userName,
+                bankCarId: word.bankCardId
+              }
+              arr.push(goods)
             }
-            arr.push(goods)
           }
           this.bankList = arr
         } else {
