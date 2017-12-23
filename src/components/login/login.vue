@@ -5,7 +5,7 @@
       <div class="logo">
         <!-- <img src="./logo.png" alt="logo"> -->
       </div>
-      <h1>后台管理系统</h1>
+      <h1>红商会后台管理系统</h1>
     </div>
     <div class="logoRight" @keyup.13="LogoIn">
       <div class="logoBox">
