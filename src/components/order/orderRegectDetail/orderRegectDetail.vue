@@ -24,7 +24,7 @@
                       </span>
                     </li>
                     <li style="width:10%">
-                      <!-- <el-checkbox v-model="checked" disabled>已联系做单</el-checkbox> -->
+                      <el-checkbox v-model="item.isContact" @change="checkedClick(item)">已联系修改</el-checkbox>
                     </li>
                   </ul>
                   <ul class="itemCont">
@@ -71,7 +71,7 @@
                     </li>
                     <li class="center styles" style="width:30%">
                       <span class="onlineTime">驳回时间:
-                        <span class="red">{{item.favorTime}}</span>
+                        <span class="red">{{item.orderTime}}</span>
                       </span>
                       <p class="taskState">驳回原因:
                         <span>{{item.rejectReson}}</span>
@@ -146,6 +146,30 @@ export default {
     handleCurrentChange (val) {
       this.sercherOne(val, this.pageSize)
     },
+    // s是否已联系修改
+    checkedClick (val) {
+      // console.log(val)
+      this.$ajax.post('/api/order/changeIsContact', {
+        buyerTaskRecordId: val.buyerTaskRecordId,
+        isContact: val.isContact === true ? 1 : 0
+      }).then((data) => {
+        let res = data.data
+        if (res.code === '200') {
+          this.$message({
+            type: 'success',
+            message: '操作成功'
+          })
+          this.getTask()
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.message
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
+    },
     sercherOne (pageNo, pageSize) {
       this.$ajax.post('/api/order/search/getOrderListByTaskStatus', {
         taskStatus: ['6', '7'],
@@ -166,7 +190,7 @@ export default {
               operaterUserName: word.operaterUserName,
               platformWechatNum: word.platformWechatNum,
               sellerTaskType: word.sellerTaskType,
-              isContact: word.isContact === '0' ? this.checked = false : this.checked = true,
+              isContact: word.isContact === '1' ? true : 0,
               remark: word.memo,
               productName: word.productName,
               productUrl: word.productUrl,
@@ -180,7 +204,8 @@ export default {
               rejectReson: word.rejectReson || '暂无数据',
               solution: word.solution || '暂无数据',
               realOrderPicId: word.realOrderPicId,
-              wechatNum: word.wechatNum
+              wechatNum: word.wechatNum,
+              orderTime: word.orderTime
             }
             arr.push(goods)
           }

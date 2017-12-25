@@ -5,7 +5,7 @@ export const pageCommon = {
       pageNo: 1,
       pageSize: 5,
       pageTotal: null
-        // loadingList: false
+      // loadingList: false
     }
   },
   mounted () {
@@ -27,9 +27,9 @@ export const pageCommon = {
     // 修改每页显示的数据数目
     handleSizeChange (val) {
       this.pageSize = val
-        // if (this.pageTotal > val) {
-        //   return false
-        // }
+      // if (this.pageTotal > val) {
+      //   return false
+      // }
     },
     // 设置pageNo
     handleCurrentChange (val) {

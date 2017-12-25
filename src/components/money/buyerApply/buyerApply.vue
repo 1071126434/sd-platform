@@ -125,7 +125,7 @@
     <!-- 当点击单个确认的弹窗 -->
     <el-dialog title="请选择打款卡号" :visible.sync="dialogFormBankOne" :modal-append-to-body=false>
       <el-form>
-        <el-form-item label="信息">
+        <el-form-item label="卡号">
           <el-select v-model="bankName" placeholder="请选择">
             <el-option v-for="(item,index) in bankList" :key="index" :label="item.bankName+' '+item.cardNo+' '+item.userName" :value="item.bankCarId"></el-option>
           </el-select>
@@ -254,6 +254,11 @@ export default {
       }
       this.applyIdsNum = arr
       this.applyIdsNumChoose = arr1
+      let abc = 0
+      for (var i = 0; i < val.length; i++) {
+        abc += (val[i].moneyNum - 0)
+      }
+      this.moneyNumber = abc.toFixed(2)
     },
     // 当点击单个的时候 的暂不处理 触发
     handleClick (tab) {

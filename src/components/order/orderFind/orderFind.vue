@@ -152,12 +152,20 @@
                     <p class="taskState">子任务状态:</p>
                     <span class="tipSuccess lh60" v-if="item.taskStatus==='20'">已完成</span>
                     <span class="tipWait lh60" v-else-if="item.taskStatus==='1'">待下单</span>
-                    <span class="tipError lh60" v-else-if="item.taskStatus==='19'">已撤销</span>
+                    <span class="tipWait lh60" v-else-if="item.taskStatus==='2'">待修改订单</span>
                     <span class="tipWait lh60" v-else-if="item.taskStatus==='3'">待商家审核</span>
+                    <span class="tipSuccess lh60" v-else-if="item.taskStatus==='4'">订单审核通过</span>
+                    <span class="tipWait lh60" v-else-if="item.taskStatus==='5'">订单待提交</span>
+                    <span class="tipError lh60" v-else-if="item.taskStatus==='6'||item.taskStatus==='7'">订单驳回</span>
                     <span class="tipWait lh60" v-else-if="item.taskStatus==='10'">待评价</span>
                     <span class="tipWait lh60" v-else-if="item.taskStatus==='11'">待审核评价</span>
+                    <span class="tipError lh60" v-else-if="item.taskStatus==='12'">评价驳回</span>
+                    <span class="tipSuccess lh60" v-else-if="item.taskStatus==='13'">评价通过</span>
+                    <span class="tipError lh60" v-else-if="item.taskStatus==='19'">已撤销</span>
                     <p>
-                      <el-checkbox v-model="checked" v-if="item.taskStatus==='1'" disabled>已联系做单</el-checkbox>
+                      <!-- 当为复选框的时候 需要循环出来 这样才能保证操作的是对应的值 -->
+                      <el-checkbox v-model="item.isContact" v-if="item.taskStatus==='1'" @change="checkedClick(item)">已联系做单</el-checkbox>
+                      <!-- <el-table-column type="selection" v-if="item.taskStatus==='1'"></el-table-column> -->
                     </p>
                   </li>
                   <li style="width:20%">
@@ -209,15 +217,15 @@ export default {
       input1: null,
       input2: null,
       input3: null,
-      select1: null,
-      select2: null,
-      select3: null,
+      select1: 'nick',
+      select2: 'package',
+      select3: 'allot',
       activeName: 'ALL',
       state2: '',
       shopNameId: null,
       firstArr: [],
       secondArr: [],
-      checked: true,
+      isChecked: true,
       restaurants: [],
       shopNameArr: [],
       operateUserAccountName: [],
@@ -334,6 +342,30 @@ export default {
         this.$message.error(err)
       })
     },
+    // 已联系做单的事件
+    checkedClick (val) {
+      // console.log(val)
+      this.$ajax.post('/api/order/changeIsContact', {
+        buyerTaskRecordId: val.buyerTaskRecordId,
+        isContact: val.isContact === true ? 1 : 0
+      }).then((data) => {
+        let res = data.data
+        if (res.code === '200') {
+          this.$message({
+            type: 'success',
+            message: '操作成功'
+          })
+          this.getTask()
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.message
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
+    },
     // 当点击查看任务详情触发的事件
     taskDetail (index, secondArr) {
       this.$router.push({ name: 'taskDetail', query: { sellerTaskId: secondArr[index].sellerTaskId } })
@@ -373,7 +405,7 @@ export default {
           jdNickName: word.jdNickName || '暂无数据',
           telephone: word.telephone || '暂无数据',
           taskStatus: word.taskStatus || '暂无数据',
-          isContact: word.isContact === '1' ? this.checked = true : this.checked = false
+          isContact: word.isContact === '1' ? true : 0
         }
         arr.push(goods)
       }

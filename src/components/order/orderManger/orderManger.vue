@@ -283,7 +283,8 @@ export default {
               wchat: word.wechatNum || '暂无数据',
               messg: word.operaterTelephone,
               plus: this.isJDPlus === '0' ? '--' : '正式会员',
-              date: word.jdPlusEndDate || '--',
+              // 用来截取 只获取年月日
+              date: word.jdPlusEndDate ? word.jdPlusEndDate.split(' ')[0] : '--',
               city: word.postCity,
               money: word.jdMonthIncome || '暂无数据',
               sellerUserId: word.buyerUserAccountId
