@@ -110,7 +110,7 @@
                 <p class="center" v-if="item.taskStatus==4">
                   <span class="smButton greenBg" @click="lookDetail(item.sellerTaskId)">去审核</span>
                 </p>
-                <p class="center" v-if="item.taskStatus!=7 || item.taskStatus!=9 || item.taskStatus!=20 || item.taskStatus!=21" :class="{'lh60': !(item.taskStatus==4)}">
+                <p class="center" v-if="item.taskStatus!=7 && item.taskStatus!=9 && item.taskStatus!=20 && item.taskStatus!=21" :class="{'lh60': !(item.taskStatus==4)}">
                   <span class="smButton" @click="callBack(item.sellerTaskId)">撤&nbsp;&nbsp;销</span>
                 </p>
               </div>
