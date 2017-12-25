@@ -12,7 +12,7 @@
 
             </div>
             <div class="content">
-              <el-button type="primary" @click="exportData">批量导出</el-button>
+              <el-button type="primary" @click="exportData(applyIdsNumChoose)">批量导出</el-button>
             </div>
           </div>
           <!-- 内容列表展示 -->
@@ -185,7 +185,10 @@ export default {
       // 用来判断是否导出就进行提现的问题
       applyIdsNumChoose: [],
       // 钱的数量
-      moneyNumber: 0
+      moneyNumber: 0,
+      // 批量导出的时候暂不处理的不给导出处理
+      point_1: '',
+      point_2: ''
     }
   },
   computed: {
@@ -216,12 +219,14 @@ export default {
     },
     // 单个选触发的事件
     handSelect (index, val) {
+      // console.log(index, val)
       let arr = []
       let arr1 = []
       for (let word of index) {
         let goods = {
           state: word.state,
-          applyIds: word.withdrawApplyId
+          applyIds: word.withdrawApplyId,
+          state1: word.state1
         }
         arr.push(goods.applyIds)
         arr1.push(goods)
@@ -241,7 +246,8 @@ export default {
       for (let word of val) {
         let goods = {
           state: word.state,
-          applyIds: word.withdrawApplyId
+          applyIds: word.withdrawApplyId,
+          state1: word.state1
         }
         arr.push(goods.applyIds)
         arr1.push(goods)
@@ -347,7 +353,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$ajax.post('/api/withdrawApply/updateApplysReject', {
-          comment: '',
+          comment: '提现驳回',
           operateUserAccountId: this.userInfo.operateUserAccountId,
           operateUserName: this.userInfo.userName,
           applyIds: [val.withdrawApplyId]
@@ -492,7 +498,7 @@ export default {
         }
       }
     },
-    // 批量进行通过提现 部分
+    // 批量进行通过提现部分
     sureBank () {
       this.$ajax.post('/api/withdrawApply/updateApplysPass', {
         comment: '',
@@ -520,7 +526,8 @@ export default {
       })
     },
     // 设置导出状态的接口
-    exportData () {
+    exportData (val) {
+      console.log(val)
       let params = (this.applyIdsNum).join(',')
       if (this.applyIdsNum.length === 0) {
         this.$message({
@@ -529,8 +536,19 @@ export default {
         })
         return false
       }
+      // bug修改部分 暂未进行处理
+      for (var i = 0; i < val.length; i++) {
+        if (val[i].state === '未导出' && val[i].state1 === '1') {
+          this.$message({
+            message: '请注意,暂不处理的数据不能进行导出',
+            type: 'warning'
+          })
+          return false
+        }
+      }
       window.open('/api/file/buyerWithdrawList?list=' + params)
       this.allState()
+      this.applyIdsNum = []
       // let params = (this.applyIdsNum).join(',')
       // this.$ajax.get('/api/file/buyerWithdrawList?list=' + params, {
       //   }).then((data) => {

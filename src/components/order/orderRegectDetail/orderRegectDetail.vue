@@ -3,7 +3,7 @@
     <div class="orderList">
       <div class="head">
         <el-tabs v-model="activeName">
-          <el-tab-pane label="待确认订单" name='1'>
+          <el-tab-pane label="被驳回订单" name='1'>
             <div class="list" v-for="(item,index) in tableData" :key="index">
               <div class="tables">
                 <div class="tableItem">
@@ -24,7 +24,7 @@
                       </span>
                     </li>
                     <li style="width:10%">
-                      <el-checkbox v-model="checked" disabled>已联系做单</el-checkbox>
+                      <!-- <el-checkbox v-model="checked" disabled>已联系做单</el-checkbox> -->
                     </li>
                   </ul>
                   <ul class="itemCont">

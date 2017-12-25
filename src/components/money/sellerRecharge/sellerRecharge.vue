@@ -47,11 +47,11 @@
           <div class="second_top">
             <div class="Stime">
               申请时间：
-              <el-date-picker v-model="value3" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format='yyyy-MM-dd'>
+              <el-date-picker v-model="value3" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format='yyyy-MM-dd' format='yyyy-MM-dd'>
               </el-date-picker>
             </div>
             <div class="search">
-              <el-input placeholder="请输入姓名/手机号" v-model="input6" class="input-with-select">
+              <el-input placeholder="请输入手机号" v-model="input6" class="input-with-select">
                 <el-button slot="append" icon="el-icon-search" @click="searchTime"></el-button>
               </el-input>
             </div>
@@ -62,7 +62,7 @@
           <!-- 展示内容部分 -->
           <div class="accountTab">
             <el-table :data="tableDataBuy" style="width: 100%">
-              <el-table-column prop="orderTask" align="center" label="订单号">
+              <el-table-column prop="orderTask" align="center" label="充值流水号">
               </el-table-column>
               <el-table-column prop="phone" align="center" label="手机号">
               </el-table-column>
