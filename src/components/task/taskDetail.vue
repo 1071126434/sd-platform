@@ -77,9 +77,10 @@
           <span @click="passIt(0)">审核不通过</span>
           <span @click="passIt(1)">审核通过</span>
         </li>
-        <li v-else>
-          <span class="disabled">审核不通过</span>
-          <span class="disabled">审核通过</span>
+        <li v-else-if="taskInfoObj.status == 8">
+          <!-- <span class="disabled">审核不通过</span>
+          <span class="disabled">审核通过</span> -->
+          <span @click="cancel">撤销</span>
         </li>
       </ul>
       <div class="contNav">
@@ -388,6 +389,37 @@ export default {
     }
   },
   methods: {
+    cancel () {
+      this.$confirm('此操作将撤销该任务审核，是否继续？', '确认撤销试用任务？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'success'
+      }).then(() => {
+        this.$ajax.post('/api/platform/task/cancelTask', {
+          sellerTaskId: this.$route.query.sellerTaskId
+        }).then((data) => {
+          if (data.data.code === '200') {
+            this.$message({
+              type: 'success',
+              message: '撤销成功!'
+            })
+            this.$router.push({ name: 'task' })
+          } else {
+            this.$message({
+              type: 'warning',
+              message: data.data.message
+            })
+          }
+        }).catch((err) => {
+          console.log(err)
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
+      })
+    },
     passIt (type) {
       if (type === 0) { // 审核不通过
         this.showReturn = true
@@ -705,7 +737,7 @@ export default {
           font-size 20px
           color #333333
           line-height 40px
-        &:last-child
+        &:nth-child(2)
           text-align right
           span
             cursor pointer
