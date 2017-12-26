@@ -629,7 +629,8 @@ export default {
     withdrawPost () {
       this.$ajax.post('/api/withdrawApply/createBuyerApply', {
         userId: this.userInfoObj.buyerUserAccountId,
-        withdrawAmount: this.withdrawMoneyNum
+        withdrawAmount: this.withdrawMoneyNum,
+        withdrawType: '1'
       }).then((data) => {
         if (data.data.code === '200') {
           this.$message({

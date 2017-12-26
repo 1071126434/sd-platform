@@ -23,6 +23,8 @@
               </el-table-column>
               <el-table-column prop="moneyNum" align="center" label="提现金额">
               </el-table-column>
+              <el-table-column prop="moneyType" align="center" label="提现类型">
+              </el-table-column>
               <el-table-column prop="bankNum" align="center" label="银行卡号">
               </el-table-column>
               <el-table-column prop="bank" align="center" label="银行">
@@ -82,7 +84,7 @@
               </el-table-column>
               <el-table-column prop="moneyNum" align="center" label="提现金额">
               </el-table-column>
-              <el-table-column prop="remark" align="center" label="提现原因">
+              <el-table-column prop="remark" align="center" label="提现类型">
               </el-table-column>
               <el-table-column prop="time" align="center" label="确认时间">
               </el-table-column>
@@ -148,6 +150,18 @@
         <el-button type="primary" @click="sure_1">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 导出之后点击撤销之后的弹窗 -->
+    <el-dialog title="提现驳回理由" :visible.sync="dialogFormVisible_2" :modal-append-to-body='false'>
+      <el-form>
+        <el-form-item label="">
+          <el-input v-model="formNo"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible_2 = false">取 消</el-button>
+        <el-button type="primary" @click="sure_2">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -175,8 +189,11 @@ export default {
       tableDataBuyList: [],
       dialogFormVisible: false,
       dialogFormVisible_1: false,
+      dialogFormVisible_2: false,
       withdrawApply_1: '',
+      withdrawApply_2: '',
       formName: '',
+      formNo: '',
       // 将选中的值存在一个数组里面
       applyIdsNum: [],
       dialogFormBank: false,
@@ -352,39 +369,32 @@ export default {
     // 当点击单个进行确认结束
     // 单个取消的开始
     handleClickNoPass (val) {
-      this.$confirm('此操作将取消用户申请, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$ajax.post('/api/withdrawApply/updateApplysReject', {
-          comment: '提现驳回',
-          operateUserAccountId: this.userInfo.operateUserAccountId,
-          operateUserName: this.userInfo.userName,
-          applyIds: [val.withdrawApplyId]
-        }).then((data) => {
-          let res = data.data
-          if (res.code === '200') {
-            this.$message({
-              message: res.message,
-              type: 'success'
-            })
-            this.dialogFormVisible = false
-            this.buyerData(1, this.pageSize)
-          } else {
-            this.$message({
-              message: res.message,
-              type: 'warning'
-            })
-          }
-        }).catch(() => {
-          this.$message.error('网络错误，刷新下试试')
-        })
+      this.withdrawApply_2 = val.withdrawApplyId
+      this.dialogFormVisible_2 = true
+    },
+    sure_2 () {
+      this.$ajax.post('/api/withdrawApply/updateApplysReject', {
+        comment: this.formNo,
+        operateUserAccountId: this.userInfo.operateUserAccountId,
+        operateUserName: this.userInfo.userName,
+        applyIds: [this.withdrawApply_2]
+      }).then((data) => {
+        let res = data.data
+        if (res.code === '200') {
+          this.$message({
+            message: res.message,
+            type: 'success'
+          })
+          this.dialogFormVisible_2 = false
+          this.buyerData(1, this.pageSize)
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          })
+        }
       }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消'
-        })
+        this.$message.error('网络错误，刷新下试试')
       })
     },
     // 单个取消的结束
@@ -427,7 +437,8 @@ export default {
               withdrawApplyId: word.withdrawApplyId,
               state: word.isExport === '0' ? '未导出' : '已导出',
               state1: word.isStoped,
-              comment: word.comment
+              comment: word.comment,
+              moneyType: word.withdrawType === '0' ? '本金提现' : '提前支取'
             }
             arr.push(goods)
           }
@@ -463,7 +474,7 @@ export default {
               orderTask: word.withdrawApplyId,
               phone: word.userTelephone,
               moneyNum: word.actualAmount,
-              remark: word.comment || '无',
+              remark: word.withdrawType === '0' ? '本金提现' : '提前支取',
               JDStatus: word.status === '1' ? '成功' : '失败',
               sBank: word.bankName + word.userName + word.bankCardNo,
               dBank: word.platformBankCardName || '--',

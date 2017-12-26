@@ -290,7 +290,7 @@ export default {
               dBank: word.sellerBankCardNo,
               creatTime: word.gmtCreate,
               orderTask: word.chargeApplyId,
-              JDStatus: word.status === '0' ? '未到账' : word.status === '1' ? '已到账' : '进行中',
+              JDStatus: word.status === '2' ? '未到账' : word.status === '1' ? '已到账' : '进行中',
               time: word.gmtModify,
               person: word.sellerBankCardUserName
             }

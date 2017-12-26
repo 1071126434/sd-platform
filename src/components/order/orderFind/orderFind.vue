@@ -88,15 +88,17 @@
             <div class="tables">
               <div class="tableItem">
                 <ul class="itemHead">
-                  <li style="width:60%">
+                  <li style="width:40%">
                     <span class="shopType jdIcon"></span>
                     <span>{{item.sellerShopName}}</span>
                     <span class="person">对接人:
-                      <em>{{item.operaterUserName}}</em>
+                      <em>{{item.operaterUserName}}</em> --
+                      <em>{{item.platformWechatNum}}</em>
                     </span>
-                    <span class="taskOrder">任务编号:
-                      <i>{{item.sellerTaskId}}</i>
-                      <span class="link" @click="taskDetail(index,secondArr)">[查看任务详情]</span>
+                  </li>
+                  <li style="width:20%">
+                    <span class="taskType">买手:
+                      <span>{{item.wechatNum}}</span>
                     </span>
                   </li>
                   <li style="width:20%">
@@ -114,7 +116,7 @@
                   <li style="width:5%;border:none;margin-top:17px">
                     <img alt="" width="30" height="30" :src="item.productPictureUrl">
                   </li>
-                  <li style="width:25%;margin-left:-80px">
+                  <li style="width:33%;margin-left:-80px">
                     <p>{{item.productName}}
                       <span>
                         <a :href="item.productUrl" style="color:#3377FF ">商品链接</a>
@@ -127,6 +129,10 @@
                       <i class="red" v-if="item.sellerTaskType===1">图文好评</i>
                       <i class="red" v-else-if="item.sellerTaskType===2">文字好评</i>
                       <i class="red" v-else>默认好评</i>
+                    </p>
+                    <p>任务编号:
+                      <i>{{item.sellerTaskId}}</i>
+                      <span class="link" @click="taskDetail(index,secondArr)">[查看任务详情]</span>
                     </p>
                   </li>
                   <li class="border_line">
@@ -405,7 +411,9 @@ export default {
           jdNickName: word.jdNickName || '暂无数据',
           telephone: word.telephone || '暂无数据',
           taskStatus: word.taskStatus || '暂无数据',
-          isContact: word.isContact === '1' ? true : 0
+          isContact: word.isContact === '1' ? true : 0,
+          wechatNum: word.wechatNum,
+          platformWechatNum: word.platformWechatNum
         }
         arr.push(goods)
       }
@@ -501,8 +509,6 @@ export default {
             height 16px
           .person
             margin-left 66px
-          .taskOrder
-            margin-left 46px
         .itemCont
           display flex
           padding 20px
@@ -511,6 +517,8 @@ export default {
             // border-right 1px solid #E5E5E5
             &:last-child
               border none
+            .taskOrder
+              margin-left 46px
           .border_line
             width 30%
             margin-left 100px
