@@ -146,7 +146,7 @@ export default {
     text-align center
     .img
       position relative
-      width 180px
+      width 150px
   .router
     .routerBox
       font-size 0
