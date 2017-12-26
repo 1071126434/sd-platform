@@ -1,8 +1,8 @@
 <template>
   <div class="menu">
     <div class="logo">
-      <!-- <img src="logo" alt="Logo" class="img"> -->
-      <span style="color:#FF2933;line-height:60px">红商会</span>
+      <img src="../../assets/images/logow.png" alt="Logo" class="img">
+      <!-- <span style="color:#FF2933;line-height:60px">红商会</span> -->
     </div>
     <div class="router">
       <div class="routerBox" v-for="(item,index) in menus" :key="index" ref="routerBox" @click="setRouterActive">
@@ -146,9 +146,7 @@ export default {
     text-align center
     .img
       position relative
-      width 60%
-      top 20%
-      left 20%
+      width 180px
   .router
     .routerBox
       font-size 0
