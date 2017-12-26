@@ -94,7 +94,7 @@
                   <div>
                     <div>
                       <p>商品名称: {{ goodsInfoObj.productName }}</p>
-                      <p>所在分类: {{ goodsInfoObj.productClassFirstDetail }}</p>
+                      <p>所在分类: {{ goodsInfoObj.productClassFirstDetail + ' / ' + goodsInfoObj.productClassSecondDetail + ' / ' + goodsInfoObj.productClassThirdDetail }}</p>
                     </div>
                     <div>
                       <p style="width:80%">商品链接:
