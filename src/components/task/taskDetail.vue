@@ -614,7 +614,6 @@ export default {
           line-height 30px
   .head
     display flex
-    justify-content space-between
     >div
       background #ffffff
       height 208px
