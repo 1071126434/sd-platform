@@ -18,13 +18,13 @@
             <el-option label="待审核" value="2"></el-option>
           </el-select>
         </div>
-        <div class="select">
+        <!-- <div class="select">
           <span>微信号:</span>
           <el-select v-model="weChat" placeholder="请选择">
             <el-option v-for="(item, index) in weChatList" :key="index" :label="item.wechatNickName + '：' + item.wechatNum" :value="item.operateWechatId">
             </el-option>
           </el-select>
-        </div>
+        </div> -->
       </div>
       <div class="search">
         <el-input v-model="telephoneOrUserName" placeholder="请输入姓名/手机号">
