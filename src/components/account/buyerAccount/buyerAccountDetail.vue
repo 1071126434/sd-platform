@@ -248,11 +248,11 @@
               </el-dialog>
               <ul v-if="showTop">
                 <li>{{ topInfoObj.userName || '暂无姓名' }}
-                  <span>{{ userInfoObj.parentUserType == 2 ? '(管理员)' : userInfoObj.parentUserType == 1 ? '(员工)' : '(买家)' }}</span>
+                  <!-- <span>{{ userInfoObj.parentUserType == 2 ? '(管理员)' : userInfoObj.parentUserType == 1 ? '(员工)' : '(买家)' }}</span> -->
                   <span v-if="userInfoObj.parentUserType == 1" class="link" style="font-size:12px;cursor:pointer;" @click="toDetail(userInfoObj.parentUserId)">查看详情</span>
                 </li>
                 <li>微信备注: {{ topWechat.wechatName || '暂无' }}</li>
-                <li>管理人: {{ topWechat.managerName }}</li>
+                <li>管理人: {{ topWechat.managerName + '_' + topWechat.managerWechatId }}</li>
                 <!-- <li>注册时间: {{ topInfoObj.gmtCreate }}</li>
                 <li>手机号: {{ topInfoObj.telephone }}</li>
                 <li v-if="userInfoObj.parentUserType != 2">收货地址: {{ (topInfoObj.postProvince+topInfoObj.postCity+topInfoObj.postRegion+topInfoObj.postAddress) ? (topInfoObj.postProvince+topInfoObj.postCity+topInfoObj.postRegion+topInfoObj.postAddress) : '暂未填写' }}</li> -->
