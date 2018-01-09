@@ -43,8 +43,11 @@
         </div>
       </div>
       <!-- 弹框部分 -->
-      <el-dialog title="确认添加商户" :visible.sync="dialogFormVisible" :modal-append-to-body=false width="40%" class="selectSize">
+      <el-dialog title="确认添加商户" :visible.sync="dialogFormVisible" top="6vh" :modal-append-to-body=false width="40%" class="selectSize">
         <el-form style="padding:0 20px">
+          <el-form-item label="公司名称" :label-width="formLabelWidth">
+            <el-input v-model="complan" auto-complete="off"></el-input>
+          </el-form-item>
           <el-form-item label="手机号" :label-width="formLabelWidth">
             <el-input v-model="phone" auto-complete="off"></el-input>
           </el-form-item>
@@ -103,6 +106,7 @@ export default {
   data () {
     return {
       input5_1: '',
+      complan: '',
       phone: '',
       password: '',
       qqNumber: '',
@@ -166,6 +170,7 @@ export default {
       let arr = []
       for (let word of data) {
         let goods = {
+          complan: word.complan || '暂无数据',
           phone: word.telephone || '暂无数据',
           shopName: word.firstShopName || '暂无店铺',
           state: word.status === '1' ? '正常' : '冻结',
@@ -189,7 +194,7 @@ export default {
     },
     // 添加商家的请求
     addSure () {
-      if (this.phone === '' || this.password === '' || this.qqNumber === '' || this.wechat === '' || this.inviteName === '' || this.adminName === '' || this.adminWechat === '' || this.source === '' || this.bank === '') {
+      if (this.complan === '' || this.phone === '' || this.password === '' || this.qqNumber === '' || this.wechat === '' || this.inviteName === '' || this.adminName === '' || this.adminWechat === '' || this.source === '' || this.bank === '') {
         this.$message({
           message: '内容不能为空,请正确填写信息',
           type: 'warning'
@@ -197,6 +202,7 @@ export default {
         return false
       }
       this.$ajax.post('/api/sellerAccout/register', {
+        companyName: this.complan,
         telephone: this.phone,
         password: md5(this.password),
         qqNum: this.qqNumber,

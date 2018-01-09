@@ -93,76 +93,113 @@
             <h2>帐号绑定情况</h2>
             <h3>京东帐号&nbsp;&nbsp;
               <strong class="red" v-if="userInfoObj.isJdPassCheck!=1">(认证待审核)</strong>
-              <span>收货地址:&nbsp;&nbsp;{{userInfoObj.postProvince + userInfoObj.postCity + userInfoObj.postRegion + userInfoObj.postAddress}}</span>
+              <span>收货地址:&nbsp;&nbsp;{{(userInfoObj.postProvince + userInfoObj.postCity + userInfoObj.postRegion + userInfoObj.postAddress) || '暂未填写'}}</span>
             </h3>
-            <ul>
-              <li>
-                <p>帐号昵称:
+            <div>
+              <ul class="fourLi">
+                <li class="jdAccount" style="width:33.3%">
+                  <!-- <p>帐号昵称:
                   <b>{{ userInfoObj.jdNickName }}</b>
                 </p>
                 <p>帐号等级:
                   <b>金牌会员</b>
-                </p>
-                <p>京东实名认证截图:
-                  <a href="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg">
-                    <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511264881&di=517c3dacb2e6b5c612f16bad69c9fc11&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimage%2Fc0%253Dshijue1%252C0%252C0%252C294%252C40%2Fsign%3Dce62ca28a5c3793169658e6a83addd30%2F0b55b319ebc4b745f53bbf38c5fc1e178a821574.jpg" alt="">
-                  </a>
-                </p>
-              </li>
-              <li>
-                <p>plus会员:
-                  <b>{{ userInfoObj.isJdPlus ==1 ? '是' : '否' }}</b>
-                </p>
-                <p>plus会员类型:
-                  <b>{{ userInfoObj.jdPlusType == '' ? '非会员' : userInfoObj.jdPlusType == 0 ? '临时会员' : '正式会员' }}</b>
-                </p>
-                <p>plus会员到期时间:
-                  <b>{{ userInfoObj.jdPlusEndDate ? userInfoObj.jdPlusEndDate.split(' ')[0] : '暂无' }}</b>
-                </p>
-              </li>
-              <li>
+                </p> -->
+                  <p>帐号截图:
+                    <a @click="lookImg(userInfoObj.jdAccountPicUrl)">
+                      <img :src="userInfoObj.jdAccountPicUrl" alt="">
+                    </a>
+                  </p>
+                  <p>帐号设置截图:
+                    <a @click="lookImg(userInfoObj.jdAccountSettingPicUrl)">
+                      <img :src="userInfoObj.jdAccountSettingPicUrl" alt="">
+                    </a>
+                  </p>
+                  <p>plus截图:
+                    <a @click="lookImg(userInfoObj.jdPlusPicId)">
+                      <img :src="userInfoObj.jdPlusPicId" alt="">
+                    </a>
+                  </p>
+                </li>
+                <li style="width:33.3%">
+                  <p>plus会员:
+                    <b>{{ userInfoObj.isJdPlus ==1 ? '是' : '否' }}</b>
+                  </p>
+                  <p>plus会员类型:
+                    <b>{{ userInfoObj.jdPlusType == 0 ? '临时会员' : userInfoObj.jdPlusType == 1 ? '正式会员' : '非会员' }}</b>
+                  </p>
+                  <p>plus会员到期时间:
+                    <b>{{ userInfoObj.jdPlusEndDate ? userInfoObj.jdPlusEndDate.split(' ')[0] : '暂无' }}</b>
+                  </p>
+                </li>
+                <li style="text-align: left;padding-left:50px; width: 33.3%">
+                  <p>京东用户名:
+                    <b>{{ userInfoObj.jdNickName || '暂无用户名' }}</b>
+                  </p>
+                  <p>白条状态:
+                    <b>{{ userInfoObj.isJdBlanknote == 1 ? '已开通' : '未开通' }}</b>
+                  </p>
+                  <p style="color: #1d6ae7;cursor:pointer" @click="editPLUS=true">
+                    修改
+                  </p>
+                  <!-- <span v-if="userInfoObj.isJdPassCheck!=1" class="btn" @click="confirmAlert(1)">认证通过</span>
+                <span v-else class="btn whiteBtn el-icon-circle-check" style="color:#40B6FF;font-size:16px">
+                  <span style="color:#000;font-size:12px">&nbsp;&nbsp;已认证</span>
+                </span>
+                <span class="btn whiteBtn" @click="editPLUS=true">修改plus</span> -->
+                  <el-dialog title="修改plus" :append-to-body="true" :visible.sync="editPLUS" width="40%">
+                    <ul class="editCont" style="padding:0 20px;">
+                      <li style="height: 40px;line-height:40px;">
+                        <span style="display: inline-block;width:120px;">京东用户名: </span>
+                        <el-input v-model="fixJdName" style="width:220px" placeholder="输入京东用户名"></el-input>
+                      </li>
+                      <li style="height: 40px;line-height:40px;">
+                        <span style="display: inline-block;width:120px;">是否是会员: </span>
+                        <el-radio v-model="isPlus" label="1">是</el-radio>
+                        <el-radio v-model="isPlus" label="0">否</el-radio>
+                      </li>
+                      <li v-show="isPlus==1" style="height: 40px;line-height:40px;">
+                        <span style="display: inline-block;width:120px;">会员类型: </span>
+                        <el-radio v-model="plusType" label="0">暂时</el-radio>
+                        <el-radio v-model="plusType" label="1">正式</el-radio>
+                      </li>
+                      <li v-show="isPlus==1" style="height: 40px;line-height:40px;">
+                        <span style="display: inline-block;width:120px;">会员到期时间: </span>
+                        <el-date-picker v-model="plusTime" style="width:220px" type="date" placeholder="选择日期" format="yyyy-MM-dd" :picker-options="pickerOptions">
+                        </el-date-picker>
+                      </li>
+                      <li style="height: 40px;line-height:40px;">
+                        <span style="display: inline-block;width:120px;">白条状态: </span>
+                        <el-radio v-model="baitiaoStatus" label="1">已开通</el-radio>
+                        <el-radio v-model="baitiaoStatus" label="0">未开通</el-radio>
+                      </li>
+                    </ul>
+                    <span slot="footer" class="dialog-footer">
+                      <el-button @click="editPLUS = false">取 消</el-button>
+                      <el-button type="primary" @click="editPlusPost">确 定</el-button>
+                    </span>
+                  </el-dialog>
+                </li>
+              </ul>
+              <div class="button">
                 <span v-if="userInfoObj.isJdPassCheck!=1" class="btn" @click="confirmAlert(1)">认证通过</span>
                 <span v-else class="btn whiteBtn el-icon-circle-check" style="color:#40B6FF;font-size:16px">
                   <span style="color:#000;font-size:12px">&nbsp;&nbsp;已认证</span>
                 </span>
-                <span class="btn whiteBtn" @click="editPLUS=true">修改plus</span>
-                <el-dialog title="修改plus" :append-to-body="true" :visible.sync="editPLUS" width="40%">
-                  <ul class="editCont" style="padding:0 20px;">
-                    <li style="height: 40px;line-height:40px;">
-                      <span style="display: inline-block;width:120px;">是否是会员: </span>
-                      <el-radio v-model="isPlus" label="0">否</el-radio>
-                      <el-radio v-model="isPlus" label="1">是</el-radio>
-                    </li>
-                    <li style="height: 40px;line-height:40px;">
-                      <span style="display: inline-block;width:120px;">会员类型: </span>
-                      <el-radio v-model="plusType" label="0">试用</el-radio>
-                      <el-radio v-model="plusType" label="1">正式</el-radio>
-                    </li>
-                    <li style="height: 40px;line-height:40px;">
-                      <span style="display: inline-block;width:120px;">会员到期时间: </span>
-                      <el-date-picker v-model="plusTime" type="date" placeholder="选择日期" format="yyyy-MM-dd" :picker-options="pickerOptions">
-                      </el-date-picker>
-                    </li>
-                  </ul>
-                  <span slot="footer" class="dialog-footer">
-                    <el-button @click="editPLUS = false">取 消</el-button>
-                    <el-button type="primary" @click="editPlusPost">确 定</el-button>
-                  </span>
-                </el-dialog>
-              </li>
-            </ul>
+                <!-- <span class="btn whiteBtn">驳回</span> -->
+              </div>
+            </div>
             <h3>微信帐号</h3>
             <ul>
               <li>
-                <p>微信认证绑定状态:
-                  <b>{{ userInfoObj.isAddManagerWechat == 1 ? '已加微信' : '未确认' }}</b>
+                <p>备注:
+                  <b>{{ userInfoObj.wechatCommentName || '暂无' }}</b>
                 </p>
                 <p>微信号:
                   <b>{{ userInfoObj.wechatNum }}</b>
                 </p>
-                <p>微信昵称:
+                <!-- <p>微信昵称:
                   <b>{{ userInfoObj.wechatNum }}</b>
-                </p>
+                </p> -->
               </li>
               <li>
                 <p>平台管理员:
@@ -214,9 +251,11 @@
                   <span>{{ userInfoObj.parentUserType == 2 ? '(管理员)' : userInfoObj.parentUserType == 1 ? '(员工)' : '(买家)' }}</span>
                   <span v-if="userInfoObj.parentUserType == 1" class="link" style="font-size:12px;cursor:pointer;" @click="toDetail(userInfoObj.parentUserId)">查看详情</span>
                 </li>
-                <li>注册时间: {{ topInfoObj.gmtCreate }}</li>
+                <li>微信备注: {{ topWechat.wechatName || '暂无' }}</li>
+                <li>管理人: {{ topWechat.managerName }}</li>
+                <!-- <li>注册时间: {{ topInfoObj.gmtCreate }}</li>
                 <li>手机号: {{ topInfoObj.telephone }}</li>
-                <li v-if="userInfoObj.parentUserType != 2">收货地址: {{ (topInfoObj.postProvince+topInfoObj.postCity+topInfoObj.postRegion+topInfoObj.postAddress) ? (topInfoObj.postProvince+topInfoObj.postCity+topInfoObj.postRegion+topInfoObj.postAddress) : '暂未填写' }}</li>
+                <li v-if="userInfoObj.parentUserType != 2">收货地址: {{ (topInfoObj.postProvince+topInfoObj.postCity+topInfoObj.postRegion+topInfoObj.postAddress) ? (topInfoObj.postProvince+topInfoObj.postCity+topInfoObj.postRegion+topInfoObj.postAddress) : '暂未填写' }}</li> -->
               </ul>
             </div>
             <div class="user">
@@ -265,12 +304,19 @@
           </div>
         </el-tab-pane>
       </el-tabs>
+      <div v-show="showLookImg ">
+        <lookImg :imgUrl="lookImgUrl " @close="showLookImg=false "></lookImg>
+      </div>
     </div>
   </div>
 </template>
 <script type="text/ecmascript-6">
+import LookImg from '../../../base/lookImg/lookImg'
 export default {
   name: 'buyerAccountDetail',
+  components: {
+    LookImg
+  },
   data () {
     return {
       currentPage: 1,
@@ -290,10 +336,14 @@ export default {
       isPlus: '0',
       plusType: '0',
       plusTime: '',
+      fixJdName: '',
+      baitiaoStatus: '',
       // 显示上级信息
       showTop: true,
       // 上级信息
       topInfoObj: {},
+      // 上级微信等信息
+      topWechat: {},
       // 用户信息
       userInfoObj: {},
       // 用户资金
@@ -307,7 +357,10 @@ export default {
         disabledDate (time) {
           return time.getTime() < Date.now()
         }
-      }
+      },
+      // 查看图片的
+      showLookImg: false,
+      lookImgUrl: ''
     }
   },
   computed: {
@@ -331,6 +384,10 @@ export default {
     }
   },
   methods: {
+    lookImg (url) {
+      this.lookImgUrl = url
+      this.showLookImg = true
+    },
     handleClick (tab, event) {
       if (tab.name === 'second') {
         if (this.userInfoObj.parentUserId && this.userInfoObj.parentUserType) {
@@ -364,7 +421,9 @@ export default {
           buyerUserAccountId: this.userInfoObj.buyerUserAccountId,
           isJDPlus: this.isPlus,
           JDPlusType: this.plusType,
-          JDPlusEndDate: this.plusTime
+          JDPlusEndDate: this.plusTime,
+          jdNickName: this.fixJdName,
+          isBlankNote: this.baitiaoStatus
         }).then((data) => {
           if (data.data.code === '200') {
             this.$message({
@@ -418,6 +477,7 @@ export default {
       this.$ajax.post('/api/buyerAccount/getUserInfoByUserId', {
         buyerUserAccountId: id
       }).then((data) => {
+        console.log(data)
         if (data.data.code === '200') {
           this.userInfoObj = data.data.data
         } else {
@@ -433,16 +493,38 @@ export default {
     // 获取上级信息
     getTopInfo (id, type) {
       let api = ''
+      let data = {}
       if (parseInt(type) === 2) {
         api = '/api/sellerManagerAccount/getParentSellerManagerByManagerId'
+        data = {
+          sellerManagerId: id
+        }
       } else {
         api = '/api/buyerAccount/getUserInfoByUserId'
+        data = {
+          buyerUserAccountId: id
+        }
       }
-      this.$ajax.post(api, {
-        sellerManagerId: id
-      }).then((data) => {
+      this.getTopChat()
+      this.$ajax.post(api, data).then((data) => {
         if (data.data.code === '200') {
           this.topInfoObj = data.data.data
+        } else {
+          this.$message({
+            message: data.data.message,
+            type: 'warning'
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
+    },
+    getTopChat () {
+      this.$ajax.post('/api/sellerManagerAccount/getParentByBuyerAccountId', {
+        buyerAccountId: this.storageUserInfo.buyerUserAccountId
+      }).then((data) => {
+        if (data.data.code === '200') {
+          this.topWechat = data.data.data
         } else {
           this.$message({
             message: data.data.message,
@@ -798,6 +880,7 @@ export default {
         padding 20px
         margin-bottom 20px
         display flex
+        flex-wrap wrap
         border-top 1px solid #e5e5e5
         border-bottom 1px solid #e5e5e5
         li
@@ -819,6 +902,23 @@ export default {
             b
               color #333333
               font-weight 500
+        .jdAccount
+          display flex
+          text-align center
+          p
+            flex 1
+            a
+              display block
+      .button
+        text-align center
+        border-top 1px solid #e5e5e5
+        border-bottom 1px solid #e5e5e5
+        margin-bottom 20px
+        padding 20px 0
+      .fourLi
+        padding none
+        margin none
+        border-bottom none
     .inviteCont
       >div
         h2

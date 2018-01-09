@@ -138,8 +138,8 @@ export default {
   },
   methods: {
     lookImg (url) {
-      this.showLookImg = true
       this.lookImgUrl = url
+      this.showLookImg = true
     },
     reset () {
       this.value = ''
