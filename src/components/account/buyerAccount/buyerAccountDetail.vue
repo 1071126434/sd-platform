@@ -122,10 +122,10 @@
                 </li>
                 <li style="width:33.3%">
                   <p>plus会员:
-                    <b>{{ userInfoObj.isJdPlus ==1 ? '是' : '否' }}</b>
+                    <b>{{ userInfoObj.isJdPlus ==1 ? '是plus会员' : '非plus会员' }}</b>
                   </p>
                   <p>plus会员类型:
-                    <b>{{ userInfoObj.jdPlusType == 0 ? '临时会员' : userInfoObj.jdPlusType == 1 ? '正式会员' : '非会员' }}</b>
+                    <b>{{ userInfoObj.jdPlusType == 0 ? '临时plus会员' : userInfoObj.jdPlusType == 1 ? '正式plus会员' : '非plus会员' }}</b>
                   </p>
                   <p>plus会员到期时间:
                     <b>{{ userInfoObj.jdPlusEndDate ? userInfoObj.jdPlusEndDate.split(' ')[0] : '暂无' }}</b>
@@ -411,37 +411,34 @@ export default {
     },
     // 修改plus到期时间
     editPlusPost () {
-      if (!this.plusTime) {
-        this.$message({
-          message: '请填写到期时间',
-          type: 'warning'
-        })
-      } else {
-        this.$ajax.post('/api/buyerAccount/fixJDPlus', {
-          buyerUserAccountId: this.userInfoObj.buyerUserAccountId,
-          isJDPlus: this.isPlus,
-          JDPlusType: this.plusType,
-          JDPlusEndDate: this.plusTime,
-          jdNickName: this.fixJdName,
-          isBlankNote: this.baitiaoStatus
-        }).then((data) => {
-          if (data.data.code === '200') {
-            this.$message({
-              message: '设置成功!',
-              type: 'success'
-            })
-            this.editPLUS = false
-            this.getUserInfo()
-          } else {
-            this.$message({
-              message: data.data.message,
-              type: 'warning'
-            })
-          }
-        }).catch((err) => {
-          this.$message.error(err)
-        })
+      if (parseInt(this.isPlus) === 0) {
+        this.plusType = '2'
+        this.plusTime = ''
       }
+      this.$ajax.post('/api/buyerAccount/fixJDPlus', {
+        buyerUserAccountId: this.userInfoObj.buyerUserAccountId,
+        isJDPlus: this.isPlus,
+        JDPlusType: this.plusType,
+        JDPlusEndDate: this.plusTime,
+        jdNickName: this.fixJdName,
+        isBlankNote: this.baitiaoStatus
+      }).then((data) => {
+        if (data.data.code === '200') {
+          this.$message({
+            message: '设置成功!',
+            type: 'success'
+          })
+          this.editPLUS = false
+          this.getUserInfo()
+        } else {
+          this.$message({
+            message: data.data.message,
+            type: 'warning'
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
     },
     // 扣除用户行为分
     deleScorePost () {

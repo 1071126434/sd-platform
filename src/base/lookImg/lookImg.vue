@@ -39,5 +39,5 @@ export default {
     bottom 0
     left 0
     margin auto
-    max-height 800px
+    max-height 90%
 </style>
