@@ -11,7 +11,7 @@
           </el-select>
         </div>
         <div class="select">
-          <span>帐号状态:</span>
+          <span>京东帐号状态:</span>
           <el-select v-model="buyerStatus" placeholder="请选择">
             <el-option label="未提交" value="0"></el-option>
             <el-option label="已认证" value="1"></el-option>
@@ -79,6 +79,11 @@
         <el-table-column prop="buyerStatus" align="center" label="帐号状态">
           <template slot-scope="scope">
             <span>{{scope.row.buyerStatus == 0 ? '冻结' : '正常'}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" width="100" label="淘宝帐号状态">
+          <template slot-scope="scope">
+            <span class="tipSmall" :class="scope.row.isTaobaoPassCheck==1 ? 'tipSuccess' : scope.row.isTaobaoPassCheck==2 ? 'tipWait' : 'tipError'">{{scope.row.isTaobaoPassCheck == 1 ? '已认证' : scope.row.isTaobaoPassCheck == 2 ? '待审核' : scope.row.isTaobaoPassCheck == 3 ? '被驳回' : '未提交' }}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" width="100" label="京东帐号状态">
@@ -162,6 +167,7 @@ export default {
           gmtCreate: this.isNull(i.gmtCreate),
           inviterId: this.isNull(i.inviterId),
           isJdPassCheck: this.isNull(i.isJdPassCheck),
+          isTaobaoPassCheck: this.isNull(i.isTaobaoPassCheck),
           operateUserAccountId: this.isNull(i.operateUserAccountId),
           operaterName: this.isNull(i.operaterName),
           operaterWechatNum: this.isNull(i.operaterWechatNum),

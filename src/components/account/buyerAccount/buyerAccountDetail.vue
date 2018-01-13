@@ -58,11 +58,11 @@
       <div class="manger">
         <h2 class="title">买家账号管理</h2>
         <ul>
-          <li>
+          <!-- <li>
             <el-switch v-model="canGetOrder" :width="45" active-color="#40B6FF" inactive-color="#9f9f9f">
             </el-switch>
             <p>接单</p>
-          </li>
+          </li> -->
           <li>
             <strong>{{ userInfoObj.userScore }}</strong>分
             <p>用户行为分</p>
@@ -92,8 +92,11 @@
           <div class="tabCont">
             <h2>帐号绑定情况</h2>
             <h3>京东帐号&nbsp;&nbsp;
-              <strong class="red" v-if="userInfoObj.isJdPassCheck!=1">(认证待审核)</strong>
-              <span>收货地址:&nbsp;&nbsp;{{(userInfoObj.postProvince + userInfoObj.postCity + userInfoObj.postRegion + userInfoObj.postAddress) || '暂未填写'}}</span>
+              <strong class="red" v-if="userInfoObj.isJdPassCheck==0">(用户未提交)</strong>
+              <strong class="red" v-if="userInfoObj.isJdPassCheck==1">(认证已通过)</strong>
+              <strong class="red" v-if="userInfoObj.isJdPassCheck==2">(认证待审核)</strong>
+              <strong class="red" v-if="userInfoObj.isJdPassCheck==3">(认证已驳回)</strong>
+              <!-- <span>收货地址:&nbsp;&nbsp;{{(userInfoObj.postProvince + userInfoObj.postCity + userInfoObj.postRegion + userInfoObj.postAddress) || '暂未填写'}}</span> -->
             </h3>
             <div>
               <ul class="fourLi">
@@ -130,6 +133,9 @@
                   <p>plus会员到期时间:
                     <b>{{ userInfoObj.jdPlusEndDate ? userInfoObj.jdPlusEndDate.split(' ')[0] : '暂无' }}</b>
                   </p>
+                  <p>接单状态:
+                    <b>能接单</b>
+                  </p>
                 </li>
                 <li style="text-align: left;padding-left:50px; width: 33.3%">
                   <p>京东用户名:
@@ -147,7 +153,7 @@
                 </span>
                 <span class="btn whiteBtn" @click="editPLUS=true">修改plus</span> -->
                   <el-dialog title="修改plus" :append-to-body="true" :visible.sync="editPLUS" width="40%">
-                    <ul class="editCont" style="padding:0 20px;">
+                    <ul class="editCont" style="padding:0 20px 0 40px;">
                       <li style="height: 40px;line-height:40px;">
                         <span style="display: inline-block;width:120px;">京东用户名: </span>
                         <el-input v-model="fixJdName" style="width:220px" placeholder="输入京东用户名"></el-input>
@@ -181,13 +187,163 @@
                 </li>
               </ul>
               <div class="button">
-                <span v-if="userInfoObj.isJdPassCheck!=1" class="btn" @click="confirmAlert(1)">认证通过</span>
-                <span v-else class="btn whiteBtn el-icon-circle-check" style="color:#40B6FF;font-size:16px">
+                <span v-if="userInfoObj.isJdPassCheck==2" class="btn" @click="confirmAlert(1)">认证通过</span>
+                <span v-if="userInfoObj.isJdPassCheck==1" class="btn whiteBtn el-icon-circle-check" style="color:#40B6FF;font-size:16px">
                   <span style="color:#000;font-size:12px">&nbsp;&nbsp;已认证</span>
                 </span>
-                <!-- <span class="btn whiteBtn">驳回</span> -->
+                <span v-if="userInfoObj.isJdPassCheck==2" class="btn whiteBtn" @click="rej(1)">驳回</span>
               </div>
             </div>
+            <h3>淘宝帐号&nbsp;&nbsp;
+              <strong class="red" v-if="userInfoObj.isTaobaoPassCheck==0">(用户未提交)</strong>
+              <strong class="red" v-if="userInfoObj.isTaobaoPassCheck==1">(认证已通过)</strong>
+              <strong class="red" v-if="userInfoObj.isTaobaoPassCheck==2">(认证待审核)</strong>
+              <strong class="red" v-if="userInfoObj.isTaobaoPassCheck==3">(认证已驳回)</strong>
+            </h3>
+            <div>
+              <ul class="fourLi">
+                <li class="jdAccount" style="width:33.3%">
+                  <p>帐号截图:
+                    <a @click="lookImg(userInfoObj.taobaoAccountPicId)">
+                      <img :src="userInfoObj.taobaoAccountPicId" alt="">
+                    </a>
+                  </p>
+                  <p>帐号设置截图:
+                    <a @click="lookImg(userInfoObj.taobaoCenterPic)">
+                      <img :src="userInfoObj.taobaoCenterPic" alt="">
+                    </a>
+                  </p>
+                  <p>花呗截图:
+                    <a @click="lookImg(userInfoObj.huabeiPicId)">
+                      <img :src="userInfoObj.huabeiPicId" alt="">
+                    </a>
+                  </p>
+                </li>
+                <li style="width:33.3%">
+                  <p>淘宝用户名:
+                    <b>{{ userInfoObj.taobaoWangNickName || '暂无用户名' }}</b>
+                  </p>
+                  <p>性别:
+                    <b>{{ userInfoObj.gender == 1 ? '男' : userInfoObj.gender == 2 ? '女' : '未填写'}}</b>
+                  </p>
+                  <p>所在省:
+                    <b>{{ userInfoObj.locationProvince || '未填写' }}</b>
+                  </p>
+                  <p>年龄段:
+                    <b>{{ userInfoObj.ageIndex == 1 ? '18岁以下' : userInfoObj.ageIndex == 2 ? '18-25岁' :userInfoObj.ageIndex == 3 ? '25-35岁' : '未填写' }}</b>
+                  </p>
+                  <p>接单状态:
+                    <b>{{ userInfoObj.isTbAccept == 1 ? '能接单' : userInfoObj.isTbAccept == 0 ? '不能接单' : '未设置' }}</b>
+                  </p>
+                </li>
+                <li style="text-align: left;padding-left:50px; width: 33.3%">
+                  <p>淘气值:
+                    <b>{{ userInfoObj.taoqiValue || '暂无淘气值' }}</b>
+                  </p>
+                  <p>会员类型:
+                    <b>{{ userInfoObj.tbVipType == 1 ? '超级会员' : userInfoObj.tbVipType == 0 ? '88会员' : '未设置' }}</b>
+                  </p>
+                  <p>帐号等级:
+                    <b>{{ userInfoObj.taobaoAccountGrade == 1 ? '钻石会员' : userInfoObj.taobaoAccountGrade == 0 ? '非钻石会员' : '未设置' }}</b>
+                  </p>
+                  <p>花呗权限:
+                    <b>{{ userInfoObj.isTbHuabei == 1 ? '已开通' : userInfoObj.isTbHuabei == 0 ? '未开通' : '未设置' }}</b>
+                  </p>
+                  <p style="color: #1d6ae7;cursor:pointer" @click="showFixTbAlert">
+                    修改
+                  </p>
+                  <el-dialog title="修改淘宝帐号" :append-to-body="true" :visible.sync="editTb" top="10vh" width="40%">
+                    <ul class="editCont" style="padding:0 20px 0 40px;">
+                      <li style="height: 40px;line-height:40px;margin: 20px 0;">
+                        <span style="display: inline-block;width:120px;">淘宝用户名: </span>
+                        <el-input v-model="editTbObj.userName" style="width:220px" placeholder="输入淘宝用户名"></el-input>
+                      </li>
+                      <li style="height: 40px;line-height:40px; margin: 20px 0;">
+                        <span style="display: inline-block;width:120px;">性别: </span>
+                        <el-radio v-model="editTbObj.gender" label="1">男</el-radio>
+                        <el-radio v-model="editTbObj.gender" label="2">女</el-radio>
+                      </li>
+                      <li style="height: 40px;line-height:40px;margin: 20px 0;">
+                        <span style="display: inline-block;width:120px;">所在省: </span>
+                        <el-select v-model="editTbObj.province" style="width:220px" placeholder="请选择">
+                          <el-option v-for="(item, index) in provinceArr" :key="index" :label="item.name" :value="item.name">
+                          </el-option>
+                        </el-select>
+                      </li>
+                      <li style="height: 40px;line-height:40px;margin: 20px 0;">
+                        <span style="display: inline-block;width:120px;">年龄段: </span>
+                        <el-select v-model="editTbObj.ageArea" style="width:220px" placeholder="请选择">
+                          <el-option label="18岁以下" value="0">
+                          </el-option>
+                          <el-option label="18-25岁" value="1">
+                          </el-option>
+                          <el-option label="25-35岁" value="2">
+                          </el-option>
+                          <el-option label="35岁以上" value="3">
+                          </el-option>
+                        </el-select>
+                      </li>
+                      <li style="height: 40px;line-height:40px;margin: 20px 0;">
+                        <span style="display: inline-block;width:120px;">淘气值: </span>
+                        <el-input type="number" v-model="editTbObj.taoNum" style="width:220px" placeholder="输入淘气值"></el-input>
+                      </li>
+                      <li style="height: 40px;line-height:40px;margin: 20px 0;">
+                        <span style="display: inline-block;width:120px;">会员类型: </span>
+                        <el-select v-model="editTbObj.plusType" style="width:220px" placeholder="请选择">
+                          <el-option label="88会员" value="0">
+                          </el-option>
+                          <el-option label="超级会员" value="1">
+                          </el-option>
+                        </el-select>
+                      </li>
+                      <li style="height: 40px;line-height:40px;margin: 20px 0;">
+                        <span style="display: inline-block;width:120px;">帐号等级: </span>
+                        <el-select v-model="editTbObj.accountLeave" style="width:220px" placeholder="请选择">
+                          <el-option label="非钻石会员" value="0">
+                          </el-option>
+                          <el-option label="钻石会员" value="1">
+                          </el-option>
+                        </el-select>
+                      </li>
+                      <li style="height: 40px;line-height:40px;margin: 20px 0;">
+                        <span style="display: inline-block;width:120px;">花呗权益: </span>
+                        <el-radio v-model="editTbObj.huabei" label="1">已开通</el-radio>
+                        <el-radio v-model="editTbObj.huabei" label="0">未开通</el-radio>
+                      </li>
+                      <li style="height: 40px;line-height:40px;margin: 20px 0;">
+                        <span style="display: inline-block;width:120px;">接单状态: </span>
+                        <el-radio v-model="editTbObj.canGetOrder" label="1">能接单</el-radio>
+                        <el-radio v-model="editTbObj.canGetOrder" label="0">不能接单</el-radio>
+                      </li>
+                    </ul>
+                    <span slot="footer" class="dialog-footer">
+                      <el-button @click="editTb = false">取 消</el-button>
+                      <el-button type="primary" @click="toFixTbInfo">确 定</el-button>
+                    </span>
+                  </el-dialog>
+                </li>
+              </ul>
+              <div class="button">
+                <span v-if="userInfoObj.isTaobaoPassCheck==2" class="btn" @click="confirmAlert(4)">认证通过</span>
+                <span v-if="userInfoObj.isTaobaoPassCheck==1" class="btn whiteBtn el-icon-circle-check" style="color:#40B6FF;font-size:16px">
+                  <span style="color:#000;font-size:12px">&nbsp;&nbsp;已认证</span>
+                </span>
+                <span v-if="userInfoObj.isTaobaoPassCheck==2" class="btn whiteBtn" @click="rej(2)">驳回</span>
+              </div>
+            </div>
+            <el-dialog title="驳回帐号认证" :append-to-body="true" :visible.sync="returnAccount" width="40%">
+              <ul class="editCont" style="padding:0 20px 0 40px;margin-bottom:20px;">
+                <li>
+                  <span style="display: inline-block;width:120px;vertical-align:top">驳回原因: </span>
+                  <el-input v-model="returnReason" style="width:300px" type="textarea" :rows="4" placeholder="请输入驳回原因" resize="none">
+                  </el-input>
+                </li>
+              </ul>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="returnAccount = false">取 消</el-button>
+                <el-button type="primary" @click="sureToTurnBack">确 定</el-button>
+              </span>
+            </el-dialog>
             <h3>微信帐号</h3>
             <ul>
               <li>
@@ -279,7 +435,7 @@
                   <td>
                     <b>{{ item.userName }}
                       <span style="color:#929292;">{{ (item.buyerType == 0 ? '(买家)' : '(员工)') }}</span>
-                      <span class="link" style="font-size:12px;cursor:pointer;" @click="toDetail(item.buyerUserAccountId)">查看详情</span>
+                      <!-- <span class="link" style="font-size:12px;cursor:pointer;" @click="toDetail(item.buyerUserAccountId)">查看详情</span> -->
                     </b>
                   </td>
                   <td>
@@ -328,6 +484,8 @@ export default {
       activeName: 'first',
       addInivite: false,
       editPLUS: false,
+      editTb: false,
+      turnType: '',
       // 显示扣除份数弹框
       showScore: false,
       deleScore: 0,
@@ -338,6 +496,23 @@ export default {
       plusTime: '',
       fixJdName: '',
       baitiaoStatus: '',
+      // 淘宝修改信息
+      editTbObj: {
+        userName: '',
+        gender: '',
+        province: '',
+        ageArea: '',
+        taoNum: '',
+        plusType: '',
+        accountLeave: '',
+        huabei: '',
+        canGetOrder: ''
+      },
+      // 省
+      provinceArr: [],
+      // 驳回原因
+      returnAccount: false,
+      returnReason: '',
       // 显示上级信息
       showTop: true,
       // 上级信息
@@ -387,6 +562,91 @@ export default {
     lookImg (url) {
       this.lookImgUrl = url
       this.showLookImg = true
+    },
+    rej (type) {
+      if (type === 1) {
+        this.returnAccount = true
+        this.turnType = 'jingdon'
+      } else {
+        this.returnAccount = true
+        this.turnType = 'taobao'
+      }
+    },
+    sureToTurnBack () {
+      console.log(this.turnType)
+      if (this.turnType === 'taobao') {
+        this.$ajax.post('/api/buyerAccount/rejectTB', {
+          buyerAccountId: this.userInfoObj.buyerUserAccountId,
+          comment: this.returnReason
+        }).then((data) => {
+          if (data.data.code === '200') {
+            this.$message({
+              message: '驳回成功!',
+              type: 'success'
+            })
+            this.getUserInfo()
+          } else {
+            this.$message({
+              message: data.data.message,
+              type: 'warning'
+            })
+          }
+        }).catch((err) => {
+          this.$message.error(err)
+        })
+      } else {
+        this.$ajax.post('/api/buyerAccount/rejectJD', {
+          buyerAccountId: this.userInfoObj.buyerUserAccountId,
+          comment: this.returnReason
+        }).then((data) => {
+          if (data.data.code === '200') {
+            this.$message({
+              message: '驳回成功!',
+              type: 'success'
+            })
+            this.getUserInfo()
+            this.returnAccount = false
+          } else {
+            this.$message({
+              message: data.data.message,
+              type: 'warning'
+            })
+          }
+        }).catch((err) => {
+          this.$message.error(err)
+        })
+      }
+      this.returnAccount = false
+    },
+    toFixTbInfo () {
+      this.$ajax.post('/api/buyerAccount/fixTaobaoInfo', {
+        buyerUserAccountId: this.userInfoObj.buyerUserAccountId,
+        taobaoName: this.editTbObj.userName,
+        isAccept: this.editTbObj.canGetOrder,
+        gender: this.editTbObj.gender,
+        locationProvince: this.editTbObj.province,
+        ageIndex: this.editTbObj.ageArea,
+        taoqiValue: this.editTbObj.taoNum,
+        vipType: this.editTbObj.plusType,
+        accountLevel: this.editTbObj.accountLeave,
+        isHuabei: this.editTbObj.huabei
+      }).then((data) => {
+        if (data.data.code === '200') {
+          this.$message({
+            message: '修改成功!',
+            type: 'success'
+          })
+          this.editTb = false
+          this.getUserInfo()
+        } else {
+          this.$message({
+            message: data.data.message,
+            type: 'warning'
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
     },
     handleClick (tab, event) {
       if (tab.name === 'second') {
@@ -476,7 +736,8 @@ export default {
       }).then((data) => {
         console.log(data)
         if (data.data.code === '200') {
-          this.userInfoObj = data.data.data
+          let res = data.data.data
+          this.userInfoObj = res
         } else {
           this.$message({
             message: data.data.message,
@@ -486,6 +747,19 @@ export default {
       }).catch((err) => {
         this.$message.error(err)
       })
+    },
+    // 修改淘宝信息
+    showFixTbAlert () {
+      this.editTbObj.userName = this.userInfoObj.taobaoWangNickName || ''
+      this.editTbObj.gender = this.userInfoObj.gender || ''
+      this.editTbObj.province = this.userInfoObj.locationProvince || ''
+      this.editTbObj.ageArea = this.userInfoObj.ageIndex || ''
+      this.editTbObj.taoNum = this.userInfoObj.taoqiValue || ''
+      this.editTbObj.plusType = this.userInfoObj.tbVipType || ''
+      this.editTbObj.accountLeave = this.userInfoObj.taobaoAccountGrade || ''
+      this.editTbObj.huabei = this.userInfoObj.isTbHuabei || ''
+      this.editTbObj.canGetOrder = this.userInfoObj.isTbAccept || ''
+      this.editTb = true
     },
     // 获取上级信息
     getTopInfo (id, type) {
@@ -644,6 +918,36 @@ export default {
             message: '已取消操作'
           })
         })
+      } else if (index === 4) {
+        this.$confirm('此操作将通过该任务审核，是否继续？', '确认通过?', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$ajax.post('/api/buyerAccount/passConfirmTaobao', {
+            buyerUserAccountId: this.userInfoObj.buyerUserAccountId
+          }).then((data) => {
+            if (data.data.code === '200') {
+              this.$message({
+                type: 'success',
+                message: '操作成功!'
+              })
+              this.getUserInfo()
+            } else {
+              this.$message({
+                message: data.data.message,
+                type: 'warning'
+              })
+            }
+          }).catch((err) => {
+            this.$message.error(err)
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消操作'
+          })
+        })
       }
     },
     // 查看详情
@@ -704,6 +1008,22 @@ export default {
         this.$message.error(err)
       })
     },
+    // 获取地址
+    getProvince () {
+      this.$ajax.post('/api/config/location/getProvinceList', {
+      }).then((data) => {
+        if (data.data.code === '200') {
+          this.provinceArr = data.data.data
+        } else {
+          this.$message({
+            message: '获取省失败!',
+            type: 'warning'
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
+    },
     // 提前支取资金
     withdrawPost () {
       this.$ajax.post('/api/withdrawApply/createBuyerApply', {
@@ -732,6 +1052,7 @@ export default {
   mounted () {
     this.getUserInfo()
     this.getBuyerMoney()
+    this.getProvince()
   }
 }
 </script>
@@ -909,7 +1230,7 @@ export default {
       .button
         text-align center
         border-top 1px solid #e5e5e5
-        border-bottom 1px solid #e5e5e5
+        // border-bottom 1px solid #e5e5e5
         margin-bottom 20px
         padding 20px 0
       .fourLi
