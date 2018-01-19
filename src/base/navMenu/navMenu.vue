@@ -83,6 +83,10 @@ export default {
                 link: 'sellerApply'
               },
               {
+                text: '垫付申请',
+                link: 'rePay'
+              },
+              {
                 text: '商家充值',
                 link: 'sellerRecharge'
                 // bradge: 12
