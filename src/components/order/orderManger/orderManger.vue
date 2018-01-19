@@ -1,492 +1,394 @@
 <template>
   <div class="wrap">
     <header>
-      <h4>第一步</h4>
-      <div class="btn" @click="downLoad">下载今日任务列表</div>
-      <h4 class="two">第二步 任务分配</h4>
-      <el-row :gutter="10">
-        <el-col :span="7" style="border:1px solid rgba(0,0,0,0.2);margin-top:32px;margin-right:24px">
-          <div class="grid-content bg-purple">
-            <h5>任务一</h5>
-            <el-input v-model="input_1" placeholder="请输入内容" style="width:90%;margin-top:8px" @blur="taskOne">
-            </el-input>
-            <div class="Surtask">
-              <p>剩余任务量</p>
-              <span>{{taskData.leftNum||0}}</span>单
-            </div>
-            <div class="surMoney">
-              <p>剩余任务金额</p>
-              <span>{{taskData.sprice||0}}</span>元
-            </div>
+      <el-tabs v-model="activeName2" @tab-click="handleClicks">
+        <ul class="search getOrder">
+          <li>
+            派单时间&nbsp; &nbsp;
+            <el-date-picker v-model="value6" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" format="yyyy-MM-dd" value-format='yyyy-MM-dd'>
+            </el-date-picker>
+          </li>
+          <li>
+            管理员&nbsp; &nbsp;
+            <el-select v-model="value" placeholder="请选择">
+              <el-option v-for="(item,index) in options" :key="index" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+          </li>
+          <li>
+            管理员微信号&nbsp; &nbsp;
+            <el-select v-model="value" placeholder="请选择">
+              <el-option v-for="(item,index) in options" :key="index" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+          </li>
+        </ul>
+        <ul class="search_1 getOrder">
+          <li>
+            <span class="status">状态</span>&nbsp; &nbsp;
+            <el-select v-model="value" placeholder="请选择">
+              <el-option v-for="(item,index) in options" :key="index" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+          </li>
+          <li>
+            <el-button type="primary" @click="searchBtn">查询</el-button>
+          </li>
+        </ul>
+        <el-tab-pane label="未联系" name="first">
+          <div class="accountTab">
+            <el-table :data="tableData" border style="width: 100%">
+              <el-table-column fixed type="index" width="50" label="编号">
+              </el-table-column>
+              <el-table-column prop="date" label="任务包编号" width="120">
+              </el-table-column>
+              <el-table-column prop="name" label="任务包状态" width="120">
+              </el-table-column>
+              <el-table-column prop="province" label="垫付总金额" width="120">
+              </el-table-column>
+              <el-table-column prop="city" label="预计佣金" width="120">
+              </el-table-column>
+              <el-table-column prop="address" label="单数" width="120">
+              </el-table-column>
+              <el-table-column prop="zip" label="剩余单数" width="120">
+              </el-table-column>
+              <el-table-column prop="zip" label="买家姓名" width="120">
+              </el-table-column>
+              <el-table-column prop="zip" label="买家手机号" width="120">
+              </el-table-column>
+              <el-table-column prop="zip" label="买家微信备注" width="120">
+              </el-table-column>
+              <el-table-column prop="zip" label="平台联系人" width="120">
+              </el-table-column>
+              <el-table-column prop="zip" label="联系状态" width="120">
+              </el-table-column>
+              <el-table-column prop="zip" label="派包时间" width="120">
+              </el-table-column>
+              <el-table-column fixed="right" label="操作" width="100">
+                <template slot-scope="scope">
+                  <el-button @click="handleClick(scope.row)" type="text" size="small">我已联系</el-button>
+                  <el-button type="text" size="small">取消</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
           </div>
-        </el-col>
-        <el-col :span="7" style=" border:1px solid rgba(0,0,0,0.2);margin-top:32px;margin-right:24px">
-          <div class="grid-content bg-purple ">
-            <h5>任务二</h5>
-            <el-input v-model="input_2" placeholder="请输入内容" style="width:90%;margin-top:8px" @blur="taskTwo"></el-input>
-            <div class="Surtask">
-              <p>剩余任务量</p>
-              <span>{{taskData_1.leftNum||0}}</span>单
-            </div>
-            <div class="surMoney">
-              <p>剩余任务金额</p>
-              <span>{{taskData_1.sprice||0}}</span>元
-            </div>
+        </el-tab-pane>
+        <el-tab-pane label="已联系" name="second">
+          <!-- 展示内容部分 -->
+          <div class="accountTab">
+            <el-table :data="tableData" border style="width: 100%">
+              <el-table-column fixed type="index" width="50" label="编号">
+              </el-table-column>
+              <el-table-column prop="date" label="任务包编号" width="120">
+              </el-table-column>
+              <el-table-column prop="name" label="任务包状态" width="120">
+              </el-table-column>
+              <el-table-column prop="province" label="垫付总金额" width="120">
+              </el-table-column>
+              <el-table-column prop="city" label="预计佣金" width="120">
+              </el-table-column>
+              <el-table-column prop="address" label="单数" width="120">
+              </el-table-column>
+              <el-table-column prop="zip" label="剩余单数" width="120">
+              </el-table-column>
+              <el-table-column prop="zip" label="买家姓名" width="120">
+              </el-table-column>
+              <el-table-column prop="zip" label="买家手机号" width="120">
+              </el-table-column>
+              <el-table-column prop="zip" label="买家微信备注" width="120">
+              </el-table-column>
+              <el-table-column prop="zip" label="平台联系人" width="120">
+              </el-table-column>
+              <el-table-column prop="zip" label="联系状态" width="120">
+              </el-table-column>
+              <el-table-column prop="zip" label="派包时间" width="120">
+              </el-table-column>
+              <el-table-column fixed="right" label="操作" width="100">
+                <template slot-scope="scope">
+                  <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+                  <el-button type="text" size="small">编辑</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
           </div>
-        </el-col>
-        <el-col :span="7" style="border:1px solid rgba(0,0,0,0.2);margin-top:32px;margin-right:24px">
-          <div class=" grid-content bg-purple ">
-            <h5>任务三</h5>
-            <el-input v-model="input_3 " placeholder="请输入内容 " style="width:90%;margin-top:8px " @blur="taskThree"></el-input>
-            <div class="Surtask">
-              <p>剩余任务量</p>
-              <span>{{taskData_2.leftNum||0}}</span>单
-            </div>
-            <div class="surMoney">
-              <p>剩余任务金额</p>
-              <span>{{taskData_2.sprice||0}}</span>元
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-      <el-row :gutter="10">
-        <el-col :span="7" style="border:1px solid rgba(0,0,0,0.2);margin-top:32px;margin-right:24px">
-          <div class="grid-content bg-purple ">
-            <h5>任务四</h5>
-            <el-input v-model="input_4" placeholder="请输入内容" style="width:90%;margin-top:8px" @blur="taskFour"></el-input>
-            <div class="Surtask">
-              <p>剩余任务量</p>
-              <span>{{ taskData_3.leftNum||0 }}</span>单
-            </div>
-            <div class="surMoney">
-              <p>剩余任务金额</p>
-              <span>{{ taskData_3.sprice||0 }}</span>元
-            </div>
-          </div>
-        </el-col>
-        <el-col :span="7" style=" border:1px solid rgba(0,0,0,0.2);margin-top:32px;margin-right:24px">
-          <div class="grid-content bg-purple ">
-            <h5>任务五</h5>
-            <el-input v-model="input_5" placeholder="请输入内容" style="width:90%;margin-top:8px" @blur="taskFive"></el-input>
-            <div class="Surtask">
-              <p>剩余任务量</p>
-              <span>{{taskData_4.leftNum||0}}</span>单
-            </div>
-            <div class="surMoney">
-              <p>剩余任务金额</p>
-              <span>{{taskData_4.sprice||0}}</span>元
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-      <div class="line"></div>
-      <div class="bottom">
-        <div class="bottom_money">包单金额:&nbsp;&nbsp;
-          <span style="color:black;font-weight:600">{{this.totalAdd||0}}</span>元</div>
-        <el-button type="primary" style="margin-top:16px" @click="sureChoose">确认筛选</el-button>
-      </div>
-      <h4>第三步 订单分配</h4>
-      <div class="orderMent">
-        <el-table :data="tableData" style="width: 100%">
-          <el-table-column prop="name" label="姓名" align="center">
-          </el-table-column>
-          <el-table-column prop="phone" label="手机号" align="center">
-          </el-table-column>
-          <el-table-column prop="wchat" label="微信号" align="center">
-          </el-table-column>
-          <el-table-column prop="messg" label="管理员手机号" align="center">
-          </el-table-column>
-          <el-table-column prop="plus" label="Plus状态" align="center">
-          </el-table-column>
-          <el-table-column prop="date" label="会员到期日" align="center">
-          </el-table-column>
-          <el-table-column prop="city" label="收货城市" align="center">
-          </el-table-column>
-          <el-table-column prop="money" label="京东本月累计金额" align="center">
-          </el-table-column>
-          <el-table-column align="center" label="操作">
-            <template slot-scope="scope">
-              <el-button @click="handleClick(scope.$index, scope.row)" type="text" size="small" :disabled="waiteing">待分发</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <Nocont v-if="this.tableData.length===0"></Nocont>
-      </div>
-
-      <div class="pager" v-if="this.tableData.length!==0">
-        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
-        </el-pagination>
-      </div>
+          <noCont v-if="this.tableDataBuy.length===0"></noCont>
+        </el-tab-pane>
+        <!-- <noCont v-if="this.tableDataBuy.length===0"></noCont> -->
+        <div class="pager" v-if="noContPage">
+          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size='pageSize' layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
+          </el-pagination>
+        </div>
+      </el-tabs>
     </header>
   </div>
 </template>
 <script type="text/ecmascript-6">
-import Nocont from '../../../base/noCont/noCont'
+import noCont from '../../../base/noCont/noCont'
 export default {
-  name: 'orderManger',
+  name: 'sellerRecharge',
   components: {
-    Nocont
+    noCont
   },
   data () {
     return {
+      value3: '',
+      input6: '',
+      value6: '',
+      activeName2: 'first',
+      input5: '',
       currentPage: 1,
-      disabled: true,
-      totalCount: 0,
-      input_1: '',
-      input_2: '',
-      input_3: '',
-      input_4: '',
-      input_5: '',
-      taskData: {},
-      taskData_1: {},
-      taskData_2: {},
-      taskData_3: {},
-      taskData_4: {},
       pageSize: 5,
-      checked: false,
-      tableData: [],
-      apiUrl: '/api/buyerAccount/getSelectableBuyerUserInfo',
-      waiteing: false,
-      isJDPlus: ''
+      totalCount: 0,
+      tableData: [{
+        date: '2016-05-03',
+        name: '王小虎',
+        province: '上海',
+        city: '普陀区',
+        address: '上海市普陀区',
+        zip: 200333
+      }, {
+        date: '2016-05-02',
+        name: '王小虎',
+        province: '上海',
+        city: '普陀区',
+        address: '上海市普陀区',
+        zip: 200333
+      }, {
+        date: '2016-05-04',
+        name: '王小虎',
+        province: '上海',
+        city: '普陀区',
+        address: '上海市普陀区金',
+        zip: 200333
+      }, {
+        date: '2016-05-01',
+        name: '王小虎',
+        province: '上海',
+        city: '普陀区',
+        address: '上海市普陀区金',
+        zip: 200333
+      }],
+      options: [],
+      tableDataBuy: [{
+        orderTask: '55616156156156156',
+        phone: '18655554444',
+        moneyNum: '100.00',
+        remark: '备注一下',
+        sBank: '545565695685856',
+        dBank: '186669985665687',
+        JDStatus: '已到账',
+        time: '2017-11-15 20:30:30',
+        person: '展示'
+      }]
     }
   },
-  // 此数据用计算属性来处理
   computed: {
-    sendArr: function () {
-      let arr = []
-      if (this.input_1 !== '') {
-        arr.push(this.input_1)
+    noContPage: function () {
+      if (this.activeName2 === 'first' && this.tableData.length !== 0) {
+        return true
+      } else if (this.activeName2 === 'second' && this.tableDataBuy.length !== 0) {
+        return true
+      } else {
+        return false
       }
-      if (this.input_2 !== '') {
-        arr.push(this.input_2)
-      }
-      if (this.input_3 !== '') {
-        arr.push(this.input_3)
-      }
-      if (this.input_4 !== '') {
-        arr.push(this.input_4)
-      }
-      if (this.input_5 !== '') {
-        arr.push(this.input_5)
-      }
-      return arr
-    },
-    totalAdd: function () {
-      let number = 0
-      if (this.taskData.sprice) {
-        number += this.taskData.sprice
-      }
-      if (this.taskData_1.sprice) {
-        number += this.taskData_1.sprice
-      }
-      if (this.taskData_2.sprice) {
-        number += this.taskData_2.sprice
-      }
-      if (this.taskData_3.sprice) {
-        number += this.taskData_3.sprice
-      }
-      if (this.taskData_4.sprice) {
-        number += this.taskData_4.sprice
-      }
-      return number
     }
+  },
+  created () {
+    this.sercherOne(1, this.pageSize)
+    this.platformBankNum()
   },
   methods: {
-    reset () {
-      this.value = ''
+    handleClicks () {
+      if (this.activeName2 === 'first') {
+        this.sercherOne(1, this.pageSize)
+      } else if (this.activeName2 === 'second') {
+        this.sellerRecord(1, this.pageSize)
+      }
     },
-    handleClick (index, seller) {
-      this.waiteing = true
-      this.$ajax.post('/api/order/packageAssign', {
-        sellerTaskIds: this.sendArr,
-        plusType: this.isJDPlus,
-        buyerUserId: seller.sellerUserId
-      }).then((data) => {
-        let res = data.data
-        if (res.code === '200') {
-          this.$message({
-            type: 'sucess',
-            message: '分发成功'
-          })
-          this.waiteing = false
-          this.getDatas(1, this.pageSize)
-        } else {
-          this.$message({
-            type: 'error',
-            message: res.message
-          })
-        }
-      }).catch((err) => {
-        this.$message.error(err)
+    // 卖家充值申请的搜索
+    searchBankNum () {
+      this.sercherOne(1, this.pageSize)
+    },
+    // 卖家充值记录的搜索
+    searchTime () {
+      this.sellerRecord(1, this.pageSize)
+    },
+    handleClick (val) {
+      this.$confirm('此操作将确认卖家充值到账, 是否继续?', '确认卖家充值到账?', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'success'
+      }).then(() => {
+        this.$ajax.post('', {
+          sellerChargeApplyIds: [this.tableData[val].chargeApplyId],
+          platformBankCardId: this.input5
+        }).then((data) => {
+          let res = data.data
+          if (res.code === '200') {
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+            this.sercherOne(1, this.pageSize)
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'warning'
+            })
+          }
+        }).catch(() => {
+          this.$message.error('网络错误，刷新下试试')
+        })
+      }).catch((error) => {
+        console.log(error)
       })
     },
     handleSizeChange (val) {
-      this.getDatas(1, val)
+      if (this.activeName2 === 'first') {
+        this.sercherOne(1, val)
+      } else if (this.activeName2 === 'second') {
+        this.sellerRecord(1, val)
+      }
     },
     handleCurrentChange (val) {
-      this.getDatas(val, this.pageSize)
-    },
-    downLoad () {
-      window.open('/api/file/downloadTodayTaskFile')
-      // this.$ajax.get('/api/file/downloadTodayTaskFile', {
-      // }).then((data) => {
-      //   // window.open('http://182.61.29.51:8089/file/downloadTodayTaskFile')
-      // }).catch((err) => {
-      //   this.$message.error(err)
-      // })
-    },
-    // 当点击确认校验的时候触发的事件
-    sureChoose () {
-      if (this.input_1 === '' && this.input_2 === '' && this.input_3 === '' && this.input_4 === '' && this.input_5 === '') {
-        this.$message({
-          type: 'warning',
-          message: '操作失败,请至少添加一条任务!'
-        })
-        return false
+      if (this.activeName2 === 'first') {
+        this.sercherOne(val, this.pageSize)
+      } else if (this.activeName2 === 'second') {
+        this.sellerRecord(val, this.pageSize)
       }
-      // 后台校验输入的数据是否正确
-      this.$ajax.post('/api/seller/taskSearch/checkSellerTasksDuplicate', {
-        sellerTaskIds: this.sendArr
-      }).then((data) => {
-        let res = data.data
-        if (res.code === '200') {
-          this.isJDPlus = res.data.isJDPlus
-          // 校验无误的时候开始筛选列表
-          this.getDatas(1, this.pageSize)
-        } else {
-          this.$message({
-            type: 'error',
-            message: res.message
-          })
-        }
-      }).catch((err) => {
-        this.$message.error(err)
+    },
+    handleNoClickNo (val) {
+      this.$confirm('此操作将确认卖家充值未到账, 是否继续?', '确认卖家充值未到账?', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$ajax.post('', {
+          sellerChargeApplyIds: [this.tableData[val].chargeApplyId]
+        }).then((data) => {
+          let res = data.data
+          if (res.code === '200') {
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+            this.sercherOne(1, this.pageSize)
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'warning'
+            })
+          }
+        }).catch(() => {
+          this.$message.error('网络错误，刷新下试试')
+        })
+      }).catch((error) => {
+        console.log(error)
       })
     },
-    // 当点击确认筛选的时候进行买家的筛选
-    getDatas (pageNo, pageSize) {
-      this.$ajax.post('/api/buyerAccount/getSelectableBuyerUserInfo', {
+    // 卖家充值申请
+    sercherOne (pageNo, pageSize) {
+      this.$ajax.post('', {
+        statusList: ['0'],
         pageNo: pageNo,
         pageSize: pageSize,
-        sellerTaskIds: this.sendArr,
-        type: 'JD',
-        isPlus: this.isJDPlus
+        platformBankCardId: this.input5.bankCardId
       }).then((data) => {
         let res = data.data
         this.totalCount = res.data.totalCount
         if (res.code === '200') {
           let arr = []
-          for (let word of res.data.buyerUsers) {
-            let obj = {
-              name: word.userName,
-              phone: word.telephone,
-              wchat: word.wechatNum || '暂无数据',
-              messg: word.operaterTelephone,
-              plus: this.isJDPlus === '0' ? '--' : '正式会员',
-              // 用来截取 只获取年月日
-              date: word.jdPlusEndDate ? word.jdPlusEndDate.split(' ')[0] : '--',
-              city: word.postCity,
-              money: word.jdMonthIncome || '暂无数据',
-              sellerUserId: word.buyerUserAccountId
+          for (let word of res.data.chargeApplys) {
+            let goods = {
+              payWater: word.chargeApplyId,
+              phone: word.sellerTelephone,
+              payNum: word.chargeAmount,
+              remark: word.memo,
+              collectionBank: word.platformBankCardNo,
+              moneyBank: word.sellerBankCardNo,
+              creatTime: word.gmtCreate,
+              chargeApplyId: word.chargeApplyId
             }
-            arr.push(obj)
+            arr.push(goods)
           }
           this.tableData = arr
-          if (this.tableData.length === 0) {
-            this.$message({
-              type: 'warning',
-              message: '暂无匹配的买家'
-            })
-          }
         } else {
           this.$message({
-            type: 'error',
-            message: res.message
+            message: res.message,
+            type: 'warning'
+          })
+        }
+      }).catch(() => {
+        this.$message.error('网络错误，刷新下试试')
+      })
+    },
+    // 卖家充值记录
+    sellerRecord (pageNo, pageSize) {
+      this.$ajax.post('', {
+        statusList: ['1', '2'],
+        pageNo: pageNo,
+        pageSize: pageSize,
+        startTime: this.value3 ? this.value3[0] : '',
+        endTime: this.value3 ? this.value3[1] : '',
+        sellerTelephoneOrName: this.input6
+      }).then((data) => {
+        let res = data.data
+        this.totalCount = res.data.totalCount
+        if (res.code === '200') {
+          let arr = []
+          for (let word of res.data.chargeApplys) {
+            let goods = {
+              phone: word.sellerTelephone,
+              moneyNum: word.chargeAmount,
+              remark: word.memo,
+              sBank: word.platformBankCardNo,
+              dBank: word.sellerBankCardNo,
+              creatTime: word.gmtCreate,
+              orderTask: word.chargeApplyId,
+              JDStatus: word.status === '2' ? '未到账' : word.status === '1' ? '已到账' : '进行中',
+              time: word.gmtModify,
+              person: word.sellerBankCardUserName
+            }
+            arr.push(goods)
+          }
+          this.tableDataBuy = arr
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          })
+        }
+      }).catch(() => {
+        this.$message.error('网络错误，刷新下试试')
+      })
+    },
+    // 获取收款卡的卡号
+    platformBankNum () {
+      this.$ajax.post('', {
+        type: 0
+      }).then((data) => {
+        let res = data.data
+        if (res.code === '200') {
+          let arr = []
+          if (res.data) {
+            for (let word of res.data) {
+              let goods = {
+                bankCardId: word.bankCardId,
+                cardNo: word.cardNo
+              }
+              arr.push(goods)
+            }
+          }
+          this.options = arr
+        } else {
+          this.$message({
+            message: data.data.message,
+            type: 'warning'
           })
         }
       }).catch((err) => {
-        this.$message.error(err)
-      })
-    },
-    // 任务一失焦的时候请求对应的接口
-    taskOne () {
-      if (this.input_1 === '') {
-        this.taskData = {}
-        return false
-      }
-      if (this.input_2 === this.input_1 || this.input_3 === this.input_1 || this.input_4 === this.input_1 || this.input_5 === this.input_1) {
-        this.$message({
-          type: 'warning',
-          message: '该任务编号添加失败,请仔细核对!'
-        })
-        this.input_1 = ''
-        return false
-      }
-      this.$ajax.post('/api/seller/taskSearch/getTodayTaskDayBySellerTaskIds', {
-        sellerTaskIds: [this.input_1]
-      }).then((data) => {
-        let res = data.data
-        if (res.code === '200') {
-          let obj = {
-            leftNum: res.data[0].leftNum,
-            sprice: res.data[0].price,
-            sellerTaskDayId: res.data[0].sellerTaskDayId,
-            sellerTaskId: res.data[0].sellerTaskId
-          }
-          this.taskData = obj
-          if (obj.leftNum <= 0) {
-            this.$message({
-              type: 'warning',
-              message: '该任务当天余量为0,请更换任务'
-            })
-          }
-        }
-      }).catch((err) => {
-        this.$message.error(err)
-      })
-    },
-    taskTwo () {
-      if (this.input_2 === '') {
-        this.taskData_1 = {}
-        return false
-      }
-      if (this.input_3 === this.input_2 || this.input_4 === this.input_2 || this.input_5 === this.input_2 || this.input_1 === this.input_2) {
-        this.$message({
-          type: 'warning',
-          message: '该任务编号添加失败,请仔细核对!'
-        })
-        this.input_2 = ''
-        return false
-      }
-      this.$ajax.post('/api/seller/taskSearch/getTodayTaskDayBySellerTaskIds', {
-        sellerTaskIds: [this.input_2]
-      }).then((data) => {
-        let res = data.data
-        if (res.code === '200') {
-          let obj = {
-            leftNum: res.data[0].leftNum,
-            sprice: res.data[0].price,
-            sellerTaskDayId: res.data[0].sellerTaskDayId,
-            sellerTaskId: res.data[0].sellerTaskId
-          }
-          this.taskData_1 = obj
-          if (obj.leftNum <= 0) {
-            this.$message({
-              type: 'warning',
-              message: '该任务当天余量为0,请更换任务'
-            })
-          }
-        }
-      }).catch((err) => {
-        this.$message.error(err)
-      })
-    },
-    taskThree () {
-      if (this.input_3 === '') {
-        this.taskData_2 = {}
-        return false
-      }
-      if (this.input_4 === this.input_3 || this.input_5 === this.input_3 || this.input_1 === this.input_3 || this.input_2 === this.input_3) {
-        this.$message({
-          type: 'warning',
-          message: '该任务编号添加失败,请仔细核对!'
-        })
-        this.input_3 = ''
-        return false
-      }
-      this.$ajax.post('/api/seller/taskSearch/getTodayTaskDayBySellerTaskIds', {
-        sellerTaskIds: [this.input_3]
-      }).then((data) => {
-        let res = data.data
-        if (res.code === '200') {
-          let obj = {
-            leftNum: res.data[0].leftNum,
-            sprice: res.data[0].price,
-            sellerTaskDayId: res.data[0].sellerTaskDayId,
-            sellerTaskId: res.data[0].sellerTaskId
-          }
-          this.taskData_2 = obj
-          if (obj.leftNum <= 0) {
-            this.$message({
-              type: 'warning',
-              message: '该任务当天余量为0,请更换任务'
-            })
-          }
-        }
-      }).catch((err) => {
-        this.$message.error(err)
-      })
-    },
-    taskFour () {
-      if (this.input_4 === '') {
-        this.taskData_3 = {}
-        return false
-      }
-      if (this.input_1 === this.input_4 || this.input_4 === this.input_2 || this.input_4 === this.input_3 || this.input_5 === this.input_4) {
-        this.$message({
-          type: 'warning',
-          message: '该任务编号添加失败,请仔细核对!'
-        })
-        this.input_4 = ''
-        return false
-      }
-      this.$ajax.post('/api/seller/taskSearch/getTodayTaskDayBySellerTaskIds', {
-        sellerTaskIds: [this.input_4]
-      }).then((data) => {
-        let res = data.data
-        if (res.code === '200') {
-          let obj = {
-            leftNum: res.data[0].leftNum,
-            sprice: res.data[0].price,
-            sellerTaskDayId: res.data[0].sellerTaskDayId,
-            sellerTaskId: res.data[0].sellerTaskId
-          }
-          this.taskData_3 = obj
-          if (obj.leftNum <= 0) {
-            this.$message({
-              type: 'warning',
-              message: '该任务当天余量为0,请更换任务'
-            })
-          }
-        }
-      }).catch((err) => {
-        this.$message.error(err)
-      })
-    },
-    taskFive () {
-      if (this.input_5 === '') {
-        this.taskData_4 = {}
-        return false
-      }
-      if (this.input_1 === this.input_5 || this.input_5 === this.input_2 || this.input_5 === this.input_3 || this.input_5 === this.input_4) {
-        this.$message({
-          type: 'warning',
-          message: '该任务编号添加失败,请仔细核对!'
-        })
-        this.input_5 = ''
-        return false
-      }
-      this.$ajax.post('/api/seller/taskSearch/getTodayTaskDayBySellerTaskIds', {
-        sellerTaskIds: [this.input_5]
-      }).then((data) => {
-        let res = data.data
-        if (res.code === '200') {
-          let obj = {
-            leftNum: res.data[0].leftNum,
-            sprice: res.data[0].price,
-            sellerTaskDayId: res.data[0].sellerTaskDayId,
-            sellerTaskId: res.data[0].sellerTaskId
-          }
-          this.taskData_4 = obj
-          if (obj.leftNum <= 0) {
-            this.$message({
-              type: 'warning',
-              message: '该任务当天余量为0,请更换任务'
-            })
-          }
-        }
-      }).catch((err) => {
-        this.$message.error(err)
+        console.log(err)
+        this.$message.error('未知错误！')
       })
     }
   }
@@ -495,61 +397,39 @@ export default {
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .wrap
   padding 20px
-  min-width 900px
+  ::-webkit-scrollbar
+    width 100%
+    height 10px
   header
     background rgba(255, 255, 255, 1)
     padding 20px
-    h4
-      font-size 20px
-      color rgba(51, 51, 51, 1)
-      line-height 28px
-    .btn
-      width 144px
-      height 36px
-      border-radius 4px
-      border 1px solid rgba(204, 204, 204, 1)
-      color black
-      text-align center
-      line-height 36px
-      font-weight 500
-      cursor pointer
-      margin-top 24px
-    .btn:hover
-      background rgba(64, 182, 255, 1)
-      color white
-    .two
-      margin-top 40px
-    .bg-purple
-      margin-left 24px
-      h5
-        font-size 14px
-        color rgba(51, 51, 51, 1)
-        margin-top 16px
-      .Surtask
-        margin-top 16px
-        font-size 12px
-        color rgba(102, 102, 102, 1)
-        font-weight 600
-        span
-          display inline-block
-          margin-top 8px
-          padding-bottom 16px
-      .surMoney
-        margin-top -48px
-        margin-left 136px
-        font-weight 600
-        span
-          display inline-block
-          margin-top 8px
-          padding-bottom 16px
+    .search, .search_1
+      display flex
+      justify-content flex-start
+      margin-top 20px
+      li
+        margin-right 20px
+      .status
+        margin-right 23px
+    .top
+      width 280px
+      margin-left 70%
     .line
       height 1px
-      background rgba(204, 204, 204, 1)
+      background rgba(229, 229, 229, 1)
       margin-top 24px
-    .bottom
-      text-align right
-      margin-top 25px
-      .bottom_money
-        color rgba(102, 102, 102, 1)
-        font-size 12px
+    .second_top
+      margin-top 20px
+      width 100%
+      overflow hidden
+      .Stime
+        float left
+        margin-right 30px
+      .search
+        width 280px
+        float left
+      .excel
+        float right
+    .accountTab
+      margin-top 30px
 </style>

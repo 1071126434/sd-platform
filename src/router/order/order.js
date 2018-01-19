@@ -18,6 +18,11 @@ const OrderEvaluteRegect = (resolve) => {
     resolve(module)
   })
 }
+const TaskPackage = (resolve) => {
+  import('@/components/order/taskPackage/taskPackage').then((module) => {
+    resolve(module)
+  })
+}
 const order = [{
   path: 'order/orderManger',
   component: OrderManger,
@@ -37,6 +42,12 @@ const order = [{
   path: 'order/orderEvaluteRegect',
   component: OrderEvaluteRegect,
   name: 'orderEvaluteRegect'
+},
+{
+  path: 'order/taskPackage',
+  component: TaskPackage,
+  name: 'taskPackage',
+  meta: { title: '任务包管理' }
 }
 ]
 export default order

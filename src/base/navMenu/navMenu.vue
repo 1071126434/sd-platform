@@ -52,6 +52,10 @@ export default {
                 link: 'orderManger'
               },
               {
+                text: '任务包管理',
+                link: 'taskPackage'
+              },
+              {
                 text: '订单查询',
                 link: 'orderFind'
               },
@@ -73,6 +77,10 @@ export default {
               {
                 text: '买家提现',
                 link: 'buyerApply'
+              },
+              {
+                text: '商家提现',
+                link: 'sellerApply'
               },
               {
                 text: '商家充值',
