@@ -8,6 +8,11 @@ const SellerRecharge = (resolve) => {
     resolve(module)
   })
 }
+const RePay = (resolve) => {
+  import('@/components/money/buyerApply/rePay').then((module) => {
+    resolve(module)
+  })
+}
 const money = [{
   path: 'money/buyerApply',
   component: BuyerApply,
@@ -17,6 +22,11 @@ const money = [{
   path: 'money/sellerRecharge',
   component: SellerRecharge,
   name: 'sellerRecharge'
+},
+{
+  path: 'money/rePay',
+  component: RePay,
+  name: 'rePay'
 }
 ]
 export default money

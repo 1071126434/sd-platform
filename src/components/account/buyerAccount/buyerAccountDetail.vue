@@ -29,6 +29,8 @@
         <ul>
           <li>
             <strong>{{ userMoneyObj.availableCapitalAmount }}</strong>
+            <span class="addBtn" @click="deleMoney=true">-</span>
+            <span class="addBtn" @click="addMoney=true">+</span>
             <p>本金余额
               <span class="link" @click="showWithdraw=true">提前支取</span>
             </p>
@@ -46,6 +48,38 @@
                   <el-button type="primary" @click="withdrawPost">确 定</el-button>
                 </span>
               </el-dialog>
+              <el-dialog title="增加买家本金余额" :append-to-body="true" :visible.sync="addMoney" width="40%">
+                <ul class="editCont" style="padding:0 20px;">
+                  <li style="height: 40px;line-height:40px;margin-bottom:20px;">
+                    <span style="display: inline-block;width:80px;">增加金额: </span>
+                    <el-input style="width:340px" type="number" placeholder="请输入内容"></el-input>
+                  </li>
+                  <li style="height: 40px;line-height:40px;">
+                    <span style="display: inline-block;width:80px;">备注: </span>
+                    <el-input style="width:340px" type="text" placeholder="请输入内容"></el-input>
+                  </li>
+                </ul>
+                <span slot="footer" class="dialog-footer">
+                  <el-button @click="addMoney = false">取 消</el-button>
+                  <el-button type="primary" @click="addMoney=false">确 定</el-button>
+                </span>
+              </el-dialog>
+              <el-dialog title="扣除买家本金余额" :append-to-body="true" :visible.sync="deleMoney" width="40%">
+                <ul class="editCont" style="padding:0 20px;">
+                  <li style="height: 40px;line-height:40px;margin-bottom:20px;">
+                    <span style="display: inline-block;width:80px;">扣除金额: </span>
+                    <el-input style="width:340px" type="number" placeholder="请输入内容"></el-input>
+                  </li>
+                  <li style="height: 40px;line-height:40px;">
+                    <span style="display: inline-block;width:80px;">备注: </span>
+                    <el-input style="width:340px" type="text" placeholder="请输入内容"></el-input>
+                  </li>
+                </ul>
+                <span slot="footer" class="dialog-footer">
+                  <el-button @click="deleMoney = false">取 消</el-button>
+                  <el-button type="primary" @click="deleMoney=false">确 定</el-button>
+                </span>
+              </el-dialog>
             </div>
           </li>
           <li>
@@ -58,11 +92,11 @@
       <div class="manger">
         <h2 class="title">买家账号管理</h2>
         <ul>
-          <!-- <li>
+          <li>
             <el-switch v-model="canGetOrder" :width="45" active-color="#40B6FF" inactive-color="#9f9f9f">
             </el-switch>
             <p>接单</p>
-          </li> -->
+          </li>
           <li>
             <strong>{{ userInfoObj.userScore }}</strong>分
             <p>用户行为分</p>
@@ -475,6 +509,8 @@ export default {
   },
   data () {
     return {
+      addMoney: false,
+      deleMoney: false,
       currentPage: 1,
       pageSize: 5,
       pageNo: 1,
@@ -1059,6 +1095,16 @@ export default {
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .buyerAccountDetail
   padding 0 20px 20px
+  .addBtn
+    display inline-block
+    margin-left 5px
+    width 20px
+    height 20px
+    line-height 20px
+    text-align center
+    border 1px solid #979797
+    font-size 16px
+    cursor pointer
   .btn
     display inline-block
     text-align center

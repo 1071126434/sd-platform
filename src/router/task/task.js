@@ -8,6 +8,11 @@ const TaskDetail = (resolve) => {
     resolve(module)
   })
 }
+const tryDetail = (resolve) => {
+  import('@/components/task/tryDetail').then((module) => {
+    resolve(module)
+  })
+}
 const task = [{
   path: 'task',
   component: Task,
@@ -16,5 +21,9 @@ const task = [{
   path: 'task/taskDetail',
   component: TaskDetail,
   name: 'taskDetail'
+}, {
+  path: 'task/tryDetail',
+  component: tryDetail,
+  name: 'tryDetail'
 }]
 export default task
