@@ -10,7 +10,7 @@
             </div>
           </div>
           <div class="midd">
-            <span>做单渠道:</span>
+            <span class="work">做单渠道: </span>&nbsp;&nbsp; &nbsp;
             <el-checkbox-group v-model="checkList">
               <el-checkbox label="淘宝/天猫"></el-checkbox>
               <el-checkbox label="京东"></el-checkbox>
@@ -87,6 +87,7 @@
         </p>
         <span>已选中:34人</span>
       </div>
+      <div class="red"></div>
       <!-- 数据展示部分 -->
       <el-table :data="tableDataBuy" style="width: 100%" @select="handSelect" @select-all="selectAll" :default-sort="{prop: 'date', order: 'descending'}">
         <el-table-column type="selection"></el-table-column>
@@ -663,6 +664,8 @@ export default {
         font-size 14px
       .midd
         margin-left -40%
+        .work
+          margin-top 3px
       .content
         margin-top -12px
     .middle
@@ -693,4 +696,12 @@ export default {
     justify-content space-between
     .mit
       margin-left -60%
+  .red
+    position absolute
+    width 17px
+    height 35px
+    background #ffffff
+    left 33px
+    top 175px
+    z-index 555
 </style>

@@ -67,7 +67,7 @@
               <el-table-column fixed="right" label="操作" width="100">
                 <template slot-scope="scope">
                   <el-button @click="handleClick(scope.row)" type="text" size="small">我已联系</el-button>
-                  <el-button type="text" size="small">取消</el-button>
+                  <el-button @click="handleNoClickNo(scope.row)" type="text" size="small">取消</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -106,7 +106,7 @@
               <el-table-column fixed="right" label="操作" width="100">
                 <template slot-scope="scope">
                   <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-                  <el-button type="text" size="small">编辑</el-button>
+                  <el-button type="text" size="small">撤销</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -120,6 +120,18 @@
         </div>
       </el-tabs>
     </header>
+    <!-- 点击撤销触发的弹框 -->
+    <el-dialog title="撤销" :visible.sync="dialogFormVisible_2" :modal-append-to-body='false' width="36%" style="margin-top: 25vh">
+      <el-radio-group v-model="radio2">
+        <el-radio :label="3" style="line-height:40px">已联系做单，立马做</el-radio> <br>
+        <el-radio :label="6" style="line-height:40px">已联系做单，晚点做</el-radio> <br>
+        <el-radio :label="9" style="line-height:40px">已联系，未回信息</el-radio> <br>
+      </el-radio-group>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible_2 = false">取 消</el-button>
+        <el-button type="primary" @click="sure_2">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -131,6 +143,7 @@ export default {
   },
   data () {
     return {
+      radio2: 3,
       value3: '',
       input6: '',
       value6: '',
@@ -139,6 +152,7 @@ export default {
       currentPage: 1,
       pageSize: 5,
       totalCount: 0,
+      dialogFormVisible_2: false,
       tableData: [{
         date: '2016-05-03',
         name: '王小虎',
@@ -213,8 +227,9 @@ export default {
     searchTime () {
       this.sellerRecord(1, this.pageSize)
     },
+    // 当点击我已联系做单触发的事件
     handleClick (val) {
-      this.$confirm('此操作将确认卖家充值到账, 是否继续?', '确认卖家充值到账?', {
+      this.$confirm('此操作将确认已联系买家做单?', '确认已联系?', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'success'
@@ -257,34 +272,12 @@ export default {
         this.sellerRecord(val, this.pageSize)
       }
     },
+    // 当点击撤销触发的事件
     handleNoClickNo (val) {
-      this.$confirm('此操作将确认卖家充值未到账, 是否继续?', '确认卖家充值未到账?', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$ajax.post('', {
-          sellerChargeApplyIds: [this.tableData[val].chargeApplyId]
-        }).then((data) => {
-          let res = data.data
-          if (res.code === '200') {
-            this.$message({
-              type: 'success',
-              message: '操作成功!'
-            })
-            this.sercherOne(1, this.pageSize)
-          } else {
-            this.$message({
-              message: res.message,
-              type: 'warning'
-            })
-          }
-        }).catch(() => {
-          this.$message.error('网络错误，刷新下试试')
-        })
-      }).catch((error) => {
-        console.log(error)
-      })
+      this.dialogFormVisible_2 = true
+    },
+    sure_2 () {
+      // 进行撤销的处理
     },
     // 卖家充值申请
     sercherOne (pageNo, pageSize) {

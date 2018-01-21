@@ -49,11 +49,11 @@ export default {
             lines: [
               {
                 text: '派单管理',
-                link: 'orderManger'
+                link: 'taskPackage'
               },
               {
                 text: '任务包管理',
-                link: 'taskPackage'
+                link: 'orderManger'
               },
               {
                 text: '订单查询',
@@ -111,12 +111,16 @@ export default {
           },
           {
             icon: 'icon-complaint-',
-            header: '投诉处理',
+            header: '申诉处理',
             routerHead: 'complain',
             lines: [
               {
-                text: '商家投诉',
+                text: '商家申诉',
                 link: 'sellerComplain'
+              },
+              {
+                text: '买家申诉',
+                link: 'buyComplain'
               }
             ]
           }
