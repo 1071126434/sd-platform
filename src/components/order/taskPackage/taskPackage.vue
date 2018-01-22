@@ -6,14 +6,14 @@
           <div class="purple_2">
             <div class="grid-content bg-purple">
               做单时间:
-              <el-autocomplete style="windth:240px;height:32px" class="inline-input" v-model="state2" :fetch-suggestions="querySearch" placeholder="请输入内容" :trigger-on-focus="false"></el-autocomplete>
+              <el-autocomplete style="windth:240px;height:32px" disabled class="inline-input" v-model="state2" :fetch-suggestions="querySearch" placeholder="请输入内容" :trigger-on-focus="false"></el-autocomplete>
             </div>
           </div>
           <div class="midd">
             <span class="work">做单渠道: </span>&nbsp;&nbsp; &nbsp;
-            <el-checkbox-group v-model="checkList">
-              <el-checkbox label="淘宝/天猫"></el-checkbox>
-              <el-checkbox label="京东"></el-checkbox>
+            <el-checkbox-group v-model="checkList" @change="changeCheckbox">
+              <el-checkbox label='1,2'>天猫/淘宝</el-checkbox>
+              <el-checkbox label="0">京东</el-checkbox>
             </el-checkbox-group>
           </div>
           <div class="content">
@@ -30,46 +30,46 @@
         </div>
         <!-- 内容列表展示 -->
         <div class="accountTab">
-          <el-table :data="tableDataBuy" style="width: 100%" @select="handSelect" @select-all="selectAll" :default-sort="{prop: 'date', order: 'descending'}">
+          <el-table :data="tableDataBuy" style="width: 100%" @select="handSelect" @select-all="selectAll">
             <el-table-column type="selection"></el-table-column>
-            <el-table-column prop="phone" align="center" label="编号">
+            <el-table-column prop="sellerTaskId" align="center" label="编号">
             </el-table-column>
-            <el-table-column prop="moneyNum" align="center" label="实际下单金额" sortable>
+            <el-table-column prop="productOrderPrice" align="center" label="实际下单金额" sortable>
             </el-table-column>
             <el-table-column prop="moneyType" align="center" label="剩余单数" sortable>
             </el-table-column>
             <el-table-column prop="bankNum" align="center" label="领取组团数" sortable>
             </el-table-column>
-            <el-table-column prop="bank" align="center" label="任务备注">
+            <el-table-column prop="comment" align="center" label="任务备注">
             </el-table-column>
-            <el-table-column prop="name" align="center" label="是否需要Plus">
+            <el-table-column prop="isPlus" align="center" label="是否需要Plus">
             </el-table-column>
-            <el-table-column prop="time" align="center" label="是否需要钻石">
+            <el-table-column prop="isOnlyDiamond" align="center" label="是否需要钻石">
             </el-table-column>
-            <el-table-column prop="state" align="center" label="是否开通花呗">
+            <el-table-column prop="isOnlyHuabei" align="center" label="是否开通花呗">
             </el-table-column>
-            <el-table-column prop="state" align="center" label="店铺">
+            <el-table-column prop="shopName" align="center" label="店铺">
             </el-table-column>
-            <el-table-column prop="state" align="center" label="商品标题">
+            <el-table-column prop="productName" align="center" label="商品标题">
             </el-table-column>
-            <el-table-column prop="state" align="center" label="三级类目">
+            <el-table-column prop="productSecondClassDetail" align="center" label="三级类目">
             </el-table-column>
           </el-table>
           <div class="line"></div>
           <div class="moneyNum">
-            <p class="number">实际金额 :
+            <!-- <p class="number">实际金额 :
               <span style="color:#ff3341">{{moneyNumber}}</span>
-            </p>
-            <el-button @click="allSure(applyIdsNumChoose)">批量确认</el-button>
+            </p> -->
+            <!-- <el-button @click="allSure(applyIdsNumChoose)">批量确认</el-button> -->
           </div>
         </div>
-        <Nocont v-if="this.tableDataBuy.length===0"></Nocont>
+        <!-- <Nocont v-if="this.tableDataBuy.length===0"></Nocont> -->
 
         <!-- 分页 -->
-        <div class="pager" style="clear:both" v-if="showPager">
+        <!-- <div class="pager" style="clear:both" v-if="showPager">
           <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
           </el-pagination>
-        </div>
+        </div> -->
       </el-tabs>
     </header>
     <!-- 点击确认派发之后触发的弹框 -->
@@ -123,6 +123,7 @@ export default {
   },
   data () {
     return {
+      state2: ((new Date()).toLocaleDateString()).replace(/\//g, '-'),
       input: '',
       checkList: [],
       activeName2: 'first',
@@ -157,24 +158,24 @@ export default {
       // 批量导出的时候暂不处理的不给导出处理
       point_1: '',
       point_2: '',
-      gridData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }],
-      dialogTableVisible: true
+      // gridData: [{
+      //   date: '2016-05-02',
+      //   name: '王小虎',
+      //   address: '上海市普陀区金沙江路 1518 弄'
+      // }, {
+      //   date: '2016-05-04',
+      //   name: '王小虎',
+      //   address: '上海市普陀区金沙江路 1518 弄'
+      // }, {
+      //   date: '2016-05-01',
+      //   name: '王小虎',
+      //   address: '上海市普陀区金沙江路 1518 弄'
+      // }, {
+      //   date: '2016-05-03',
+      //   name: '王小虎',
+      //   address: '上海市普陀区金沙江路 1518 弄'
+      // }],
+      dialogTableVisible: false
     }
   },
   computed: {
@@ -192,13 +193,13 @@ export default {
     }
   },
   created () {
-    this.buyerData(1, this.pageSize)
-    this.bankLists()
+    // this.buyerData(1, this.pageSize)
+    // this.bankLists()
   },
   methods: {
     handleClickTab () {
       if (this.activeName2 === 'first') {
-        this.buyerData(1, this.pageSize)
+        // this.buyerData(1, this.pageSize)
       } else if (this.activeName2 === 'second') {
         this.buyerDataList(1, this.pageSize)
       }
@@ -265,7 +266,7 @@ export default {
             type: 'success'
           })
           this.dialogFormVisible_1 = false
-          this.buyerData(1, this.pageSize)
+          // this.buyerData(1, this.pageSize)
         } else {
           this.$message({
             message: res.message,
@@ -291,7 +292,7 @@ export default {
             message: res.message,
             type: 'success'
           })
-          this.buyerData(1, this.pageSize)
+          // this.buyerData(1, this.pageSize)
         } else {
           this.$message({
             message: res.message,
@@ -324,7 +325,7 @@ export default {
             type: 'success'
           })
           this.dialogFormBankOne = false
-          this.buyerData(1, this.pageSize)
+          // this.buyerData(1, this.pageSize)
         } else {
           this.$message({
             message: res.message,
@@ -355,7 +356,7 @@ export default {
             type: 'success'
           })
           this.dialogFormVisible_2 = false
-          this.buyerData(1, this.pageSize)
+          // this.buyerData(1, this.pageSize)
         } else {
           this.$message({
             message: res.message,
@@ -369,45 +370,43 @@ export default {
     // 单个取消的结束
     handleSizeChange (val) {
       if (this.activeName2 === 'first') {
-        this.buyerData(1, val)
+        // this.buyerData(1, val)
       } else if (this.activeName2 === 'second') {
         this.buyerDataList(1, val)
       }
     },
     handleCurrentChange (val) {
       if (this.activeName2 === 'first') {
-        this.buyerData(val, this.pageSize)
+        // this.buyerData(val, this.pageSize)
       } else if (this.activeName2 === 'second') {
         this.buyerDataList(val, this.pageSize)
       }
     },
     // 当进入页面进行展示的部分
-    buyerData (pageNo, pageSize) {
-      this.$ajax.post('/api/withdrawApply/getApplysByConditions', {
-        statusList: ['0'],
-        pageNo: pageNo,
-        pageSize: pageSize,
-        startTime: this.value4 ? this.value4[0] : '',
-        endTime: this.value4 ? this.value4[1] : ''
+    changeCheckbox () {
+      this.$ajax.post('/api/seller/taskSearch/getDayTaskList', {
+        day: this.state2,
+        shopType: (this.checkList).join(',')
       }).then((data) => {
+        console.log(data)
         let res = data.data
-        this.totalCount = res.data.totalCount
+        // this.totalCount = res.data.totalCount
         if (res.code === '200') {
           let arr = []
           // if (res.data) {
-          for (let word of res.data.withdrawApplys) {
+          for (let word of res.data) {
             let goods = {
-              phone: word.userTelephone,
-              moneyNum: word.actualAmount,
-              bankNum: word.bankCardNo,
-              bank: word.bankName,
-              name: word.userName,
-              time: word.gmtCreate,
-              withdrawApplyId: word.withdrawApplyId,
-              state: word.isExport === '0' ? '未导出' : '已导出',
-              state1: word.isStoped,
+              sellerTaskId: word.sellerTaskId,
+              productOrderPrice: word.productOrderPrice,
+              // 剩余单数(无)
+              // 领取组团数(无)
               comment: word.comment,
-              moneyType: word.withdrawType === '0' ? '本金提现' : '提前支取'
+              isPlus: word.isPlus === '0' ? '否' : word.isPlus === '1' ? '是' : '--',
+              isOnlyDiamond: word.isOnlyDiamond === '0' ? '否' : word.isOnlyDiamond === '1' ? '是' : '--',
+              isOnlyHuabei: word.isOnlyHuabei === '0' ? '否' : word.isOnlyHuabei === '1' ? '是' : '--',
+              shopName: word.shopName,
+              productName: word.productName,
+              productSecondClassDetail: word.productSecondClassDetail
             }
             arr.push(goods)
           }
@@ -419,17 +418,16 @@ export default {
             type: 'warning'
           })
         }
-      }).catch(() => {
+      }).catch((error) => {
+        console.log(error)
         this.$message.error('网络错误，刷新下试试')
       })
     },
     // 当进入第二个请求的部分
     // 当进入页面进行展示的部分
-    buyerDataList (pageNo, pageSize) {
+    buyerDataList () {
       this.$ajax.post('/api/withdrawApply/getApplysByConditions', {
         statusList: ['1', '2'],
-        pageNo: pageNo,
-        pageSize: pageSize,
         startTime: this.value3 ? this.value3[0] : '',
         endTime: this.value3 ? this.value3[1] : '',
         buyerTelephoneOrName: this.input5
@@ -499,7 +497,7 @@ export default {
             type: 'success'
           })
           this.dialogFormBank = false
-          this.buyerData(1, this.pageSize)
+          // this.buyerData(1, this.pageSize)
         } else {
           this.$message({
             message: res.message,
@@ -510,7 +508,7 @@ export default {
         this.$message.error('网络错误，刷新下试试')
       })
     },
-    // 设置导出状态的接口
+    // 当点击确认派发触发的事件
     exportData (val) {
       this.dialogTableVisible = true
       console.log(val)
@@ -559,7 +557,7 @@ export default {
             type: 'success'
           })
           this.dialogFormVisible = false
-          this.buyerData(1, this.pageSize)
+          // this.buyerData(1, this.pageSize)
         } else {
           this.$message({
             message: res.message,
@@ -585,7 +583,7 @@ export default {
             type: 'success'
           })
           this.dialogFormVisible = false
-          this.buyerData(1, this.pageSize)
+          // this.buyerData(1, this.pageSize)
         } else {
           this.$message({
             message: res.message,
@@ -598,7 +596,7 @@ export default {
     },
     // 日期的筛选
     blur () {
-      this.buyerData(1, this.pageSize)
+      // this.buyerData(1, this.pageSize)
     },
     search () {
       this.buyerDataList(1, this.pageSize)

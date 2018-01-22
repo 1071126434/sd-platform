@@ -47,7 +47,7 @@ const order = [{
   path: 'order/taskPackage',
   component: TaskPackage,
   name: 'taskPackage',
-  meta: { title: '任务包管理' }
+  meta: { title: '派单管理' }
 }
 ]
 export default order
