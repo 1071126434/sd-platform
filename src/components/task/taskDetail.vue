@@ -94,7 +94,7 @@
                   <div>
                     <div>
                       <p>商品名称: {{ goodsInfoObj.productName }}</p>
-                      <p>所在分类: {{ goodsInfoObj.productClassFirstDetail + ' / ' + goodsInfoObj.productClassSecondDetail + ' / ' + goodsInfoObj.productClassThirdDetail }}</p>
+                      <p>所在分类: {{ goodsInfoObj.productClassFirstDetail + ' / ' + goodsInfoObj.productClassSecondDetail + (goodsInfoObj.productClassThirdDetail ? (' / ' + goodsInfoObj.productClassThirdDetail) : '') }}</p>
                     </div>
                     <div>
                       <p style="width:80%">商品链接:
@@ -120,14 +120,16 @@
                       <span>排序方式:</span>{{ item.sortClass || '其他' }}</p>
                     <p>
                       <span>价格区间:</span>{{ item.priceLow }}-{{ item.priceHigh }}元</p>
-                    <p>
+                    <p v-if="taskInfoObj.shopType==0">
                       <span>品牌:</span>{{ item.brand || '暂无品牌信息' }}</p>
                     <p>
                       <span>发货地:</span>{{ item.postLocation }}</p>
-                    <p>
+                    <p v-if="taskInfoObj.shopType==0">
                       <span>评价数(约):</span>{{ item.favorNum }}</p>
-                    <p>
+                    <p v-if="taskInfoObj.shopType==0">
                       <span>预计翻页数:</span>{{ item.pageNum }}</p>
+                    <p v-else>
+                      <span>付款人数:</span>{{ item.pageNum }}</p>
                   </li>
                 </ul>
               </li>
@@ -169,7 +171,10 @@
                   </div>
                 </td>
                 <td>{{ benjin }}元</td>
-                <td rowspan="2">
+                <td v-if="taskInfoObj.shopType==0" rowspan="2">
+                  <span class="red">{{ totalPriceObj.totalPrice }}</span>元
+                </td>
+                <td v-else rowspan="3">
                   <span class="red">{{ totalPriceObj.totalPrice }}</span>元
                 </td>
               </tr>
@@ -184,6 +189,28 @@
                   </div>
                 </td>
                 <td>{{ yongjin }}元</td>
+              </tr>
+              <tr v-if="taskInfoObj.shopType==1 || taskInfoObj.shopType==2">
+                <td>
+                  <span>增值服务</span>
+                </td>
+                <td>
+                  <div style="width:50%;margin:0 auto;">
+                    <p>地域限制: {{ totalPriceObj.limitLocationPrice }}元 / 单*
+                      <span class="red">{{ totalPriceObj.isLimitLocation == 1 ? totalPriceObj.totalNum : 0 }}</span>单</p>
+                    <p>年龄限制: {{ totalPriceObj.limitAgePrice }}元 / 单*
+                      <span class="red">{{ totalPriceObj.isLimitAge == 1 ? totalPriceObj.totalNum : 0 }}</span>单</p>
+                    <p>性别限制: {{ totalPriceObj.limitGenderPrice }}元 / 单*
+                      <span class="red">{{ totalPriceObj.isLimitGender == 1 ? totalPriceObj.totalNum : 0 }}</span>单</p>
+                    <p>钻石限制: {{ totalPriceObj.limitDiamondPrice }}元 / 单*
+                      <span class="red">{{ totalPriceObj.isLimitDiamond == 1 ? totalPriceObj.totalNum : 0 }}</span>单</p>
+                    <p>花呗限制: {{ totalPriceObj.limitHuabeiPrice }}元 / 单*
+                      <span class="red">{{ totalPriceObj.isLimitHUabei == 1 ? totalPriceObj.totalNum : 0 }}</span>单</p>
+                  </div>
+                </td>
+                <td>
+                  <span>{{ fuwu }}元</span>
+                </td>
               </tr>
             </table>
           </el-tab-pane>
@@ -204,6 +231,10 @@
                       </template>
                     </el-table-column>
                     <el-table-column prop="orderId" align="center" label="平台订单编号">
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.orderId }}</span>
+                        <strong class="link">查看详情</strong>
+                      </template>
                     </el-table-column>
                   </el-table>
                 </el-tab-pane>
@@ -361,6 +392,16 @@ export default {
         (this.totalPriceObj.defaultFavorPrice) * (this.totalPriceObj.defaultFavorNum) +
         (this.totalPriceObj.plusPrice) * (this.totalPriceObj.plusNum)
       return yongjin
+    },
+    fuwu: function () {
+      let total = 0
+      total = (this.totalPriceObj.limitAgePrice) * (this.totalPriceObj.totalNum) * (this.totalPriceObj.isLimitAge) +
+        (this.totalPriceObj.limitDiamondPrice) * (this.totalPriceObj.totalNum) * (this.totalPriceObj.isLimitDiamond) +
+        (this.totalPriceObj.limitGenderPrice) * (this.totalPriceObj.totalNum) * (this.totalPriceObj.isLimitGender) +
+        (this.totalPriceObj.limitHuabeiPrice) * (this.totalPriceObj.totalNum) * (this.totalPriceObj.isLimitHUabei) +
+        (this.totalPriceObj.limitLocationPrice) * (this.totalPriceObj.totalNum) * (this.totalPriceObj.isLimitLocation)
+      total = total.toFixed(2)
+      return total
     },
     newSearchWordList: function () {
       if (this.goodsInfoObj.searchWordList) {
@@ -598,6 +639,7 @@ export default {
     color #FC1733
   .link
     color #1D6AE7
+    cursor pointer
   .nav
     height 36px
     span
@@ -791,7 +833,6 @@ export default {
           display flex
           justify-content flex-start
           li
-            margin-right 120px
             h3, p
               font-size 14px
               color #333333
@@ -799,8 +840,10 @@ export default {
               font-weight 600
               span
                 color #666666
-                display inline-block
-                width 90px
+                margin-right 10px
+            p
+              display inline-block
+              margin-right 60px
       .step3
         p
           font-size 14px
