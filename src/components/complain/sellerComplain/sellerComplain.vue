@@ -35,15 +35,15 @@
           </el-table-column>
           <el-table-column prop="dealResultIn" align="center" label="处理意见(对内)">
             <template slot-scope="scope">
-              <el-tooltip class="item" effect="dark" :content="scope.row.dealResultIn || '暂无'" placement="top">
-                <span class="overElipes">{{ scope.row.dealResultIn || '暂无' }}</span>
+              <el-tooltip class="item" effect="dark" :content="scope.row.dealResultIn || '--'" placement="top">
+                <span class="overElipes">{{ scope.row.dealResultIn || '--' }}</span>
               </el-tooltip>
             </template>
           </el-table-column>
           <el-table-column prop="dealComment" align="center" label="处理意见(对外)">
             <template slot-scope="scope">
-              <el-tooltip class="item" effect="dark" :content="scope.row.dealComment || '暂无'" placement="top">
-                <span class="overElipes">{{ scope.row.dealComment || '暂无' }}</span>
+              <el-tooltip class="item" effect="dark" :content="scope.row.dealComment || '--'" placement="top">
+                <span class="overElipes">{{ scope.row.dealComment || '--' }}</span>
               </el-tooltip>
             </template>
           </el-table-column>
@@ -85,8 +85,8 @@ export default {
       phone: '',
       tableData: [{
         sellerPhone: '18655554444',
-        complainReason: '八个字八个字',
-        complainCommon: '八个字八个字',
+        complainReason: '--',
+        complainCommon: '--',
         dealOptionIn: '--',
         dealOptionOut: '--',
         applyTime: '2017-11-17 19:20:56',
@@ -110,7 +110,7 @@ export default {
       this.getTask()
     },
     lookDetail (row) {
-      this.$router.push({ name: 'sellerComplainDetail', query: { messageComplainId: row.messageComplainId } })
+      this.$router.push({ name: 'sellerComplainDetail', query: { messageComplainId: row.messageComplainId, id: 2 } })
     },
     setList (data) {
       this.complainList = data

@@ -25,14 +25,19 @@
       <div class="pCont">
         <p>{{ complainDetailObj.complainReason }}</p>
       </div>
-      <div class="imgs">
+      <div class="imgs" v-if="this.$route.query.id===2">
         <!-- <a :href="complainDetailObj.picUrls" target="_blank"> -->
         <img :src="complainDetailObj.picUrls" @click="lookImg" alt="投诉截图">
         <!-- </a> -->
       </div>
+      <div class="imgs" v-if="this.$route.query.id===1">
+        <span v-for="(itemObj,index) in pics" :key="index" class="allPic">
+          <img :src="itemObj" alt="投诉截图">
+        </span>
+      </div>
       <h6>投诉备注</h6>
       <div class="pCont">
-        <p>{{ complainDetailObj.complainComment }}</p>
+        <p>{{ complainDetailObj.complainComment||'--' }}</p>
       </div>
       <h6>处理备注</h6>
       <ul class="inputs">
@@ -75,7 +80,8 @@ export default {
       showImg: '',
       isShowImg: false,
       complainDetailObj: {},
-      tableData: {}
+      tableData: {},
+      pics: ''
     }
   },
   computed: {
@@ -121,6 +127,7 @@ export default {
           this.complainDetailObj = res
           this.showOut = res.dealComment
           this.showIn = res.dealResultIn
+          this.pics = JSON.parse(this.complainDetailObj.picUrls)
         } else {
           this.$message({
             type: 'warning',
