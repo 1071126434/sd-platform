@@ -10,23 +10,21 @@
           </li>
           <li>
             管理员&nbsp; &nbsp;
-            <el-select v-model="value" placeholder="请选择">
-              <el-option v-for="(item,index) in options" :key="index" :label="item.label" :value="item.value">
-              </el-option>
+            <el-select v-model="value" placeholder="请选择" @change="adName">
+              <el-option v-for="(item, index) in adminNameArr" :label="item.userName" :value="item.operateUserAccountId" :key="index"></el-option>
             </el-select>
           </li>
           <li>
             管理员微信号&nbsp; &nbsp;
-            <el-select v-model="value" placeholder="请选择">
-              <el-option v-for="(item,index) in options" :key="index" :label="item.label" :value="item.value">
-              </el-option>
+            <el-select v-model="value1" placeholder="请选择">
+              <el-option v-for="(item, index) in wechatArr" :label="item.wechatNum" :value="item.operateWechatId" :key="index"></el-option>
             </el-select>
           </li>
         </ul>
         <ul class="search_1 getOrder">
           <li>
             <span class="status">状态</span>&nbsp; &nbsp;
-            <el-select v-model="value" placeholder="请选择">
+            <el-select v-model="value2" placeholder="请选择">
               <el-option v-for="(item,index) in options" :key="index" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
@@ -76,7 +74,7 @@
         <el-tab-pane label="已联系" name="second">
           <!-- 展示内容部分 -->
           <div class="accountTab">
-            <el-table :data="tableData" border style="width: 100%">
+            <el-table :data="tableDataBuy" border style="width: 100%">
               <el-table-column fixed type="index" width="50" label="编号">
               </el-table-column>
               <el-table-column prop="date" label="任务包编号" width="120">
@@ -136,6 +134,7 @@
 </template>
 <script type="text/ecmascript-6">
 import noCont from '../../../base/noCont/noCont'
+import { mapGetters } from 'vuex'
 export default {
   name: 'sellerRecharge',
   components: {
@@ -143,57 +142,32 @@ export default {
   },
   data () {
     return {
+      adminNameArr: [],
+      wechatArr: [],
       radio2: 3,
       value3: '',
       input6: '',
       value6: '',
       activeName2: 'first',
-      input5: '',
+      value: '',
+      value1: '',
       currentPage: 1,
       pageSize: 5,
       totalCount: 0,
       dialogFormVisible_2: false,
-      tableData: [{
-        date: '2016-05-03',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区',
-        zip: 200333
+      tableData: [],
+      options: [{
+        value2: '0',
+        label: '未领取'
       }, {
-        date: '2016-05-02',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区',
-        zip: 200333
+        value2: '1',
+        label: '已领取'
       }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金',
-        zip: 200333
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金',
-        zip: 200333
-      }],
-      options: [],
-      tableDataBuy: [{
-        orderTask: '55616156156156156',
-        phone: '18655554444',
-        moneyNum: '100.00',
-        remark: '备注一下',
-        sBank: '545565695685856',
-        dBank: '186669985665687',
-        JDStatus: '已到账',
-        time: '2017-11-15 20:30:30',
-        person: '展示'
-      }]
+        value2: '2',
+        label: '领取失败'
+      }
+      ],
+      tableDataBuy: []
     }
   },
   computed: {
@@ -205,11 +179,14 @@ export default {
       } else {
         return false
       }
-    }
+    },
+    ...mapGetters([
+      'userInfo'
+    ])
   },
   created () {
     this.sercherOne(1, this.pageSize)
-    this.platformBankNum()
+    this.adminName_1()
   },
   methods: {
     handleClicks () {
@@ -226,37 +203,6 @@ export default {
     // 卖家充值记录的搜索
     searchTime () {
       this.sellerRecord(1, this.pageSize)
-    },
-    // 当点击我已联系做单触发的事件
-    handleClick (val) {
-      this.$confirm('此操作将确认已联系买家做单?', '确认已联系?', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'success'
-      }).then(() => {
-        this.$ajax.post('', {
-          sellerChargeApplyIds: [this.tableData[val].chargeApplyId],
-          platformBankCardId: this.input5
-        }).then((data) => {
-          let res = data.data
-          if (res.code === '200') {
-            this.$message({
-              type: 'success',
-              message: '操作成功!'
-            })
-            this.sercherOne(1, this.pageSize)
-          } else {
-            this.$message({
-              message: res.message,
-              type: 'warning'
-            })
-          }
-        }).catch(() => {
-          this.$message.error('网络错误，刷新下试试')
-        })
-      }).catch((error) => {
-        console.log(error)
-      })
     },
     handleSizeChange (val) {
       if (this.activeName2 === 'first') {
@@ -279,32 +225,21 @@ export default {
     sure_2 () {
       // 进行撤销的处理
     },
-    // 卖家充值申请
+    // 未联系
     sercherOne (pageNo, pageSize) {
-      this.$ajax.post('', {
-        statusList: ['0'],
-        pageNo: pageNo,
-        pageSize: pageSize,
-        platformBankCardId: this.input5.bankCardId
+      this.$ajax.post('/api/platformPackageAssign/getPackageAssignInfoByCondition', {
+        startTime: this.value6 ? this.value6[0] : '',
+        endTime: this.value6 ? this.value6[1] : '',
+        operateUserAccountId: '',
+        operaterWechatId: this.value1,
+        status: this.value2,
+        contactStatus: '0',
+        limit: this.pageSize,
+        currPageNo: pageNo
       }).then((data) => {
         let res = data.data
         this.totalCount = res.data.totalCount
         if (res.code === '200') {
-          let arr = []
-          for (let word of res.data.chargeApplys) {
-            let goods = {
-              payWater: word.chargeApplyId,
-              phone: word.sellerTelephone,
-              payNum: word.chargeAmount,
-              remark: word.memo,
-              collectionBank: word.platformBankCardNo,
-              moneyBank: word.sellerBankCardNo,
-              creatTime: word.gmtCreate,
-              chargeApplyId: word.chargeApplyId
-            }
-            arr.push(goods)
-          }
-          this.tableData = arr
         } else {
           this.$message({
             message: res.message,
@@ -315,9 +250,9 @@ export default {
         this.$message.error('网络错误，刷新下试试')
       })
     },
-    // 卖家充值记录
+    // 已联系
     sellerRecord (pageNo, pageSize) {
-      this.$ajax.post('', {
+      this.$ajax.post('/api/platformPackageAssign/getPackageAssignInfoByCondition', {
         statusList: ['1', '2'],
         pageNo: pageNo,
         pageSize: pageSize,
@@ -328,23 +263,6 @@ export default {
         let res = data.data
         this.totalCount = res.data.totalCount
         if (res.code === '200') {
-          let arr = []
-          for (let word of res.data.chargeApplys) {
-            let goods = {
-              phone: word.sellerTelephone,
-              moneyNum: word.chargeAmount,
-              remark: word.memo,
-              sBank: word.platformBankCardNo,
-              dBank: word.sellerBankCardNo,
-              creatTime: word.gmtCreate,
-              orderTask: word.chargeApplyId,
-              JDStatus: word.status === '2' ? '未到账' : word.status === '1' ? '已到账' : '进行中',
-              time: word.gmtModify,
-              person: word.sellerBankCardUserName
-            }
-            arr.push(goods)
-          }
-          this.tableDataBuy = arr
         } else {
           this.$message({
             message: res.message,
@@ -355,33 +273,62 @@ export default {
         this.$message.error('网络错误，刷新下试试')
       })
     },
-    // 获取收款卡的卡号
-    platformBankNum () {
-      this.$ajax.post('', {
-        type: 0
+    adName () {
+      this.value1 = ' '
+      this.wechatArr = []
+      this.wechats()
+    },
+    // 获取管理员姓名接口
+    adminName_1 () {
+      this.$ajax.post('/api/operateAccount/getOperatersOfPlatform', {
       }).then((data) => {
         let res = data.data
         if (res.code === '200') {
           let arr = []
-          if (res.data) {
-            for (let word of res.data) {
-              let goods = {
-                bankCardId: word.bankCardId,
-                cardNo: word.cardNo
-              }
-              arr.push(goods)
+          for (let word of res.data) {
+            let goods = {
+              userName: word.userName || '暂无数据',
+              operateUserAccountId: word.operateUserAccountId
             }
+            arr.push(goods)
           }
-          this.options = arr
+          this.adminNameArr = arr
         } else {
           this.$message({
-            message: data.data.message,
+            message: res.message,
             type: 'warning'
           })
         }
-      }).catch((err) => {
-        console.log(err)
-        this.$message.error('未知错误！')
+      }).catch(() => {
+        this.$message.error('网络错误，刷新下试试')
+      })
+    },
+    // 获取平台端联系人微信列表
+    wechats () {
+      this.$ajax.post('/api/platform/wechat/getListByOperateUserId', {
+        operateUserId: this.value
+      }).then((data) => {
+        let res = data.data
+        if (res.code === '200') {
+          let arr = []
+          for (let word of res.data) {
+            let goods = {
+              wechatNickName: word.wechatNickName,
+              wechatNum: word.wechatNum,
+              operateWechatId: word.operateWechatId
+            }
+            arr.push(goods)
+          }
+          this.wechatArr = arr
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          })
+        }
+      }).catch((error) => {
+        console.log(error)
+        // this.$message.error('网络错误，刷新下试试')
       })
     }
   }

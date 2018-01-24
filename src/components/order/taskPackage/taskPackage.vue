@@ -28,9 +28,10 @@
             <i>{{this.totalClusterCount.totalCount||0}}</i>
           </span>
         </div>
+        <div class="red"></div>
         <!-- 内容列表展示 -->
         <div class="accountTab">
-          <el-table :data="tableDataBuy" style="width: 100%" @select="handSelect" @select-all="selectAll" border height="400">
+          <el-table :data="tableDataBuy" style="width: 100%" @select="handSelect" @select-all="selectAll" border>
             <el-table-column type="selection" fixed></el-table-column>
             <el-table-column prop="sellerTaskId" width="180" align="center" label="编号">
             </el-table-column>
@@ -76,27 +77,27 @@
         <p>请输入您希望消耗的订单数
         </p>
         <p class="mit">
-          <el-input v-model="input"></el-input>
+          <el-input v-model="input" type="number"></el-input>
         </p>
-        <span>已选中:{{this.buyIds.length||0}}人</span>
+        <span style="margin-left:40px">已选中:{{this.buyIds.length||0}}人</span>
       </div>
       <div class="red"></div>
       <!-- 数据展示部分 -->
-      <el-table :data="tableDataBuyList" style="width: 100%" @select="handSelectOne" border height="200">
-        <el-table-column type="selection" width="50" fixed></el-table-column>
+      <el-table :data="tableDataBuyList" style="width: 100%;height:100%" @select="handSelectOne" border>
+        <el-table-column type="selection" width="50" fixed :selectable='false'></el-table-column>
         <el-table-column prop="buyerName" align="center" width="80" label="姓名">
         </el-table-column>
         <el-table-column prop="telephone" align="center" width="100" label="手机号">
         </el-table-column>
         <el-table-column prop="province" align="center" width="80" label="所在省">
         </el-table-column>
-        <el-table-column prop="clusterId" align="center" width="150" label="组团编号">
+        <el-table-column prop="clusterId" align="center" width="180" label="组团编号">
         </el-table-column>
         <el-table-column prop="buyerIdentify" align="center" width="80" label="标识">
         </el-table-column>
         <el-table-column prop="waitingBackCapitalAccount" width="100" align="center" label="未确认收货金" fixed="right">
         </el-table-column>
-        <el-table-column prop="lastLoginTime" align="center" width="120" label="上次登陆时间">
+        <el-table-column prop="lastLoginTime" align="center" width="150" label="上次登陆时间">
         </el-table-column>
       </el-table>
       <div class="line"></div>
@@ -135,7 +136,7 @@ export default {
       // 钱的数量
       moneyNumber: 0,
       dialogTableVisible: false,
-      // 弹出的筛选买家
+      // 弹出的筛选买家 组团的买家id
       buyIds: [],
       // 本金的存储
       principal: 0,
@@ -143,11 +144,15 @@ export default {
       commission: 0,
       // 买家信息的存储
       buyInfo: [],
-      // 买家id的存储
+      // 可用买家id的存储
       buyIdsChoonse: [],
       jd: 0,
       taobao: 0,
-      tianmao: 0
+      tianmao: 0,
+      // 筛选买家数组
+      maxBuyerUserIds: [],
+      // 图片的存储
+      imageUrls: []
     }
   },
   computed: {
@@ -170,28 +175,32 @@ export default {
   methods: {
     // 单个选触发的事件
     handSelect (index, val) {
-      console.log(index, val)
+      // console.log(index, val)
       let arr = []
       let arr1 = []
       let arr2 = []
       let arr3 = []
       let arr8 = []
+      let arr5 = []
       for (let word of index) {
         let goods = {
           state: word.state,
           applyIds: word.sellerTaskId,
           principal: word.productOrderPrice,
           commission: word.commission,
-          sellerType: word.sellerShopType
+          sellerType: word.sellerShopType,
+          productPictureUrl: word.productPictureUrl
         }
         arr.push(goods.applyIds)
         arr1.push(goods)
         arr2.push(goods.principal)
         arr3.push(goods.commission)
         arr8.push(goods.sellerType)
+        arr5.push(goods.productPictureUrl)
       }
       this.applyIdsNum = arr
       this.applyIdsNumChoose = arr1
+      this.imageUrls = arr5
       // 本金
       let abc = 0
       for (var i = 0; i < arr2.length; i++) {
@@ -205,7 +214,7 @@ export default {
         ab += arr3[j]
       }
       this.commission = ab
-      console.log(this.commission)
+      // console.log(this.commission)
       // 京东淘宝天猫的数量
       for (var k = 0; k < arr8.length; k++) {
         if (arr8[k] === '0') {
@@ -218,11 +227,18 @@ export default {
           this.tianmao = this.tianmao + 1
         }
       }
-      console.log(this.jd, this.tianmao, this.taobao)
+      if (this.applyIdsNum.length > 5) {
+        this.$message({
+          message: '最多选择5个,您已超出',
+          type: 'warning'
+        })
+        return false
+      }
+      // console.log(this.jd, this.tianmao, this.taobao)
       this.$ajax.post('/api/buyerAccount/getAvailableBuyerCount', {
         sellerTaskIds: this.applyIdsNum
       }).then((data) => {
-        console.log(data)
+        // console.log(data)
         let res = data.data
         if (res.code === '200') {
           this.totalClusterCount = {
@@ -241,8 +257,8 @@ export default {
     },
     // 弹出页面的单选触发的事件 ,这个事件是不能有全选的
     handSelectOne (index, val) {
-      console.log(index, val)
-      let arr = []
+      // console.log(index, val)
+      let arr9 = []
       let arr1 = []
       let arr5 = []
       let arr6 = []
@@ -252,12 +268,14 @@ export default {
           applyIds: word.clusterId,
           availableBuyerUserAccountId: word.availableBuyerUserAccountId
         }
-        arr.push(goods.applyIds)
+        arr9.push(goods.applyIds)
         arr1.push(goods)
         arr5.push(word)
         arr6.push(goods.availableBuyerUserAccountId)
       }
-      this.buyIds = arr
+      // 组团的买家id
+      this.buyIds = arr9
+      // 可用买家的id
       this.applyIdsNumChoose = arr1
       this.buyInfo = index
       this.buyIdsChoonse = arr6
@@ -268,13 +286,15 @@ export default {
       //   abc += arr2[i]
       // }
       // this.principal = abc
-      console.log(this.principal)
+      // console.log(this.buyIdsChoonse)
       this.$ajax.post('/api/buyerAccount/getClusterBuyByUserIds', {
-        buyerUserIds: this.buyIds
+        buyerUserIds: this.buyIdsChoonse
       }).then((data) => {
-        console.log(data)
+        // console.log(data)
         let res = data.data
         if (res.code === '200') {
+          this.maxBuyerUserIds = res.data.maxBuyerUserIds
+          //  this.buyIdsChoonse
         } else {
           this.$message({
             message: res.message,
@@ -285,45 +305,16 @@ export default {
         this.$message.error('网络错误，刷新下试试')
       })
     },
+    disabledFilter (row, index) {
+      if (this.maxBuyerUserIds.indexOf(row.availableBuyerUserAccountId) > 0) {
+        return false
+      } else {
+        return true
+      }
+    },
     // 全选触发的事件
-    selectAll (index) {
-      let arr = []
-      let arr1 = []
-      for (let word of index) {
-        let goods = {
-          state: word.state,
-          applyIds: word.sellerTaskId,
-          state1: word.state1
-        }
-        arr.push(goods.applyIds)
-        arr1.push(goods)
-      }
-      this.applyIdsNum = arr
-      this.applyIdsNumChoose = arr1
-      let abc = 0
-      for (var i = 0; i < index.length; i++) {
-        abc += (index[i].moneyNum - 0)
-      }
-      this.moneyNumber = abc.toFixed(2)
-      this.$ajax.post('/api/buyerAccount/getAvailableBuyerCount', {
-        sellerTaskIds: this.applyIdsNum
-      }).then((data) => {
-        console.log(data)
-        let res = data.data
-        if (res.code === '200') {
-          this.totalClusterCount = {
-            totalCluster: res.data.totalClusterCount,
-            totalCount: res.data.totalCount
-          }
-        } else {
-          this.$message({
-            message: res.message,
-            type: 'warning'
-          })
-        }
-      }).catch(() => {
-        this.$message.error('网络错误，刷新下试试')
-      })
+    selectAll (index, val) {
+      this.handSelect()
     },
     // 当进入页面进行展示的部分
     changeCheckbox () {
@@ -332,13 +323,14 @@ export default {
           message: '请至少选择一项',
           type: 'warning'
         })
+        this.tableDataBuy = []
         return false
       }
       this.$ajax.post('/api/seller/taskSearch/getDayTaskList', {
         day: this.state2,
         shopType: (this.checkList).join(',')
       }).then((data) => {
-        console.log(data)
+        // console.log(data)
         let res = data.data
         // this.totalCount = res.data.totalCount
         if (res.code === '200') {
@@ -360,7 +352,8 @@ export default {
               productName: word.productName,
               productSecondClassDetail: word.productSecondClassDetail,
               commission: word.buyerCommissionOrder + word.buyerCommmissionFavor,
-              sellerShopType: word.sellerShopType
+              sellerShopType: word.sellerShopType,
+              productPictureUrl: word.productPictureUrl
             }
             arr.push(goods)
           }
@@ -386,11 +379,18 @@ export default {
         })
         return false
       }
+      if (this.applyIdsNum.length > 5) {
+        this.$message({
+          message: '最多选择5个,您已超出',
+          type: 'warning'
+        })
+        return false
+      }
       this.dialogTableVisible = true
       this.$ajax.post('/api/buyerAccount/getAvailableBuyers', {
         sellerTaskIds: this.applyIdsNum
       }).then((data) => {
-        console.log(data)
+        // console.log(data)
         let res = data.data
         if (res.code === '200') {
           let arr = []
@@ -403,7 +403,8 @@ export default {
                 clusterId: word.clusterId,
                 buyerIdentify: word.buyerIdentify || '--',
                 waitingBackCapitalAccount: word.waitingBackCapitalAccount,
-                lastLoginTime: word.lastLoginTime
+                lastLoginTime: word.lastLoginTime,
+                availableBuyerUserAccountId: word.availableBuyerUserAccountId
               }
               arr.push(goods)
             }
@@ -419,14 +420,28 @@ export default {
         this.$message.error('网络错误，刷新下试试')
       })
     },
-    // 当点击确认分配的时候触发的事件
+    // 2.当点击确认分配的时候触发的事件
     allSure () {
+      if (this.input <= 0) {
+        this.$message({
+          message: '请正确输入希望消耗的订单数',
+          type: 'warning'
+        })
+        return false
+      }
+      if (this.input > this.buyIds.length) {
+        this.$message({
+          message: '希望消耗的订单数不能大于已选中的人数',
+          type: 'warning'
+        })
+        return false
+      }
       this.$ajax.post('/api/order/newPackageAssign', {
         totalCapitalAmount: this.principal,
         totalCommissionAmount: this.commission,
         actualNum: this.input,
-        excessNum: this.buyIds.length || 0,
-        sellerTaskIds: this.buyIds,
+        excessNum: this.buyIdsChoonse.length || 0,
+        sellerTaskIds: this.applyIdsNum,
         taskAvailableBuyer: this.buyInfo,
         buyerUserIds: this.buyIdsChoonse,
         hasTaobao: this.taobao === 0 ? '0' : '1',
@@ -434,15 +449,20 @@ export default {
         hasJD: this.jd === 0 ? '0' : '1',
         taobaoNum: this.taobao,
         tianmaoNum: this.tianmao,
-        JDNum: this.jd
+        JDNum: this.jd,
+        operaterId: this.userInfo.operateUserAccountId,
+        platformOperaterName: this.userInfo.userName,
+        imageUrls: this.imageUrls
       }).then((data) => {
-        console.log(data)
+        // console.log(data)
         let res = data.data
         if (res.code === '200') {
           this.$message({
             message: res.message,
-            type: 'warning'
+            type: 'success'
           })
+          this.dialogTableVisible = false
+          this.changeCheckbox()
         } else {
           this.$message({
             message: res.message,
@@ -485,7 +505,7 @@ export default {
         color rgba(51, 51, 51, 1)
         font-size 14px
       .midd
-        margin-left -40%
+        // margin-left -214px
         .work
           margin-top 3px
       .content
@@ -493,6 +513,14 @@ export default {
     .middle
       margin-top 20px
       padding-left 10px
+    .red
+      position absolute
+      width 30px
+      height 35px
+      background #ffffff
+      left 5px
+      top 110px
+      z-index 555
     .accountTab
       margin-top 20px
       .overElipes
@@ -522,9 +550,9 @@ export default {
     padding-bottom 10px
   .midd
     display flex
-    justify-content space-between
+    justify-content flex-start
     .mit
-      margin-left -60%
+      margin-left 5px
   .red
     position absolute
     width 30px
