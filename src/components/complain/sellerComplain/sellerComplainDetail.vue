@@ -107,7 +107,11 @@ export default {
             message: '处理成功！',
             type: 'success'
           })
-          this.$router.push({ name: 'sellerComplain' })
+          if (this.$route.query.id === 2) {
+            this.$router.push({ name: 'sellerComplain' })
+          } else if (this.$route.query.id === 1) {
+            this.$router.push({ name: 'buyComplain' })
+          }
         } else {
           this.$message({
             message: data.data.message,

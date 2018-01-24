@@ -414,7 +414,7 @@ export default {
     },
     // 当进入页面进行展示的部分
     buyerData (pageNo, pageSize) {
-      this.$ajax.post('/api/withdrawApply/getApplysByConditions', {
+      this.$ajax.post('/api/withdrawApply/getSellerApplysByConditions', {
         statusList: ['0'],
         pageNo: pageNo,
         pageSize: pageSize,
@@ -431,8 +431,8 @@ export default {
               phone: word.userTelephone,
               moneyNum: word.actualAmount,
               bankNum: word.bankCardNo,
-              bank: word.bankName,
-              name: word.userName,
+              bank: word.bankCardName,
+              name: word.bankName,
               time: word.gmtCreate,
               withdrawApplyId: word.withdrawApplyId,
               state: word.isExport === '0' ? '未导出' : '已导出',
@@ -457,7 +457,7 @@ export default {
     // 当进入第二个请求的部分
     // 当进入页面进行展示的部分
     buyerDataList (pageNo, pageSize) {
-      this.$ajax.post('/api/withdrawApply/getApplysByConditions', {
+      this.$ajax.post('/api/withdrawApply/getSellerApplysByConditions', {
         statusList: ['1', '2'],
         pageNo: pageNo,
         pageSize: pageSize,
