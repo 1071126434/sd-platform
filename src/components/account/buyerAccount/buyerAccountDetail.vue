@@ -52,32 +52,32 @@
                 <ul class="editCont" style="padding:0 20px;">
                   <li style="height: 40px;line-height:40px;margin-bottom:20px;">
                     <span style="display: inline-block;width:80px;">增加金额: </span>
-                    <el-input style="width:340px" type="number" placeholder="请输入内容"></el-input>
+                    <el-input style="width:340px" v-model="addUserMoney" type="number" placeholder="请输入内容"></el-input>
                   </li>
-                  <li style="height: 40px;line-height:40px;">
+                  <!-- <li style="height: 40px;line-height:40px;">
                     <span style="display: inline-block;width:80px;">备注: </span>
                     <el-input style="width:340px" type="text" placeholder="请输入内容"></el-input>
-                  </li>
+                  </li> -->
                 </ul>
                 <span slot="footer" class="dialog-footer">
                   <el-button @click="addMoney = false">取 消</el-button>
-                  <el-button type="primary" @click="addMoney=false">确 定</el-button>
+                  <el-button type="primary" @click="changeMoney(1)">确 定</el-button>
                 </span>
               </el-dialog>
               <el-dialog title="扣除买家本金余额" :append-to-body="true" :visible.sync="deleMoney" width="40%">
                 <ul class="editCont" style="padding:0 20px;">
                   <li style="height: 40px;line-height:40px;margin-bottom:20px;">
                     <span style="display: inline-block;width:80px;">扣除金额: </span>
-                    <el-input style="width:340px" type="number" placeholder="请输入内容"></el-input>
+                    <el-input style="width:340px" v-model="deleUserMoney" type="number" placeholder="请输入内容"></el-input>
                   </li>
-                  <li style="height: 40px;line-height:40px;">
+                  <!-- <li style="height: 40px;line-height:40px;">
                     <span style="display: inline-block;width:80px;">备注: </span>
                     <el-input style="width:340px" type="text" placeholder="请输入内容"></el-input>
-                  </li>
+                  </li> -->
                 </ul>
                 <span slot="footer" class="dialog-footer">
                   <el-button @click="deleMoney = false">取 消</el-button>
-                  <el-button type="primary" @click="deleMoney=false">确 定</el-button>
+                  <el-button type="primary" @click="changeMoney(0)">确 定</el-button>
                 </span>
               </el-dialog>
             </div>
@@ -509,6 +509,8 @@ export default {
   },
   data () {
     return {
+      addUserMoney: '',
+      deleUserMoney: '',
       addMoney: false,
       deleMoney: false,
       currentPage: 1,
@@ -1059,6 +1061,52 @@ export default {
       }).catch((err) => {
         this.$message.error(err)
       })
+    },
+    // 增加或者减少用户本金余额
+    changeMoney (type) {
+      if (type === 0) { // 减少本金
+        this.$ajax.post('/api/userFund/buyer/platformReduceMoney', {
+          buyerUserAccountId: this.userInfoObj.buyerUserAccountId,
+          amount: this.deleUserMoney
+        }).then((data) => {
+          if (data.data.code === '200') {
+            this.$message({
+              message: '减少成功!',
+              type: 'success'
+            })
+            this.getBuyerMoney()
+            this.deleMoney = false
+          } else {
+            this.$message({
+              message: data.data.message,
+              type: 'warning'
+            })
+          }
+        }).catch((err) => {
+          this.$message.error(err)
+        })
+      } else { // 增加本金
+        this.$ajax.post('/api/userFund/buyer/platformAddMoney', {
+          buyerUserAccountId: this.userInfoObj.buyerUserAccountId,
+          amount: this.addUserMoney
+        }).then((data) => {
+          if (data.data.code === '200') {
+            this.$message({
+              message: '增加成功!',
+              type: 'success'
+            })
+            this.getBuyerMoney()
+            this.addMoney = false
+          } else {
+            this.$message({
+              message: data.data.message,
+              type: 'warning'
+            })
+          }
+        }).catch((err) => {
+          this.$message.error(err)
+        })
+      }
     },
     // 提前支取资金
     withdrawPost () {

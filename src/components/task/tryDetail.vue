@@ -6,25 +6,25 @@
         <li>
           <p>
             <span>试用进度: </span>
-            获取试用
+            {{ infoObj.orderStatusDetail || '--' }}
           </p>
           <p>
             <span>任务类型: </span>
-            手淘app垫付任务
+            {{ infoObj.taskTypeDetail || '--' }}
           </p>
           <p>
             <span>订单号: </span>
-            4756985442322155632
+            {{ infoObj.orderId || '--' }}
           </p>
           <p>
             <span>买号: </span>
-            贵族的撒
+            {{ infoObj.buyerName || '--' }}
           </p>
         </li>
         <li>
           <p>
             <span>支付金额: </span>
-            <strong class="red">9.90</strong>
+            <strong class="red">{{ infoObj.orderPrice || '--' }}</strong>
           </p>
           <p>
             <span>返款方式: </span>
@@ -34,11 +34,11 @@
         <li>
           <p>
             <span>任务编号: </span>
-            2562626126512651655616516512656
+            {{ infoObj.taskId || '--' }}
           </p>
           <p>
             <span>申请时间: </span>
-            2017-08-09 14:25:36
+            {{ infoObj.applyTime || '--' }}
           </p>
         </li>
       </ul>
@@ -49,31 +49,31 @@
         <li>
           <div class="title">商品</div>
           <div class="cont">
-            <img src="http://img4.duitang.com/uploads/item/201510/17/20151017151935_KiQuA.jpeg" alt="pic">
-            <span>安卓数据线</span>
+            <img :src="infoObj.productPicUrl || ''" alt="pic">
+            <span>{{ infoObj.productName || '--' }}</span>
           </div>
         </li>
         <li>
           <div class="title">单价(元)</div>
           <div class="cont red">
-            9.90
+            {{ infoObj.productPrice || '--' }}
           </div>
         </li>
         <li>
           <div class="title">数量</div>
           <div class="cont">
-            1
+            {{ infoObj.numPereOrder || '--' }}
           </div>
         </li>
         <li>
           <div class="title">运费(元)</div>
           <div class="cont">
-            包邮
+            {{ (infoObj.isContainPost==1 ? '0': '10') || '--' }}
           </div>
         </li>
       </ul>
       <p>买家实付款:
-        <span class="red">9.90</span>元</p>
+        <span class="red">{{ infoObj.actualPrice || '--' }}</span>元</p>
     </div>
     <div class="stepInfo">
       <h2>任务进展</h2>
@@ -84,29 +84,39 @@
         <li>状态</li>
       </ul>
       <ul class="detail">
-        <li>
+        <li v-for="(item, index) in detailArr" :key="index">
           <div>
-            <span class="line first"></span>
-            <strong>买家找商品</strong>
+            <span class="line" :class="{'first': index===0}"></span>
+            <strong>{{ item.orderFlowTypeDetail || '--' }}</strong>
           </div>
           <div>
-            <strong>2017-08-24 19:10:25</strong>
+            <strong>{{ item.gmtCreate || '--' }}</strong>
           </div>
           <div>
-            <strong>
-              驳回原因: 撒后撒谎是否撒谎沙发上
-              <br /> 修改方案: 法国沙发上发生阿斯达斯
+            <strong v-if="0">
+              {{ item.content }}
             </strong>
+            <br />
+            <strong v-if="item.favorContent">{{ '评论内容: ' + item.favorContent || '--' }}</strong>
+            <br />
+            <strong v-if="item.thirdOrderId">{{ '买家订单编号: ' + item.thirdOrderId || '--' }}</strong>
           </div>
           <div>
             <p>
               <i class="passIcon"></i>
-              <strong>买家已完成</strong>
+              <strong>已完成</strong>
             </p>
-            <img src="http://img4.duitang.com/uploads/item/201510/17/20151017151935_KiQuA.jpeg" alt="pic">
+            <p v-if="item.logisticsPicUrl!='[]' && item.logisticsPicUrl">物流截图:</p>
+            <p v-if="item.favorPicUrls!='[]' && item.favorPicUrls">评价截图:</p>
+            <p v-if="item.relatedProductPicsId!='[]' && item.relatedProductPicsId">货比三家截图:</p>
+            <p v-if="item.searchPic!='[]' && item.searchPic">搜索截图:</p>
+            <img v-if="item.logisticsPicUrl" :src="img" @click="lookImg(img)" v-for="(img, i) in (item.logisticsPicUrl ? JSON.parse(item.logisticsPicUrl) : [])" :key="i" alt="pic">
+            <img v-if="item.favorPicUrls" :src="img" @click="lookImg(img)" v-for="(img, i) in (item.favorPicUrls ? JSON.parse(item.favorPicUrls) : [])" :key="i" alt="pic">
+            <img v-if="item.relatedProductPicsId" :src="img" @click="lookImg(img)" v-for="(img, i) in (item.relatedProductPicsId ? JSON.parse(item.relatedProductPicsId) : [])" :key="i" alt="pic">
+            <img v-if="item.searchPic" :src="img" @click="lookImg(img)" v-for="(img, i) in (item.searchPic ? JSON.parse(item.searchPic) : [])" :key="i" alt="pic">
           </div>
         </li>
-        <li>
+        <!-- <li>
           <div class="firstDiv">
             <span class="line" :class="{ 'grayLine': 0 }"></span>
             <strong>买家找商品防撒旦法撒</strong>
@@ -126,7 +136,7 @@
             <img src="http://img4.duitang.com/uploads/item/201510/17/20151017151935_KiQuA.jpeg" alt="pic">
             <img src="http://img4.duitang.com/uploads/item/201510/17/20151017151935_KiQuA.jpeg" alt="pic">
           </div>
-        </li>
+        </li> -->
       </ul>
     </div>
     <div v-show="showLookImg ">
@@ -144,14 +154,54 @@ export default {
   data () {
     return {
       showLookImg: false,
-      lookImgUrl: ''
+      lookImgUrl: '',
+      detailArr: [],
+      infoObj: {}
     }
   },
   methods: {
     lookImg (url) {
       this.lookImgUrl = url
       this.showLookImg = true
+    },
+    // 获取任务详情信息
+    getInfo () {
+      this.$ajax.post('/api/buyer/task/getOrderDetail', {
+        buyerTaskId: this.$route.query.buyerTaskId
+      }).then((data) => {
+        if (data.data.code === '200') {
+          this.infoObj = data.data.data
+        } else {
+          this.$message({
+            type: 'warning',
+            message: data.data.message
+          })
+        }
+      }).catch((err) => {
+        console.error(err)
+      })
+    },
+    // 获取步骤流水内容
+    getDetail () {
+      this.$ajax.post('/api/buyer/task/getOrderFlowByOrderId', {
+        buyerTaskId: this.$route.query.buyerTaskId
+      }).then((data) => {
+        if (data.data.code === '200') {
+          this.detailArr = data.data.data
+        } else {
+          this.$message({
+            type: 'warning',
+            message: data.data.message
+          })
+        }
+      }).catch((err) => {
+        console.error(err)
+      })
     }
+  },
+  mounted () {
+    this.getInfo()
+    this.getDetail()
   }
 }
 </script>
@@ -218,7 +268,7 @@ export default {
       margin-top 22px
       text-align right
   .stepInfo
-    padding 20px
+    padding 20px 20px 100px
     background #ffffff
     .title
       display flex

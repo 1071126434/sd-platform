@@ -233,7 +233,7 @@
                     <el-table-column prop="orderId" align="center" label="平台订单编号">
                       <template slot-scope="scope">
                         <span>{{ scope.row.orderId }}</span>
-                        <strong class="link">查看详情</strong>
+                        <strong class="link" @click="toLookDetail(scope.row.orderId)">查看详情</strong>
                       </template>
                     </el-table-column>
                   </el-table>
@@ -541,6 +541,10 @@ export default {
       }).catch((err) => {
         console.log(err)
       })
+    },
+    // 查看买手进度流水
+    toLookDetail (id) {
+      this.$router.push({ name: 'tryDetail', query: { buyerTaskId: id } })
     },
     // 获取商品详情信息
     getGoodsInfo () {
