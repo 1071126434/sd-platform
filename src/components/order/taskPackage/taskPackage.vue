@@ -83,7 +83,7 @@
       </div>
       <div class="red"></div>
       <!-- 数据展示部分 -->
-      <el-table :data="tableDataBuyList" style="width: 100%;height:100%" @select="handSelectOne" border>
+      <el-table :data="tableDataBuyList" style="width: 100%;" @select="handSelectOne" border>
         <el-table-column type="selection" width="50" fixed :selectable='false'></el-table-column>
         <el-table-column prop="buyerName" align="center" width="80" label="姓名">
         </el-table-column>

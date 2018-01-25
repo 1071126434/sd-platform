@@ -93,9 +93,11 @@
         <h2 class="title">买家账号管理</h2>
         <ul>
           <li>
-            <el-switch v-model="canGetOrder" :width="45" active-color="#40B6FF" inactive-color="#9f9f9f">
+            <!-- <el-switch v-model="canGetOrder" :width="45" active-color="#40B6FF" inactive-color="#9f9f9f">
             </el-switch>
-            <p>接单</p>
+            <p>接单</p> -->
+            <p>收货地址:</p>
+            <p>{{ userInfoObj.postProvince || '--' }}{{ userInfoObj.postCity || '--' }}{{ userInfoObj.postRegion || '--' }}</p>
           </li>
           <li>
             <strong>{{ userInfoObj.userScore }}</strong>分
@@ -168,7 +170,7 @@
                     <b>{{ userInfoObj.jdPlusEndDate ? userInfoObj.jdPlusEndDate.split(' ')[0] : '暂无' }}</b>
                   </p>
                   <p>接单状态:
-                    <b>能接单</b>
+                    <b>{{ userInfoObj.isJdAccept == 1 ? '能接单' : userInfoObj.isJdAccept == 0 ? '不能接单' : '未设置' }}</b>
                   </p>
                 </li>
                 <li style="text-align: left;padding-left:50px; width: 33.3%">
@@ -211,6 +213,11 @@
                         <span style="display: inline-block;width:120px;">白条状态: </span>
                         <el-radio v-model="baitiaoStatus" label="1">已开通</el-radio>
                         <el-radio v-model="baitiaoStatus" label="0">未开通</el-radio>
+                      </li>
+                      <li style="height: 40px;line-height:40px;margin: 20px 0;">
+                        <span style="display: inline-block;width:120px;">接单状态: </span>
+                        <el-radio v-model="JDcanGetOrder" label="1">能接单</el-radio>
+                        <el-radio v-model="JDcanGetOrder" label="0">不能接单</el-radio>
                       </li>
                     </ul>
                     <span slot="footer" class="dialog-footer">
@@ -534,6 +541,7 @@ export default {
       plusTime: '',
       fixJdName: '',
       baitiaoStatus: '',
+      JDcanGetOrder: '',
       // 淘宝修改信息
       editTbObj: {
         userName: '',
@@ -719,7 +727,8 @@ export default {
         JDPlusType: this.plusType,
         JDPlusEndDate: this.plusTime,
         jdNickName: this.fixJdName,
-        isBlankNote: this.baitiaoStatus
+        isBlankNote: this.baitiaoStatus,
+        isAccept: this.JDcanGetOrder
       }).then((data) => {
         if (data.data.code === '200') {
           this.$message({
