@@ -67,7 +67,7 @@
       </el-tabs>
     </header>
     <!-- 点击确认派发之后触发的弹框 -->
-    <<<<<<< HEAD <div v-if="dialogTableVisible" class="cover">
+    <div v-if="dialogTableVisible" class="cover">
       <div class="content">
         <div class="cancel" @click="dialogTableVisible=false">X</div>
         <h2>确认派单</h2>
@@ -110,7 +110,7 @@
           <el-button @click="allSure()">确认分配</el-button>
         </div>
       </div>
-  </div>
+    </div>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -566,6 +566,7 @@ export default {
     top 0px
     left 0px
     z-index 655
+    min-height 130%
     .content
       width 60%
       background white
