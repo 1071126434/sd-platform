@@ -93,7 +93,9 @@
                   <img :src="goodsInfoObj.productPicUrl" alt="商品展示图">
                   <div>
                     <div>
-                      <p>商品名称: {{ goodsInfoObj.productName }}</p>
+                      <div>
+                        <p style="width:calc(100% - 200px)">商品名称: {{ goodsInfoObj.productName }}</p>
+                      </div>
                       <p>所在分类: {{ goodsInfoObj.productClassFirstDetail + ' / ' + goodsInfoObj.productClassSecondDetail + (goodsInfoObj.productClassThirdDetail ? (' / ' + goodsInfoObj.productClassThirdDetail) : '') }}</p>
                     </div>
                     <div>
@@ -106,7 +108,7 @@
                       <p>买手每单拍: {{ goodsInfoObj.numPerOrder }}件</p>
                     </div>
                     <div>
-                      <p>下单价格: {{ goodsInfoObj.productOrderPrice }}元</p>
+                      <p>下单价格: {{ (goodsInfoObj.productOrderPrice * goodsInfoObj.numPerOrder + (goodsInfoObj.isPostFree == 0 ? 10 : 0)).toFixed(2) }}元</p>
                     </div>
                   </div>
                 </div>
@@ -167,7 +169,7 @@
                 <td>
                   <div style="width:50%;margin:0 auto;">
                     <p>商品: {{ totalPriceObj.productUnitPrice }}元*{{ totalPriceObj.numPerOrder }}件 / 单 * {{ totalPriceObj.totalNum }}单</p>
-                    <p>运费备用金: {{ totalPriceObj.postPrice }}元 / 单*{{ totalPriceObj.totalNum }}单</p>
+                    <p>运费备用金: {{ totalPriceObj.isPostFree == 0 ? 10 : 0 }}元 / 单*{{ totalPriceObj.totalNum }}单</p>
                   </div>
                 </td>
                 <td>{{ benjin }}元</td>
@@ -185,7 +187,7 @@
                     <p>图文好评: {{ totalPriceObj.graphicFavorPrice }}元 / 单*{{ totalPriceObj.graphicFavorNum }}单</p>
                     <p>纯文字好评: {{ totalPriceObj.wordFavorPrice }}元 / 单*{{ totalPriceObj.wordFavorNum }}单</p>
                     <p>默认五星好评: {{ totalPriceObj.defaultFavorPrice }}元 / 单*{{ totalPriceObj.defaultFavorNum }}单</p>
-                    <p>plus会员: {{ totalPriceObj.plusPrice }}元 / 单*{{ totalPriceObj.plusNum }}单</p>
+                    <p v-if="taskInfoObj.shopType==0">plus会员: {{ totalPriceObj.plusPrice }}元 / 单*{{ totalPriceObj.plusNum }}单</p>
                   </div>
                 </td>
                 <td>{{ yongjin }}元</td>
@@ -233,7 +235,7 @@
                     <el-table-column prop="orderId" align="center" label="平台订单编号">
                       <template slot-scope="scope">
                         <span>{{ scope.row.orderId }}</span>
-                        <strong class="link">查看详情</strong>
+                        <strong class="link" @click="toLookDetail(scope.row.orderId)">查看详情</strong>
                       </template>
                     </el-table-column>
                   </el-table>
@@ -382,8 +384,8 @@ export default {
   computed: {
     benjin: function () {
       let benjin = 0
-      benjin = (this.totalPriceObj.productUnitPrice) * (this.totalPriceObj.numPerOrder) * (this.totalPriceObj.totalNum) + (this.totalPriceObj.postPrice) * (this.totalPriceObj.totalNum)
-      return benjin
+      benjin = (this.totalPriceObj.productUnitPrice) * (this.totalPriceObj.numPerOrder) * (this.totalPriceObj.totalNum) + (parseInt(this.totalPriceObj.isPostFree) === 0 ? 10 : 0) * (this.totalPriceObj.totalNum)
+      return benjin.toFixed(2)
     },
     yongjin: function () {
       let yongjin = 0
@@ -391,7 +393,7 @@ export default {
         (this.totalPriceObj.wordFavorPrice) * (this.totalPriceObj.wordFavorNum) +
         (this.totalPriceObj.defaultFavorPrice) * (this.totalPriceObj.defaultFavorNum) +
         (this.totalPriceObj.plusPrice) * (this.totalPriceObj.plusNum)
-      return yongjin
+      return yongjin.toFixed(2)
     },
     fuwu: function () {
       let total = 0
@@ -541,6 +543,10 @@ export default {
       }).catch((err) => {
         console.log(err)
       })
+    },
+    // 查看买手进度流水
+    toLookDetail (id) {
+      this.$router.push({ name: 'tryDetail', query: { buyerTaskId: id } })
     },
     // 获取商品详情信息
     getGoodsInfo () {
@@ -810,7 +816,7 @@ export default {
           width 60px
           height 60px
           float left
-          margin 20px 40px 20px 20px
+          margin 20px 40px 60px 20px
         .info
           p
             display inline-block

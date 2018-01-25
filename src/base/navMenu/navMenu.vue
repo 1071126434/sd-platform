@@ -156,6 +156,7 @@ export default {
 .menu
   background #0a1727
   height 100%
+  overflow auto
   .logo
     height $normal-height
     background $bg-small

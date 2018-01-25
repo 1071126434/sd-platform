@@ -52,32 +52,32 @@
                 <ul class="editCont" style="padding:0 20px;">
                   <li style="height: 40px;line-height:40px;margin-bottom:20px;">
                     <span style="display: inline-block;width:80px;">增加金额: </span>
-                    <el-input style="width:340px" type="number" placeholder="请输入内容"></el-input>
+                    <el-input style="width:340px" v-model="addUserMoney" type="number" placeholder="请输入内容"></el-input>
                   </li>
-                  <li style="height: 40px;line-height:40px;">
+                  <!-- <li style="height: 40px;line-height:40px;">
                     <span style="display: inline-block;width:80px;">备注: </span>
                     <el-input style="width:340px" type="text" placeholder="请输入内容"></el-input>
-                  </li>
+                  </li> -->
                 </ul>
                 <span slot="footer" class="dialog-footer">
                   <el-button @click="addMoney = false">取 消</el-button>
-                  <el-button type="primary" @click="addMoney=false">确 定</el-button>
+                  <el-button type="primary" @click="changeMoney(1)">确 定</el-button>
                 </span>
               </el-dialog>
               <el-dialog title="扣除买家本金余额" :append-to-body="true" :visible.sync="deleMoney" width="40%">
                 <ul class="editCont" style="padding:0 20px;">
                   <li style="height: 40px;line-height:40px;margin-bottom:20px;">
                     <span style="display: inline-block;width:80px;">扣除金额: </span>
-                    <el-input style="width:340px" type="number" placeholder="请输入内容"></el-input>
+                    <el-input style="width:340px" v-model="deleUserMoney" type="number" placeholder="请输入内容"></el-input>
                   </li>
-                  <li style="height: 40px;line-height:40px;">
+                  <!-- <li style="height: 40px;line-height:40px;">
                     <span style="display: inline-block;width:80px;">备注: </span>
                     <el-input style="width:340px" type="text" placeholder="请输入内容"></el-input>
-                  </li>
+                  </li> -->
                 </ul>
                 <span slot="footer" class="dialog-footer">
                   <el-button @click="deleMoney = false">取 消</el-button>
-                  <el-button type="primary" @click="deleMoney=false">确 定</el-button>
+                  <el-button type="primary" @click="changeMoney(0)">确 定</el-button>
                 </span>
               </el-dialog>
             </div>
@@ -93,9 +93,11 @@
         <h2 class="title">买家账号管理</h2>
         <ul>
           <li>
-            <el-switch v-model="canGetOrder" :width="45" active-color="#40B6FF" inactive-color="#9f9f9f">
+            <!-- <el-switch v-model="canGetOrder" :width="45" active-color="#40B6FF" inactive-color="#9f9f9f">
             </el-switch>
-            <p>接单</p>
+            <p>接单</p> -->
+            <p>收货地址:</p>
+            <p>{{ userInfoObj.postProvince || '--' }}{{ userInfoObj.postCity || '--' }}{{ userInfoObj.postRegion || '--' }}</p>
           </li>
           <li>
             <strong>{{ userInfoObj.userScore }}</strong>分
@@ -168,7 +170,7 @@
                     <b>{{ userInfoObj.jdPlusEndDate ? userInfoObj.jdPlusEndDate.split(' ')[0] : '暂无' }}</b>
                   </p>
                   <p>接单状态:
-                    <b>能接单</b>
+                    <b>{{ userInfoObj.isJdAccept == 1 ? '能接单' : userInfoObj.isJdAccept == 0 ? '不能接单' : '未设置' }}</b>
                   </p>
                 </li>
                 <li style="text-align: left;padding-left:50px; width: 33.3%">
@@ -211,6 +213,11 @@
                         <span style="display: inline-block;width:120px;">白条状态: </span>
                         <el-radio v-model="baitiaoStatus" label="1">已开通</el-radio>
                         <el-radio v-model="baitiaoStatus" label="0">未开通</el-radio>
+                      </li>
+                      <li style="height: 40px;line-height:40px;margin: 20px 0;">
+                        <span style="display: inline-block;width:120px;">接单状态: </span>
+                        <el-radio v-model="JDcanGetOrder" label="1">能接单</el-radio>
+                        <el-radio v-model="JDcanGetOrder" label="0">不能接单</el-radio>
                       </li>
                     </ul>
                     <span slot="footer" class="dialog-footer">
@@ -509,6 +516,8 @@ export default {
   },
   data () {
     return {
+      addUserMoney: '',
+      deleUserMoney: '',
       addMoney: false,
       deleMoney: false,
       currentPage: 1,
@@ -532,6 +541,7 @@ export default {
       plusTime: '',
       fixJdName: '',
       baitiaoStatus: '',
+      JDcanGetOrder: '',
       // 淘宝修改信息
       editTbObj: {
         userName: '',
@@ -717,7 +727,8 @@ export default {
         JDPlusType: this.plusType,
         JDPlusEndDate: this.plusTime,
         jdNickName: this.fixJdName,
-        isBlankNote: this.baitiaoStatus
+        isBlankNote: this.baitiaoStatus,
+        isAccept: this.JDcanGetOrder
       }).then((data) => {
         if (data.data.code === '200') {
           this.$message({
@@ -1059,6 +1070,52 @@ export default {
       }).catch((err) => {
         this.$message.error(err)
       })
+    },
+    // 增加或者减少用户本金余额
+    changeMoney (type) {
+      if (type === 0) { // 减少本金
+        this.$ajax.post('/api/userFund/buyer/platformReduceMoney', {
+          buyerUserAccountId: this.userInfoObj.buyerUserAccountId,
+          amount: this.deleUserMoney
+        }).then((data) => {
+          if (data.data.code === '200') {
+            this.$message({
+              message: '减少成功!',
+              type: 'success'
+            })
+            this.getBuyerMoney()
+            this.deleMoney = false
+          } else {
+            this.$message({
+              message: data.data.message,
+              type: 'warning'
+            })
+          }
+        }).catch((err) => {
+          this.$message.error(err)
+        })
+      } else { // 增加本金
+        this.$ajax.post('/api/userFund/buyer/platformAddMoney', {
+          buyerUserAccountId: this.userInfoObj.buyerUserAccountId,
+          amount: this.addUserMoney
+        }).then((data) => {
+          if (data.data.code === '200') {
+            this.$message({
+              message: '增加成功!',
+              type: 'success'
+            })
+            this.getBuyerMoney()
+            this.addMoney = false
+          } else {
+            this.$message({
+              message: data.data.message,
+              type: 'warning'
+            })
+          }
+        }).catch((err) => {
+          this.$message.error(err)
+        })
+      }
     },
     // 提前支取资金
     withdrawPost () {
