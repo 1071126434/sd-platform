@@ -5,10 +5,10 @@
         <el-tab-pane label="垫付申请" name="first">
           <div class="search">
             <span>申请时间 </span>
-            <el-date-picker style="width: 160px;margin-right:50px" v-model="applyTime" type="date" placeholder="选择日期">
+            <el-date-picker v-model="applyTime" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" format="yyyy-MM-dd" value-format='yyyy-MM-dd'>
             </el-date-picker>
-            <span>申请人 </span>
-            <el-input style="width: 160px;margin-right:50px" v-model="applyer" placeholder="请输入内容"></el-input>
+            <span style="margin-left:10px">申请人 </span>
+            <el-input style="width: 160px;margin-right:50px" v-model="applyer" placeholder="请输入手机号/姓名"></el-input>
             <strong class="btn">查询</strong>
           </div>
           <div class="accountTab">
@@ -28,14 +28,11 @@
               <el-table-column prop="applyTime" align="center" label="申请时间">
               </el-table-column>
               <el-table-column prop="status" align="center" label="状态">
-                <template slot-scope="scope">
-                  <span>{{ scope.row.status == 1 ? '通过' : '待审核' }}</span>
-                </template>
               </el-table-column>
               <el-table-column align="center" label="操作">
                 <template slot-scope="scope">
-                  <el-button type="text" size="small">审核通过</el-button>
-                  <el-button type="text" size="small">驳回</el-button>
+                  <el-button type="text" size="small" @click="handleClick(scope.row)">审核通过</el-button>
+                  <el-button type="text" size="small" @click="handleClickNo(scope.row)">驳回</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -51,7 +48,7 @@
             <el-input v-model="applyer" style="width: 160px;margin-right:50px" placeholder="请输入内容"></el-input>
             <span>审核状态 </span>
             <el-select v-model="applyStatus" style="width: 160px;margin-right:50px" placeholder="请选择">
-              <el-option label="全部" value="">
+              <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
             <strong class="btn">查询</strong>
@@ -88,47 +85,131 @@
           <noCont v-if="0"></noCont>
         </el-tab-pane>
         <div class="pager">
-          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size='pageSize' layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
+          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size='pageSize' layout="total, sizes, prev, pager, next, jumper" :total="pageTotal">
           </el-pagination>
         </div>
       </el-tabs>
     </header>
+    <el-dialog title="提示" :visible.sync="dialogVisible" width="30%" :before-close="handleClose" :modal-append-to-body='false'>
+      <span>确认审核通过么?</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="sure">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script type="text/ecmascript-6">
 import noCont from '../../../base/noCont/noCont'
+import { pageCommon } from '../../../assets/js/mixin'
+import { mapGetters } from 'vuex'
 export default {
   name: 'rePay',
+  mixins: [pageCommon],
   components: {
     noCont
   },
   data () {
     return {
       activeName: 'first',
-      tableData: [{
-        orderNum: '894894864485',
-        money: '26',
-        yongjin: '5',
-        weCommon: 'weijfsajd',
-        admin: '杨树林',
-        adminChat: 'yndansffs',
-        applyTime: '2017-06-23',
-        detailTime: '2017-06-23',
-        status: '1',
-        operater: '黄黄'
+      pageSize: 5,
+      currentPage: 1,
+      totalCount: 0,
+      tableData: [],
+      dialogVisible: false,
+      orderNum: '',
+      options: [{
+        applyStatus: '0',
+        label: '未审核'
+      }, {
+        vaapplyStatuslue: '1',
+        label: '审核通过'
+      }, {
+        applyStatus: '2',
+        label: '被驳回'
+      }, {
+        applyStatus: '3',
+        label: '已导出'
+      }, {
+        applyStatus: '4',
+        label: '已打款'
+      }, {
+        applyStatus: '5',
+        label: '取消'
       }],
       applyTime: '',
       applyer: '',
-      applyStatus: ''
+      applyStatus: '-1',
+      apiUrl: '/api/advanceApply/getListByCondition'
     }
+  },
+  computed: {
+    params () {
+      return {
+        startTime: this.applyTime ? this.applyTime[0] : '',
+        endTime: this.applyTime ? this.applyTime[1] : '',
+        condition: this.applyer,
+        status: this.applyStatus,
+        pageNo: this.pageNo,
+        pageSize: this.pageSize
+      }
+    },
+    ...mapGetters([
+      'userInfo'
+    ])
   },
   methods: {
     handleClicks () {
       if (this.activeName2 === 'first') {
-
+        this.getTask()
       } else if (this.activeName2 === 'second') {
 
       }
+    },
+    setList (data) {
+      let arr = []
+      for (let word of data) {
+        let goods = {
+          orderNum: word.packageId || '--',
+          money: word.amount || '--',
+          yongjin: word.commission || '--',
+          weCommon: word.buyWchat || '--',
+          admin: word.platformName || '--',
+          adminChat: word.platformWechatName || '--',
+          applyTime: word.gmtModify || '--',
+          status: word.status === '0' ? '未审核' : word.status === '1' ? '审核通过' : word.status === '2' ? '被驳回' : word.status === '3' ? '已导出' : word.status === '4' ? '已打款' : '取消'
+        }
+        arr.push(goods)
+      }
+      this.tableData = arr
+    },
+    // 点击审核通过触发事件
+    handleClick (val) {
+      console.log(val)
+      this.dialogVisible = true
+      this.orderNum = val.orderNum
+    },
+    sure () {
+      this.$ajax.post('/api/withdrawApply/updateApplysRestart', {
+        advanceApplyId: this.orderNum,
+        operateUserId: this.userInfo.operateUserAccountId
+      }).then((data) => {
+        let res = data.data
+        if (res.code === '200') {
+          this.$message({
+            message: res.message,
+            type: 'success'
+          })
+          this.getTask()
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          })
+        }
+      }).catch(() => {
+        this.$message.error('网络错误，刷新下试试')
+      })
     }
   }
 }

@@ -36,36 +36,36 @@
         <el-tab-pane label="未联系" name="first">
           <div class="accountTab">
             <el-table :data="tableData" border style="width: 100%">
-              <el-table-column fixed type="index" width="50" label="编号">
+              <el-table-column fixed type="index" width="50" label="编号" align="center">
               </el-table-column>
-              <el-table-column prop="date" label="任务包编号" width="120">
+              <el-table-column prop="date" label="任务包编号" width="160" align="center">
               </el-table-column>
-              <el-table-column prop="name" label="任务包状态" width="120">
+              <el-table-column prop="name" label="任务包状态" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="province" label="垫付总金额" width="120">
+              <el-table-column prop="province" label="垫付总金额" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="city" label="预计佣金" width="120">
+              <el-table-column prop="city" label="预计佣金" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="address" label="单数" width="120">
+              <el-table-column prop="address" label="单数" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="zip" label="剩余单数" width="120">
+              <el-table-column prop="operaterUserName" label="剩余单数" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="zip" label="买家姓名" width="120">
+              <el-table-column prop="buyName" label="买家姓名" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="zip" label="买家手机号" width="120">
+              <el-table-column prop="buyPhone" label="买家手机号" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="zip" label="买家微信备注" width="120">
+              <el-table-column prop="comment" label="买家备注" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="zip" label="平台联系人" width="120">
+              <el-table-column prop="platformOperaterName" label="平台联系人" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="zip" label="联系状态" width="120">
+              <el-table-column prop="contantStatus" label="联系状态" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="zip" label="派包时间" width="120">
+              <el-table-column prop="gmtModify" label="派包时间" width="120" align="center">
               </el-table-column>
-              <el-table-column fixed="right" label="操作" width="100">
+              <el-table-column fixed="right" label="操作" width="100" align="center">
                 <template slot-scope="scope">
-                  <el-button @click="handleClick(scope.row)" type="text" size="small">我已联系</el-button>
-                  <el-button @click="handleNoClickNo(scope.row)" type="text" size="small">取消</el-button>
+                  <el-button v-if="scope.row.name==='未领取'||scope.name==='已领取'" @click=" handleClick(scope.row) " type="text " size="small ">我已联系</el-button>
+                  <el-button v-if="scope.row.name==='未领取'||scope.name==='已领取'" @click="handleNoClickNo(scope.row) " type="text " size="small ">撤销</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -75,59 +75,70 @@
           <!-- 展示内容部分 -->
           <div class="accountTab">
             <el-table :data="tableDataBuy" border style="width: 100%">
-              <el-table-column fixed type="index" width="50" label="编号">
+              <el-table-column fixed type="index" width="50" label="编号" align="center">
               </el-table-column>
-              <el-table-column prop="date" label="任务包编号" width="120">
+              <el-table-column prop="date" label="任务包编号" width="160" align="center">
               </el-table-column>
-              <el-table-column prop="name" label="任务包状态" width="120">
+              <el-table-column prop="name" label="任务包状态" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="province" label="垫付总金额" width="120">
+              <el-table-column prop="province" label="垫付总金额" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="city" label="预计佣金" width="120">
+              <el-table-column prop="city" label="预计佣金" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="address" label="单数" width="120">
+              <el-table-column prop="address" label="单数" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="zip" label="剩余单数" width="120">
+              <el-table-column prop="operaterUserName" label="剩余单数" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="zip" label="买家姓名" width="120">
+              <el-table-column prop="buyName" label="买家姓名" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="zip" label="买家手机号" width="120">
+              <el-table-column prop="buyPhone" label="买家手机号" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="zip" label="买家微信备注" width="120">
+              <el-table-column prop="comment" label="买家微信备注" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="zip" label="平台联系人" width="120">
+              <el-table-column prop="platformOperaterName" label="平台联系人" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="zip" label="联系状态" width="120">
+              <el-table-column prop="contantStatus" label="联系状态" width="120" align="center">
               </el-table-column>
-              <el-table-column prop="zip" label="派包时间" width="120">
+              <el-table-column prop="gmtModify" label="派包时间" width="120" align="center">
               </el-table-column>
-              <el-table-column fixed="right" label="操作" width="100">
+              <el-table-column fixed="right" label="操作" width="100" align="center">
                 <template slot-scope="scope">
-                  <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-                  <el-button type="text" size="small">撤销</el-button>
+                  <el-button v-if="scope.row.name==='未领取'||scope.name==='已领取'" @click=" handleClick(scope.row) " type="text " size="small ">我已联系</el-button>
+                  <el-button v-if="scope.row.name==='未领取'||scope.name==='已领取'" @click="handleNoClickNo(scope.row) " type="text " size="small ">撤销</el-button>
                 </template>
               </el-table-column>
             </el-table>
           </div>
-          <noCont v-if="this.tableDataBuy.length===0"></noCont>
+          <noCont v-if="this.tableDataBuy.length===0 "></noCont>
         </el-tab-pane>
-        <!-- <noCont v-if="this.tableDataBuy.length===0"></noCont> -->
-        <div class="pager" v-if="noContPage">
-          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size='pageSize' layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
+        <noCont v-if="this.tableDataBuy.length===0 "></noCont>
+        <div class="pager " v-if="noContPage ">
+          <el-pagination @size-change="handleSizeChange " @current-change="handleCurrentChange " :current-page="currentPage " :page-sizes="[5, 10, 15, 20] " :page-size='pageSize' layout="total, sizes, prev, pager, next, jumper " :total="totalCount ">
           </el-pagination>
         </div>
       </el-tabs>
     </header>
-    <!-- 点击撤销触发的弹框 -->
-    <el-dialog title="撤销" :visible.sync="dialogFormVisible_2" :modal-append-to-body='false' width="36%" style="margin-top: 25vh">
-      <el-radio-group v-model="radio2">
-        <el-radio :label="3" style="line-height:40px">已联系做单，立马做</el-radio> <br>
-        <el-radio :label="6" style="line-height:40px">已联系做单，晚点做</el-radio> <br>
-        <el-radio :label="9" style="line-height:40px">已联系，未回信息</el-radio> <br>
-      </el-radio-group>
+    <!-- 点击确认联系触发的弹框 -->
+    <el-dialog title="确认联系" :visible.sync="dialogFormVisible_2 " :modal-append-to-body='false' width="36% " style="margin-top: 25vh ">
+      <el-radio v-model="radio" label="已联系做单立马做">已联系做单，立马做</el-radio><br>
+      <el-radio v-model="radio" label="已联系做单晚点做">已联系做单，晚点做</el-radio><br>
+      <el-radio v-model="radio" label="已联系未回信息">已联系，未回信息</el-radio><br>
+      <el-radio v-model="radio" label="未联系">未联系</el-radio><br>
+      <el-radio v-model="radio" label="已联系不想做">已联系,不想做</el-radio><br>
+      <el-radio v-model="radio" label="已领取">已领取</el-radio><br>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible_2 = false">取 消</el-button>
+        <el-button @click="dialogFormVisible_2=false">取 消</el-button>
         <el-button type="primary" @click="sure_2">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 点击撤销的弹框 -->
+    <el-dialog title="撤销" :visible.sync="dialogFormVisible_1" :modal-append-to-body='false' width="36% " style="margin-top: 25vh">
+      <el-radio v-model="radio1" label="已联系做单立马做">已联系做单，立马做</el-radio><br>
+      <el-radio v-model="radio1" label="已联系做单晚点做">已联系做单，晚点做</el-radio><br>
+      <el-radio v-model="radio1" label="已联系未回信息">已联系，未回信息</el-radio><br>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible_1=false">取 消</el-button>
+        <el-button type="primary" @click="sure_1">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -144,7 +155,8 @@ export default {
     return {
       adminNameArr: [],
       wechatArr: [],
-      radio2: 3,
+      radio: '',
+      radio1: '',
       value3: '',
       input6: '',
       value6: '',
@@ -153,8 +165,10 @@ export default {
       value1: '',
       currentPage: 1,
       pageSize: 5,
+      pageNo: 1,
       totalCount: 0,
       dialogFormVisible_2: false,
+      dialogFormVisible_1: false,
       tableData: [],
       options: [{
         value2: '0',
@@ -164,10 +178,11 @@ export default {
         label: '已领取'
       }, {
         value2: '2',
-        label: '领取失败'
-      }
-      ],
-      tableDataBuy: []
+        label: '已失效'
+      }],
+      value2: '',
+      tableDataBuy: [],
+      assignedUserId: ''
     }
   },
   computed: {
@@ -190,6 +205,10 @@ export default {
   },
   methods: {
     handleClicks () {
+      this.value6 = ''
+      this.value = ''
+      this.value1 = ''
+      this.value2 = ''
       if (this.activeName2 === 'first') {
         this.sercherOne(1, this.pageSize)
       } else if (this.activeName2 === 'second') {
@@ -197,12 +216,12 @@ export default {
       }
     },
     // 卖家充值申请的搜索
-    searchBankNum () {
-      this.sercherOne(1, this.pageSize)
-    },
-    // 卖家充值记录的搜索
-    searchTime () {
-      this.sellerRecord(1, this.pageSize)
+    searchBtn () {
+      if (this.activeName2 === 'first') {
+        this.sercherOne(1, this.pageSize)
+      } else if (this.activeName2 === 'second') {
+        this.sellerRecord(1, this.pageSize)
+      }
     },
     handleSizeChange (val) {
       if (this.activeName2 === 'first') {
@@ -218,13 +237,6 @@ export default {
         this.sellerRecord(val, this.pageSize)
       }
     },
-    // 当点击撤销触发的事件
-    handleNoClickNo (val) {
-      this.dialogFormVisible_2 = true
-    },
-    sure_2 () {
-      // 进行撤销的处理
-    },
     // 未联系
     sercherOne (pageNo, pageSize) {
       this.$ajax.post('/api/platformPackageAssign/getPackageAssignInfoByCondition', {
@@ -234,12 +246,103 @@ export default {
         operaterWechatId: this.value1,
         status: this.value2,
         contactStatus: '0',
-        limit: this.pageSize,
+        limit: pageSize,
         currPageNo: pageNo
       }).then((data) => {
+        console.log(data)
         let res = data.data
-        this.totalCount = res.data.totalCount
+        this.totalCount = res.data.total
         if (res.code === '200') {
+          let arr = []
+          for (let word of res.data.datas) {
+            let goods = {
+              date: word.platformPackageId,
+              name: word.status === '0' ? '未领取' : word.status === '1' ? '已领取' : '已失效',
+              province: word.totalCommission + word.totalCapital,
+              city: word.totalCommission,
+              address: word.totalTaskNum,
+              // 对应管理员
+              operaterUserName: word.undoneTaskNum,
+              buyName: word.assignedUserName,
+              buyPhone: word.assignedUserTelephone,
+              comment: '--',
+              // 买家信息
+              platformOperaterName: word.platformOperaterName,
+              contantStatus: word.comment || '--',
+              gmtModify: word.gmtModify,
+              assignedUserId: word.assignedUserId
+            }
+            arr.push(goods)
+          }
+          this.tableData = arr
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          })
+        }
+      }).catch(() => {
+        this.$message.error('网络错误，刷新下试试')
+      })
+    },
+    // 当点击我已联系触发事件
+    handleClick (val) {
+      this.dialogFormVisible_2 = true
+      console.log(val)
+      this.assignedUserId = val.assignedUserId
+    },
+    sure_2 () {
+      this.$ajax.post('/api/platformPackageAssign/updatePackageAssignContactStatus', {
+        contactStatus: '1',
+        assignedUserId: this.assignedUserId,
+        comment: this.radio
+      }).then((data) => {
+        let res = data.data
+        if (res.code === '200') {
+          this.$message({
+            message: '操作成功',
+            type: 'success'
+          })
+          this.dialogFormVisible_2 = false
+          if (this.activeName2 === 'first') {
+            this.sercherOne(1, this.pageSize)
+          } else if (this.activeName2 === 'second') {
+            this.sellerRecord(1, this.pageSize)
+          }
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          })
+        }
+      }).catch(() => {
+        this.$message.error('网络错误，刷新下试试')
+      })
+    },
+    // 当点击撤销触发的事件
+    handleNoClickNo (val) {
+      this.dialogFormVisible_1 = true
+      console.log(val)
+      this.assignedUserId = val.assignedUserId
+    },
+    sure_1 () {
+      this.$ajax.post('/api/platformPackageAssign/updatePackageAssignStatus', {
+        status: '2',
+        assignedUserId: this.assignedUserId,
+        comment: this.radio1
+      }).then((data) => {
+        let res = data.data
+        if (res.code === '200') {
+          this.$message({
+            message: '操作成功',
+            type: 'success'
+          })
+          this.dialogFormVisible_1 = false
+          if (this.activeName2 === 'first') {
+            this.sercherOne(1, this.pageSize)
+          } else if (this.activeName2 === 'second') {
+            this.sellerRecord(1, this.pageSize)
+          }
         } else {
           this.$message({
             message: res.message,
@@ -253,16 +356,40 @@ export default {
     // 已联系
     sellerRecord (pageNo, pageSize) {
       this.$ajax.post('/api/platformPackageAssign/getPackageAssignInfoByCondition', {
-        statusList: ['1', '2'],
-        pageNo: pageNo,
-        pageSize: pageSize,
-        startTime: this.value3 ? this.value3[0] : '',
-        endTime: this.value3 ? this.value3[1] : '',
-        sellerTelephoneOrName: this.input6
+        startTime: this.value6 ? this.value6[0] : '',
+        endTime: this.value6 ? this.value6[1] : '',
+        operateUserAccountId: '',
+        operaterWechatId: this.value1,
+        status: this.value2,
+        contactStatus: '1',
+        limit: pageSize,
+        currPageNo: pageNo
       }).then((data) => {
+        console.log(data)
         let res = data.data
-        this.totalCount = res.data.totalCount
+        this.totalCount = res.data.total
         if (res.code === '200') {
+          let arr = []
+          for (let word of res.data.datas) {
+            let goods = {
+              date: word.platformPackageId,
+              name: word.status === '0' ? '未领取' : word.status === '1' ? '已领取' : '已失效',
+              province: word.totalCommission + word.totalCapital,
+              city: word.totalCommission,
+              address: word.totalTaskNum,
+              operaterUserName: word.undoneTaskNum,
+              buyName: word.assignedUserName,
+              buyPhone: word.assignedUserTelephone,
+              comment: '--',
+              // 买家信息
+              platformOperaterName: word.platformOperaterName,
+              contantStatus: word.comment || '--',
+              gmtModify: word.gmtModify,
+              assignedUserId: word.assignedUserId
+            }
+            arr.push(goods)
+          }
+          this.tableDataBuy = arr
         } else {
           this.$message({
             message: res.message,

@@ -1,7 +1,7 @@
 <template>
   <div class="wrap">
     <header>
-      <el-tabs v-model="activeName2" @tab-click="handleClickTab">
+      <el-tabs>
         <div class="top">
           <div class="purple_2">
             <div class="grid-content bg-purple">
@@ -31,7 +31,7 @@
         <div class="red"></div>
         <!-- 内容列表展示 -->
         <div class="accountTab">
-          <el-table :data="tableDataBuy" style="width: 100%" @select="handSelect" @select-all="selectAll" border>
+          <el-table :data="tableDataBuy" style="width: 90%" @select="handSelect" @select-all="selectAll" border>
             <el-table-column type="selection" fixed></el-table-column>
             <el-table-column prop="sellerTaskId" width="180" align="center" label="编号">
             </el-table-column>
@@ -67,44 +67,50 @@
       </el-tabs>
     </header>
     <!-- 点击确认派发之后触发的弹框 -->
-    <el-dialog title="派单确认" :visible.sync="dialogTableVisible" :modal-append-to-body='false'>
-      <div class="head">
-        <p>本任务包最大订单数:{{this.totalClusterCount.totalCluster||0}}</p>
-        <p>可接组团数:{{this.totalClusterCount.totalCluster||0}}</p>
-        <p>可接人数:{{this.totalClusterCount.totalCount||0}}</p>
+    <div v-if="dialogTableVisible" class="cover">
+      <div class="content">
+        <div class="cancel" @click="dialogTableVisible=false">X</div>
+        <h2>确认派单</h2>
+        <div class="head">
+          <p>本任务包最大订单数:{{this.totalClusterCount.totalCluster||0}}</p>
+          <p>可接组团数:{{this.totalClusterCount.totalCluster||0}}</p>
+          <p>可接人数:{{this.totalClusterCount.totalCount||0}}</p>
+        </div>
+        <div class="midd">
+          <p>请输入您希望消耗的订单数
+          </p>
+          <p class="mit">
+            <el-input v-model="input" type="number"></el-input>
+          </p>
+          <span style="margin-left:40px">已选中:{{this.buyIds.length||0}}人</span>
+        </div>
+        <div class="red"></div>
+        <!-- 数据展示部分 -->
+        <div class="scoller">
+          <el-table :data="tableDataBuyList" style="width: 100%;" @select="handSelectOne">
+            <el-table-column type="selection" width="50" :selectable='disabledFilter'></el-table-column>
+            <el-table-column prop="buyerName" align="center" width="80" label="姓名">
+            </el-table-column>
+            <el-table-column prop="telephone" align="center" width="100" label="手机号">
+            </el-table-column>
+            <el-table-column prop="province" align="center" width="100" label="所在省">
+            </el-table-column>
+            <el-table-column prop="clusterId" align="center" width="165" label="组团编号">
+            </el-table-column>
+            <el-table-column prop="buyerIdentify" align="center" width="100" label="标识">
+            </el-table-column>
+            <el-table-column prop="waitingBackCapitalAccount" width="100" align="center" label="未确认收货金">
+            </el-table-column>
+            <el-table-column prop="lastLoginTime" align="center" width="150" label="上次登陆时间">
+            </el-table-column>
+          </el-table>
+        </div>
+        <div class="line"></div>
+        <div class="moneyNum" style="margin-top:10px">
+          <el-button @click="allSure()">确认分配</el-button>
+        </div>
       </div>
-      <div class="midd">
-        <p>请输入您希望消耗的订单数
-        </p>
-        <p class="mit">
-          <el-input v-model="input" type="number"></el-input>
-        </p>
-        <span style="margin-left:40px">已选中:{{this.buyIds.length||0}}人</span>
-      </div>
-      <div class="red"></div>
-      <!-- 数据展示部分 -->
-      <el-table :data="tableDataBuyList" style="width: 100%;height:100%" @select="handSelectOne" border>
-        <el-table-column type="selection" width="50" fixed :selectable='false'></el-table-column>
-        <el-table-column prop="buyerName" align="center" width="80" label="姓名">
-        </el-table-column>
-        <el-table-column prop="telephone" align="center" width="100" label="手机号">
-        </el-table-column>
-        <el-table-column prop="province" align="center" width="80" label="所在省">
-        </el-table-column>
-        <el-table-column prop="clusterId" align="center" width="180" label="组团编号">
-        </el-table-column>
-        <el-table-column prop="buyerIdentify" align="center" width="80" label="标识">
-        </el-table-column>
-        <el-table-column prop="waitingBackCapitalAccount" width="100" align="center" label="未确认收货金" fixed="right">
-        </el-table-column>
-        <el-table-column prop="lastLoginTime" align="center" width="150" label="上次登陆时间">
-        </el-table-column>
-      </el-table>
-      <div class="line"></div>
-      <div class="moneyNum" style="margin-top:10px">
-        <el-button @click="allSure()">确认分配</el-button>
-      </div>
-    </el-dialog>
+    </div>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -128,7 +134,16 @@ export default {
       value4: '',
       input5: '',
       tableDataBuy: [],
-      tableDataBuyList: [],
+      tableDataBuyList: [{
+        buyerName: 'zhaasn',
+        telephone: '15031515',
+        province: '河南省',
+        clusterId: '15465465461546156156',
+        buyerIdentify: '333',
+        waitingBackCapitalAccount: '11',
+        lastLoginTime: '2015-2-8'
+      }
+      ],
       // 将选中的值存在一个数组里面
       applyIdsNum: [],
       // 用来判断是否导出就进行提现的问题
@@ -479,6 +494,7 @@ export default {
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .wrap
   padding 20px
+  position relative
   ::-webkit-scrollbar
     width 100%
     height 10px
@@ -542,23 +558,53 @@ export default {
         float left
         margin-top 1.2rem
         margin-right 0.5rem
-  .head
-    display flex
-    justify-content space-between
-    border-top 1px solid #ccc
-    padding-top 20px
-    padding-bottom 10px
-  .midd
-    display flex
-    justify-content flex-start
-    .mit
-      margin-left 5px
-  .red
+  .cover
+    width 100%
+    height auto
+    background rgba(0, 0, 0, 0.2)
     position absolute
-    width 30px
-    height 35px
-    background #ffffff
-    left 22px
-    top 175px
-    z-index 555
+    top 0px
+    left 0px
+    z-index 655
+    .content
+      width 60%
+      background white
+      margin-left 10%
+      margin-top 5%
+      padding 20px
+      position relative
+      .cancel
+        position absolute
+        right 5px
+        top 5px
+        font-size 20px
+        cursor pointer
+      h2
+        font-size 20px
+        padding-bottom 10px
+      .head
+        display flex
+        justify-content space-between
+        border-top 1px solid #ccc
+        padding-top 20px
+        padding-bottom 10px
+        font-size 14px
+      .midd
+        display flex
+        justify-content flex-start
+        font-size 14px
+        margin-top 18px
+        .mit
+          margin-left 5px
+          margin-top -5px
+      .red
+        position absolute
+        width 30px
+        height 35px
+        background #fff
+        left 27px
+        top 133px
+        z-index 555
+      .scoller
+        overflow auto
 </style>
