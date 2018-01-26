@@ -25,7 +25,7 @@
           <li>
             <span class="status">状态</span>&nbsp; &nbsp;
             <el-select v-model="value2" placeholder="请选择">
-              <el-option v-for="(item,index) in options" :key="index" :label="item.label" :value="item.value">
+              <el-option v-for="(item,index) in options" :key="index" :label="item.label" :value="item.value2">
               </el-option>
             </el-select>
           </li>
@@ -64,8 +64,8 @@
               </el-table-column>
               <el-table-column fixed="right" label="操作" width="100" align="center">
                 <template slot-scope="scope">
-                  <el-button v-if="scope.row.name==='未领取'||scope.name==='已领取'" @click=" handleClick(scope.row) " type="text " size="small ">我已联系</el-button>
-                  <el-button v-if="scope.row.name==='未领取'||scope.name==='已领取'" @click="handleNoClickNo(scope.row) " type="text " size="small ">撤销</el-button>
+                  <el-button v-if="scope.row.name==='未领取'||scope.row.name==='已领取'" @click=" handleClick(scope.row) " type="text " size="small ">我已联系</el-button>
+                  <el-button v-if="scope.row.name==='未领取'||scope.row.name==='已领取'" @click="handleNoClickNo(scope.row) " type="text " size="small ">撤销</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -103,16 +103,16 @@
               </el-table-column>
               <el-table-column fixed="right" label="操作" width="100" align="center">
                 <template slot-scope="scope">
-                  <el-button v-if="scope.row.name==='未领取'||scope.name==='已领取'" @click=" handleClick(scope.row) " type="text " size="small ">我已联系</el-button>
-                  <el-button v-if="scope.row.name==='未领取'||scope.name==='已领取'" @click="handleNoClickNo(scope.row) " type="text " size="small ">撤销</el-button>
+                  <el-button v-if="scope.row.name==='未领取'||scope.row.name==='已领取'" @click=" handleClick(scope.row) " type="text " size="small ">我已联系</el-button>
+                  <el-button v-if="scope.row.name==='未领取'||scope.row.name==='已领取'" @click="handleNoClickNo(scope.row) " type="text " size="small ">撤销</el-button>
                 </template>
               </el-table-column>
             </el-table>
           </div>
-          <noCont v-if="this.tableDataBuy.length===0 "></noCont>
+          <!-- <noCont v-if="this.tableDataBuy.length===0 "></noCont> -->
         </el-tab-pane>
-        <noCont v-if="this.tableDataBuy.length===0 "></noCont>
-        <div class="pager " v-if="noContPage ">
+        <!-- <noCont v-if="this.tableDataBuy.length===0 "></noCont> -->
+        <div class="pager">
           <el-pagination @size-change="handleSizeChange " @current-change="handleCurrentChange " :current-page="currentPage " :page-sizes="[5, 10, 15, 20] " :page-size='pageSize' layout="total, sizes, prev, pager, next, jumper " :total="totalCount ">
           </el-pagination>
         </div>
@@ -124,8 +124,6 @@
       <el-radio v-model="radio" label="已联系做单晚点做">已联系做单，晚点做</el-radio><br>
       <el-radio v-model="radio" label="已联系未回信息">已联系，未回信息</el-radio><br>
       <el-radio v-model="radio" label="未联系">未联系</el-radio><br>
-      <el-radio v-model="radio" label="已联系不想做">已联系,不想做</el-radio><br>
-      <el-radio v-model="radio" label="已领取">已领取</el-radio><br>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible_2=false">取 消</el-button>
         <el-button type="primary" @click="sure_2">确 定</el-button>
@@ -133,8 +131,7 @@
     </el-dialog>
     <!-- 点击撤销的弹框 -->
     <el-dialog title="撤销" :visible.sync="dialogFormVisible_1" :modal-append-to-body='false' width="36% " style="margin-top: 25vh">
-      <el-radio v-model="radio1" label="已联系做单立马做">已联系做单，立马做</el-radio><br>
-      <el-radio v-model="radio1" label="已联系做单晚点做">已联系做单，晚点做</el-radio><br>
+      <el-radio v-model="radio1" label="已联系做单晚点做">已联系做单，不想做</el-radio><br>
       <el-radio v-model="radio1" label="已联系未回信息">已联系，未回信息</el-radio><br>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible_1=false">取 消</el-button>
@@ -258,7 +255,7 @@ export default {
             let goods = {
               date: word.platformPackageId,
               name: word.status === '0' ? '未领取' : word.status === '1' ? '已领取' : '已失效',
-              province: word.totalCommission + word.totalCapital,
+              province: word.totalCapital,
               city: word.totalCommission,
               address: word.totalTaskNum,
               // 对应管理员
@@ -374,7 +371,7 @@ export default {
             let goods = {
               date: word.platformPackageId,
               name: word.status === '0' ? '未领取' : word.status === '1' ? '已领取' : '已失效',
-              province: word.totalCommission + word.totalCapital,
+              province: word.totalCapital,
               city: word.totalCommission,
               address: word.totalTaskNum,
               operaterUserName: word.undoneTaskNum,

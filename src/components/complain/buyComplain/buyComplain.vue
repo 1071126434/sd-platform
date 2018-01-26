@@ -17,7 +17,7 @@
       </div>
       <div class="tabCont">
         <el-table :data="complainList">
-          <el-table-column prop="complainPhone" align="center" label="商家联系方式">
+          <el-table-column prop="complainPhone" align="center" label="买家联系方式">
           </el-table-column>
           <el-table-column prop="complainReason" align="center" label="投诉原因">
             <template slot-scope="scope">

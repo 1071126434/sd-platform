@@ -36,22 +36,22 @@
                 </template>
               </el-table-column>
             </el-table>
-            <noCont v-if="0"></noCont>
+            <noCont v-if="tableData.length===0"></noCont>
           </div>
         </el-tab-pane>
         <el-tab-pane label="垫付记录" name="second">
           <div class="search">
             <span>申请时间 </span>
-            <el-date-picker v-model="applyTime" style="width: 160px;margin-right:50px" type="date" placeholder="选择日期">
+            <el-date-picker v-model="applyTime" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" format="yyyy-MM-dd" value-format='yyyy-MM-dd'>
             </el-date-picker>
-            <span>申请人 </span>
-            <el-input v-model="applyer" style="width: 160px;margin-right:50px" placeholder="请输入内容"></el-input>
+            <span style="margin-left:10px">申请人 </span>
+            <el-input style="width: 160px;margin-right:50px" v-model="applyer" placeholder="请输入手机号/姓名"></el-input>
             <span>审核状态 </span>
-            <el-select v-model="applyStatus" style="width: 160px;margin-right:50px" placeholder="请选择">
+            <el-select v-model="value" style="width: 160px;margin-right:50px" placeholder="请选择">
               <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
-            <strong class="btn">查询</strong>
+            <strong class="btn" @click="search">查询</strong>
           </div>
           <div>
             <strong class="btn-b" style="margin: 0 0 20px">导出</strong>
@@ -71,30 +71,37 @@
               </el-table-column>
               <el-table-column prop="adminChat" align="center" label="管理员微信">
               </el-table-column>
-              <el-table-column prop="detailTime" align="center" label="审核时间">
+              <el-table-column prop="applyTime" align="center" label="审核时间">
               </el-table-column>
               <el-table-column prop="status" align="center" label="状态">
-                <template slot-scope="scope">
-                  <span>{{ scope.row.status == 1 ? '通过' : '待审核' }}</span>
-                </template>
               </el-table-column>
               <el-table-column prop="operater" align="center" label="操作人">
               </el-table-column>
             </el-table>
           </div>
-          <noCont v-if="0"></noCont>
+          <noCont v-if="tableData.length===0"></noCont>
         </el-tab-pane>
-        <div class="pager">
+        <div class="pager" v-if="tableData.length!==0">
           <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size='pageSize' layout="total, sizes, prev, pager, next, jumper" :total="pageTotal">
           </el-pagination>
         </div>
       </el-tabs>
     </header>
+    <!-- 点击通过的弹框 -->
     <el-dialog title="提示" :visible.sync="dialogVisible" width="30%" :before-close="handleClose" :modal-append-to-body='false'>
       <span>确认审核通过么?</span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="sure">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 点击驳回的弹框 -->
+    <el-dialog title="确认驳回么?" :visible.sync="dialogVisible_1" width="30%" :before-close="handleClose" :modal-append-to-body='false'>
+      <span>请输入驳回理由</span>
+      <el-input v-model="input" placeholder="请输入内容"></el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible_1 = false">取 消</el-button>
+        <el-button type="primary" @click="sure_1">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -117,41 +124,42 @@ export default {
       totalCount: 0,
       tableData: [],
       dialogVisible: false,
+      dialogVisible_1: false,
+      input: '',
       orderNum: '',
       options: [{
-        applyStatus: '0',
-        label: '未审核'
-      }, {
-        vaapplyStatuslue: '1',
+        value: '1',
         label: '审核通过'
       }, {
-        applyStatus: '2',
+        value: '2',
         label: '被驳回'
-      }, {
-        applyStatus: '3',
-        label: '已导出'
-      }, {
-        applyStatus: '4',
-        label: '已打款'
-      }, {
-        applyStatus: '5',
-        label: '取消'
       }],
       applyTime: '',
       applyer: '',
-      applyStatus: '-1',
+      value: '',
       apiUrl: '/api/advanceApply/getListByCondition'
     }
   },
   computed: {
     params () {
-      return {
-        startTime: this.applyTime ? this.applyTime[0] : '',
-        endTime: this.applyTime ? this.applyTime[1] : '',
-        condition: this.applyer,
-        status: this.applyStatus,
-        pageNo: this.pageNo,
-        pageSize: this.pageSize
+      if (this.activeName === 'first') {
+        return {
+          startTime: this.applyTime ? this.applyTime[0] : '',
+          endTime: this.applyTime ? this.applyTime[1] : '',
+          condition: this.applyer,
+          status: '0',
+          pageNo: this.pageNo,
+          pageSize: this.pageSize
+        }
+      } else if (this.activeName === 'second') {
+        return {
+          startTime: this.applyTime ? this.applyTime[0] : '',
+          endTime: this.applyTime ? this.applyTime[1] : '',
+          condition: this.applyer,
+          status: '1,2,3,4,5',
+          pageNo: this.pageNo,
+          pageSize: this.pageSize
+        }
       }
     },
     ...mapGetters([
@@ -160,24 +168,26 @@ export default {
   },
   methods: {
     handleClicks () {
-      if (this.activeName2 === 'first') {
+      if (this.activeName === 'first') {
         this.getTask()
-      } else if (this.activeName2 === 'second') {
-
+      } else if (this.activeName === 'second') {
+        this.getTask()
       }
     },
     setList (data) {
       let arr = []
       for (let word of data) {
         let goods = {
+          advanceApplyId: word.advanceApplyId,
           orderNum: word.packageId || '--',
           money: word.amount || '--',
           yongjin: word.commission || '--',
-          weCommon: word.buyWchat || '--',
+          weCommon: word.buyerWechatComment || '--',
           admin: word.platformName || '--',
           adminChat: word.platformWechatName || '--',
           applyTime: word.gmtModify || '--',
-          status: word.status === '0' ? '未审核' : word.status === '1' ? '审核通过' : word.status === '2' ? '被驳回' : word.status === '3' ? '已导出' : word.status === '4' ? '已打款' : '取消'
+          status: word.status === '0' ? '未审核' : word.status === '1' ? '审核通过' : word.status === '2' ? '被驳回' : word.status === '3' ? '已导出' : word.status === '4' ? '已打款' : '取消',
+          operater: word.operateName
         }
         arr.push(goods)
       }
@@ -187,19 +197,20 @@ export default {
     handleClick (val) {
       console.log(val)
       this.dialogVisible = true
-      this.orderNum = val.orderNum
+      this.orderNum = val.advanceApplyId
     },
     sure () {
-      this.$ajax.post('/api/withdrawApply/updateApplysRestart', {
+      this.$ajax.post('/api/advanceApply/passApply', {
         advanceApplyId: this.orderNum,
         operateUserId: this.userInfo.operateUserAccountId
       }).then((data) => {
         let res = data.data
         if (res.code === '200') {
           this.$message({
-            message: res.message,
+            message: '已通过审核',
             type: 'success'
           })
+          this.dialogVisible = false
           this.getTask()
         } else {
           this.$message({
@@ -210,6 +221,40 @@ export default {
       }).catch(() => {
         this.$message.error('网络错误，刷新下试试')
       })
+    },
+    // 当点击驳回触发的事件
+    handleClickNo (val) {
+      this.dialogVisible_1 = true
+      this.orderNum = val.advanceApplyId
+    },
+    sure_1 () {
+      this.$ajax.post('/api/advanceApply/rejectApply', {
+        advanceApplyId: this.orderNum,
+        operateUserId: this.userInfo.operateUserAccountId,
+        comment: this.input
+      }).then((data) => {
+        let res = data.data
+        if (res.code === '200') {
+          this.$message({
+            message: '操作成功',
+            type: 'success'
+          })
+          this.dialogVisible_1 = false
+          this.getTask()
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          })
+        }
+      }).catch(() => {
+        this.$message.error('网络错误，刷新下试试')
+      })
+    },
+    // 点击查询的进行查询
+    search () {
+      this.params.status = this.value
+      this.getTask()
     }
   }
 }

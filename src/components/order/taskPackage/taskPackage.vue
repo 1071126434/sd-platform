@@ -32,7 +32,7 @@
         <!-- 内容列表展示 -->
         <div class="accountTab">
           <el-table :data="tableDataBuy" style="width: 90%" @select="handSelect" @select-all="selectAll" border>
-            <el-table-column type="selection" fixed></el-table-column>
+            <el-table-column type="selection" fixed :selectable='disabledFilterFirst'></el-table-column>
             <el-table-column prop="sellerTaskId" width="180" align="center" label="编号">
             </el-table-column>
             <el-table-column prop="productOrderPrice" width="120" align="center" label="实际下单金额" sortable>
@@ -57,6 +57,11 @@
             <el-table-column prop="shopName" width="120" align="center" label="店铺" fixed="right">
             </el-table-column>
             <el-table-column prop="productName" width="120" align="center" label="商品标题">
+              <template slot-scope="scope">
+                <el-tooltip class="item" effect="dark" :content="scope.row.productName" placement="top">
+                  <span class="overElipes">{{ scope.row.productName }}</span>
+                </el-tooltip>
+              </template>
             </el-table-column>
             <el-table-column prop="productSecondClassDetail" align="center" width="120" label="三级类目">
             </el-table-column>
@@ -123,6 +128,7 @@ export default {
   },
   data () {
     return {
+      repeat: '',
       state2: ((new Date()).toLocaleDateString()).replace(/\//g, '-'),
       input: 0,
       checkList: ['1,2'],
@@ -161,13 +167,16 @@ export default {
       buyInfo: [],
       // 可用买家id的存储
       buyIdsChoonse: [],
+      sellerIdsChoonse: [],
       jd: 0,
       taobao: 0,
       tianmao: 0,
       // 筛选买家数组
       maxBuyerUserIds: [],
       // 图片的存储
-      imageUrls: []
+      imageUrls: [],
+      // 点击存储最小值得地方
+      bestMin: ''
     }
   },
   computed: {
@@ -190,13 +199,14 @@ export default {
   methods: {
     // 单个选触发的事件
     handSelect (index, val) {
-      // console.log(index, val)
+      console.log(index)
       let arr = []
       let arr1 = []
       let arr2 = []
       let arr3 = []
       let arr8 = []
       let arr5 = []
+      let arr6 = []
       for (let word of index) {
         let goods = {
           state: word.state,
@@ -204,7 +214,8 @@ export default {
           principal: word.productOrderPrice,
           commission: word.commission,
           sellerType: word.sellerShopType,
-          productPictureUrl: word.productPictureUrl
+          productPictureUrl: word.productPictureUrl,
+          totalNum: word.totalNum
         }
         arr.push(goods.applyIds)
         arr1.push(goods)
@@ -212,6 +223,7 @@ export default {
         arr3.push(goods.commission)
         arr8.push(goods.sellerType)
         arr5.push(goods.productPictureUrl)
+        arr6.push(goods.totalNum)
       }
       this.applyIdsNum = arr
       this.applyIdsNumChoose = arr1
@@ -242,6 +254,14 @@ export default {
           this.tianmao = this.tianmao + 1
         }
       }
+      // 循环已选中的订单数量进行一个排序
+      let bestMin = 100000
+      for (var a = 0; a < arr6.length; a++) {
+        if (arr6[a] < bestMin) {
+          bestMin = arr6[a]
+        }
+      }
+      this.bestMin = bestMin
       if (this.applyIdsNum.length > 5) {
         this.$message({
           message: '最多选择5个,您已超出',
@@ -258,9 +278,26 @@ export default {
         if (res.code === '200') {
           this.totalClusterCount = {
             totalCluster: res.data.totalClusterCount,
-            totalCount: res.data.totalCount
+            totalCount: res.data.totalCount > this.bestMin ? this.bestMin : res.data.totalCount
           }
         } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          })
+        }
+      }).catch(() => {
+        this.$message.error('网络错误，刷新下试试')
+      })
+      // 检测是否有重复店铺的接口
+      this.$ajax.post('/api/seller/taskSearch/checkSellerTasksDuplicateV2', {
+        sellerTaskIds: this.applyIdsNum
+      }).then((data) => {
+        console.log(data)
+        let res = data.data
+        if (res.code === '200') {
+        } else {
+          this.repeat = '重复了'
           this.$message({
             message: res.message,
             type: 'warning'
@@ -272,7 +309,7 @@ export default {
     },
     // 弹出页面的单选触发的事件 ,这个事件是不能有全选的
     handSelectOne (index, val) {
-      // console.log(index, val)
+      console.log(index)
       let arr9 = []
       let arr1 = []
       let arr5 = []
@@ -327,10 +364,13 @@ export default {
         return true
       }
     },
+    // disabledFilterFirst () {
+
+    // },
     // 全选触发的事件
-    selectAll (index, val) {
-      this.handSelect()
-    },
+    // selectAll (index, val) {
+    //   this.handSelect()
+    // },
     // 当进入页面进行展示的部分
     changeCheckbox () {
       if ((this.checkList).join(',') === '') {
@@ -365,7 +405,7 @@ export default {
               isOnlyHuabei: word.isOnlyHuabei === '0' ? '否' : word.isOnlyHuabei === '1' ? '是' : '--',
               shopName: word.shopName,
               productName: word.productName,
-              productSecondClassDetail: word.productSecondClassDetail,
+              productSecondClassDetail: word.productThirdClassDetail || '--',
               commission: word.buyerCommissionOrder + word.buyerCommmissionFavor,
               sellerShopType: word.sellerShopType,
               productPictureUrl: word.productPictureUrl
@@ -394,6 +434,14 @@ export default {
         })
         return false
       }
+      if (this.repeat === '重复了') {
+        this.$message({
+          message: '部分店铺重复或三级类目重复,请重新选取',
+          type: 'warning'
+        })
+        this.repeat = ''
+        return false
+      }
       if (this.applyIdsNum.length > 5) {
         this.$message({
           message: '最多选择5个,您已超出',
@@ -416,7 +464,7 @@ export default {
                 telephone: word.telephone,
                 province: word.province,
                 clusterId: word.clusterId,
-                buyerIdentify: word.buyerIdentify || '--',
+                buyerIdentify: word.buyerIdentify === '1' ? '想做单' : '--',
                 waitingBackCapitalAccount: word.waitingBackCapitalAccount,
                 lastLoginTime: word.lastLoginTime,
                 availableBuyerUserAccountId: word.availableBuyerUserAccountId
@@ -447,6 +495,13 @@ export default {
       if (this.input > this.buyIds.length) {
         this.$message({
           message: '希望消耗的订单数不能大于已选中的人数',
+          type: 'warning'
+        })
+        return false
+      }
+      if (this.input > this.totalClusterCount.totalCluster) {
+        this.$message({
+          message: '希望消耗的订单数不能大于本任务包最大订单数',
           type: 'warning'
         })
         return false
