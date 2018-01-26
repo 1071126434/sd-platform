@@ -393,7 +393,20 @@
                 </p>
                 <p>微信号:
                   <b>{{ userInfoObj.wechatNum }}</b>
+                  <span class="link" @click="getWeChat">修改</span>
                 </p>
+                <el-dialog title="修改微信号" :append-to-body="true" :visible.sync="changeWeChat" width="40%">
+                  <ul class="editCont" style="padding:0 20px;">
+                    <li style="height: 40px;line-height:40px;">
+                      <span style="display: inline-block;width:80px;">修改微信: </span>
+                      <el-input v-model="weChat" style="width:340px" type="text" placeholder="请输入内容"></el-input>
+                    </li>
+                  </ul>
+                  <span slot="footer" class="dialog-footer">
+                    <el-button @click="changeWeChat = false">取 消</el-button>
+                    <el-button type="primary" @click="toChangeWeChat">确 定</el-button>
+                  </span>
+                </el-dialog>
                 <!-- <p>微信昵称:
                   <b>{{ userInfoObj.wechatNum }}</b>
                 </p> -->
@@ -509,6 +522,7 @@
 </template>
 <script type="text/ecmascript-6">
 import LookImg from '../../../base/lookImg/lookImg'
+import { mapGetters } from 'vuex'
 export default {
   name: 'buyerAccountDetail',
   components: {
@@ -559,6 +573,9 @@ export default {
       // 驳回原因
       returnAccount: false,
       returnReason: '',
+      // 修改微信号
+      changeWeChat: false,
+      weChat: '',
       // 显示上级信息
       showTop: true,
       // 上级信息
@@ -602,7 +619,10 @@ export default {
       let allMoney = this.userMoneyObj.availableCapitalAmount
       allMoney = allMoney - this.withdrawMoneyNum
       return allMoney
-    }
+    },
+    ...mapGetters([
+      'userInfo'
+    ])
   },
   methods: {
     lookImg (url) {
@@ -736,6 +756,33 @@ export default {
             type: 'success'
           })
           this.editPLUS = false
+          this.getUserInfo()
+        } else {
+          this.$message({
+            message: data.data.message,
+            type: 'warning'
+          })
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
+    },
+    // 修改微信号
+    getWeChat () {
+      this.changeWeChat = true
+    },
+    toChangeWeChat () {
+      this.$ajax.post('/api/buyerAccount/updateBuyerWechat', {
+        buyerAccountId: this.userInfoObj.buyerUserAccountId,
+        wechatNum: this.weChat,
+        operateUserId: this.userInfo.operateUserAccountId
+      }).then((data) => {
+        if (data.data.code === '200') {
+          this.$message({
+            message: '修改成功!',
+            type: 'success'
+          })
+          this.changeWeChat = false
           this.getUserInfo()
         } else {
           this.$message({

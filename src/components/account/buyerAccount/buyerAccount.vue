@@ -140,6 +140,11 @@ export default {
       apiUrl: '/api/buyerAccount/getBuyerUserDetailList'
     }
   },
+  watch: {
+    pageNo (val) {
+      sessionStorage.setItem('__buyerAccountPageNo__', val)
+    }
+  },
   methods: {
     handleClick (row) {
       window.sessionStorage.setItem('clickUserInfo', JSON.stringify(row))
@@ -203,6 +208,11 @@ export default {
   },
   mounted () {
     this.getWechatList()
+    if (sessionStorage.getItem('__buyerAccountPageNo__')) {
+      this.pageNo = (sessionStorage.getItem('__buyerAccountPageNo__') - 0)
+      this.currentPage = (sessionStorage.getItem('__buyerAccountPageNo__') - 0)
+    }
+    this.getTask()
   },
   computed: {
     operateUserAccountId () {

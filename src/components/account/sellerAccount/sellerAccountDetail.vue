@@ -21,8 +21,8 @@
               </em>
             </div>
             <div class="tab">
-              <el-switch v-model="value3" active-text="成为联盟商家">
-              </el-switch>
+              <!-- <el-switch v-model="value3" active-text="成为联盟商家">
+              </el-switch> -->
               <em class="service">服务人:
                 <span>{{this.sellerInfo.admin}}</span>
               </em>
@@ -149,7 +149,7 @@ export default {
         color rgba(146, 146, 146, 1)
         font-size 14px
         .service
-          margin-left 45px
+          margin-left 32px
           span
             color black
       .wchat
