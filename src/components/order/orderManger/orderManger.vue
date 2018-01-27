@@ -2,7 +2,7 @@
   <div class="wrap">
     <header>
       <el-tabs v-model="activeName2" @tab-click="handleClicks">
-        <ul class="search getOrder">
+        <ul class="search getOrder" v-if="activeName2==='first'||activeName2==='second'">
           <li>
             派单时间&nbsp; &nbsp;
             <el-date-picker v-model="value6" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" format="yyyy-MM-dd" value-format='yyyy-MM-dd'>
@@ -22,17 +22,46 @@
           </li>
         </ul>
         <ul class="search_1 getOrder">
-          <li>
+          <li v-if="activeName2==='first'||activeName2==='second'">
             <span class="status">状态</span>&nbsp; &nbsp;
             <el-select v-model="value2" placeholder="请选择">
               <el-option v-for="(item,index) in options" :key="index" :label="item.label" :value="item.value2">
               </el-option>
             </el-select>
           </li>
-          <li>
+          <li class="taskNumInput">
+            <span class="status">任务包编号</span>&nbsp; &nbsp;
+            <el-input v-model="taskNum" placeholder="请输入内容"></el-input>
+          </li>
+          <li style="margin-left:200px" v-if="activeName2==='first'||activeName2==='second'">
             <el-button type="primary" @click="searchBtn">查询</el-button>
           </li>
+          <li style="margin-left:200px" v-if="activeName2==='three'">
+            <el-button type="primary" @click="searchThree">查询</el-button>
+          </li>
         </ul>
+        <el-tab-pane label="任务管理" name="three">
+          <!-- 展示内容部分 -->
+          <div class="accountTab">
+            <el-table :data="tableDataMess" border style="width: 100%">
+              <el-table-column prop="platformPackageId" label="任务包编号" width="160" align="center">
+              </el-table-column>
+              <el-table-column prop="actualNum" label="总任务数" width="120" align="center">
+              </el-table-column>
+              <el-table-column prop="actualNumIng" label="已领取任务数" width="120" align="center">
+                <template slot-scope="scope">
+                  <span @click="jumper(scope.row.platformPackageId)">{{scope.row.actualNumIng}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="actualLeftNum" label="剩余任务数" width="120" align="center">
+                <template slot-scope="scope">
+                  <span @click="jumper_1(scope.row.platformPackageId)">{{scope.row.actualLeftNum}}</span>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <!-- <noCont v-if="this.tableDataBuy.length===0 "></noCont> -->
+        </el-tab-pane>
         <el-tab-pane label="未联系" name="first">
           <div class="accountTab">
             <el-table :data="tableData" border style="width: 100%">
@@ -111,31 +140,10 @@
           </div>
           <!-- <noCont v-if="this.tableDataBuy.length===0 "></noCont> -->
         </el-tab-pane>
-        <el-tab-pane label="已联系" name="second">
-          <!-- 展示内容部分 -->
-          <div class="accountTab">
-            <el-table :data="tableDataMess" border style="width: 100%">
-              <el-table-column prop="date" label="任务包编号" width="160" align="center">
-              </el-table-column>
-              <el-table-column prop="name" label="总任务数" width="120" align="center">
-              </el-table-column>
-              <el-table-column prop="province" label="垫付总金额" width="120" align="center">
-              </el-table-column>
-              <el-table-column prop="city" label="预计佣金" width="120" align="center">
-              </el-table-column>
-              <el-table-column prop="address" label="单数" width="120" align="center">
-              </el-table-column>
-              <el-table-column prop="operaterUserName" label="剩余单数" width="120" align="center">
-              </el-table-column>
-              <el-table-column prop="buyName" label="买家姓名" width="120" align="center">
-              </el-table-column>
-            </el-table>
-          </div>
-          <!-- <noCont v-if="this.tableDataBuy.length===0 "></noCont> -->
-        </el-tab-pane>
+
         <!-- <noCont v-if="this.tableDataBuy.length===0 "></noCont> -->
         <div class="pager">
-          <el-pagination @size-change="handleSizeChange " @current-change="handleCurrentChange " :current-page="currentPage " :page-sizes="[5, 10, 15, 20] " :page-size='pageSize' layout="total, sizes, prev, pager, next, jumper " :total="totalCount ">
+          <el-pagination @size-change="handleSizeChange " @current-change="handleCurrentChange " :current-page="currentPage " :page-sizes="[15, 30, 40, 50] " :page-size='pageSize' layout="total, sizes, prev, pager, next, jumper " :total="totalCount ">
           </el-pagination>
         </div>
       </el-tabs>
@@ -179,16 +187,17 @@ export default {
       value3: '',
       input6: '',
       value6: '',
-      activeName2: 'first',
+      activeName2: 'three',
       value: '',
       value1: '',
       currentPage: 1,
-      pageSize: 5,
-      pageNo: 1,
+      pageSize: 15,
       totalCount: 0,
       dialogFormVisible_2: false,
       dialogFormVisible_1: false,
       tableData: [],
+      tableDataMess: [],
+      taskNum: '',
       options: [{
         value2: '0',
         label: '未领取'
@@ -219,19 +228,32 @@ export default {
     ])
   },
   created () {
-    this.sercherOne(1, this.pageSize)
+    this.message(1, this.pageSize)
     this.adminName_1()
   },
   methods: {
+    jumper (val) {
+      this.activeName2 = 'second'
+      this.taskNum = val
+      this.sellerRecord(1, this.pageSize)
+    },
+    jumper_1 (val) {
+      this.activeName2 = 'first'
+      this.taskNum = val
+      this.sercherOne(1, this.pageSize)
+    },
     handleClicks () {
       this.value6 = ''
       this.value = ''
       this.value1 = ''
       this.value2 = ''
+      this.taskNum = ''
       if (this.activeName2 === 'first') {
         this.sercherOne(1, this.pageSize)
       } else if (this.activeName2 === 'second') {
         this.sellerRecord(1, this.pageSize)
+      } else if (this.activeName2 === 'three') {
+        this.message(1, this.pageSize)
       }
     },
     // 卖家充值申请的搜索
@@ -243,10 +265,13 @@ export default {
       }
     },
     handleSizeChange (val) {
+      this.pageSize = val
       if (this.activeName2 === 'first') {
         this.sercherOne(1, val)
       } else if (this.activeName2 === 'second') {
         this.sellerRecord(1, val)
+      } else if (this.activeName2 === 'three') {
+        this.message(1, val)
       }
     },
     handleCurrentChange (val) {
@@ -254,6 +279,8 @@ export default {
         this.sercherOne(val, this.pageSize)
       } else if (this.activeName2 === 'second') {
         this.sellerRecord(val, this.pageSize)
+      } else if (this.activeName2 === 'three') {
+        this.message(val, this.pageSize)
       }
     },
     // 未联系
@@ -266,7 +293,8 @@ export default {
         status: this.value2,
         contactStatus: '0',
         limit: pageSize,
-        currPageNo: pageNo
+        currPageNo: pageNo,
+        platformPackageId: this.taskNum
       }).then((data) => {
         console.log(data)
         let res = data.data
@@ -382,7 +410,8 @@ export default {
         status: this.value2,
         contactStatus: '1',
         limit: pageSize,
-        currPageNo: pageNo
+        currPageNo: pageNo,
+        platformPackageId: this.taskNum
       }).then((data) => {
         console.log(data)
         let res = data.data
@@ -418,6 +447,44 @@ export default {
       }).catch(() => {
         this.$message.error('网络错误，刷新下试试')
       })
+    },
+    // 任务管理列表
+    message (pageNo, pageSize) {
+      this.$ajax.post('/api/platformPackageAssign/getTodaysPlatformPackageInfosByCondition', {
+        platformPackageId: this.taskNum,
+        limit: pageSize,
+        currPageNo: pageNo
+      }).then((data) => {
+        console.log(data)
+        let res = data.data
+        this.totalCount = res.data.total
+        if (res.code === '200') {
+          let arr = []
+          for (let word of res.data.datas) {
+            let goods = {
+              platformPackageId: word.platformPackageId,
+              // 总任务数
+              actualNum: word.actualNum,
+              // 已领取
+              actualNumIng: word.actualNum - word.actualLeftNum,
+              // 剩余的
+              actualLeftNum: word.actualLeftNum
+            }
+            arr.push(goods)
+          }
+          this.tableDataMess = arr
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          })
+        }
+      }).catch(() => {
+        this.$message.error('网络错误，刷新下试试')
+      })
+    },
+    searchThree () {
+      this.message(1, this.pageSize)
     },
     adName () {
       this.value1 = ' '

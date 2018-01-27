@@ -430,8 +430,8 @@ export default {
             let goods = {
               phone: word.userTelephone,
               moneyNum: word.actualAmount,
-              bankNum: word.bankCardNo,
-              bank: word.bankName,
+              bankNum: word.bankCardNo || '--',
+              bank: word.bankName || '--',
               name: word.userName,
               time: word.gmtCreate,
               withdrawApplyId: word.withdrawApplyId,

@@ -33,7 +33,7 @@
         <div class="accountTab">
           <el-table :data="tableDataBuy" style="width: 90%" @select="handSelect" @select-all="selectAll" border>
             <el-table-column type="selection" fixed :selectable='disabledFilterFirst'></el-table-column>
-            <el-table-column prop="sellerTaskId" width="180" align="center" label="编号">
+            <el-table-column prop="sellerTaskId" width="180" align="center" label="任务编号">
             </el-table-column>
             <el-table-column prop="productOrderPrice" width="120" align="center" label="实际下单金额" sortable>
             </el-table-column>

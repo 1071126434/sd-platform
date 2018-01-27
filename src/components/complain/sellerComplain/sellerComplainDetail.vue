@@ -16,7 +16,7 @@
           </tr>
           <tr>
             <td>{{ complainDetailObj.complainInfo }}</td>
-            <td>{{ complainDetailObj.chuaqinInfo }}</td>
+            <td>{{ complainDetailObj.chuaqinInfo||'--' }}</td>
             <td>{{ complainDetailObj.applyTime }}</td>
           </tr>
         </table>
