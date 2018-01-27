@@ -81,12 +81,12 @@
             <span>{{scope.row.buyerStatus == 0 ? '冻结' : '正常'}}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" width="100" label="淘宝帐号状态">
+        <el-table-column align="center" width="120" label="淘宝帐号状态">
           <template slot-scope="scope">
             <span class="tipSmall" :class="scope.row.isTaobaoPassCheck==1 ? 'tipSuccess' : scope.row.isTaobaoPassCheck==2 ? 'tipWait' : 'tipError'">{{scope.row.isTaobaoPassCheck == 1 ? '已认证' : scope.row.isTaobaoPassCheck == 2 ? '待审核' : scope.row.isTaobaoPassCheck == 3 ? '被驳回' : '未提交' }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" width="100" label="京东帐号状态">
+        <el-table-column align="center" width="120" label="京东帐号状态">
           <template slot-scope="scope">
             <span class="tipSmall" :class="scope.row.isJdPassCheck==1 ? 'tipSuccess' : scope.row.isJdPassCheck==2 ? 'tipWait' : 'tipError'">{{scope.row.isJdPassCheck == 1 ? '已认证' : scope.row.isJdPassCheck == 0 ? '未提交' : '待审核' }}</span>
           </template>
