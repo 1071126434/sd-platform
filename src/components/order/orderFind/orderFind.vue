@@ -170,7 +170,7 @@
                     <span class="tipError lh60" v-else-if="item.taskStatus==='19'">已撤销</span>
                     <p>
                       <!-- 当为复选框的时候 需要循环出来 这样才能保证操作的是对应的值 -->
-                      <el-checkbox v-model="item.isContact" v-if="item.taskStatus==='1'" @change="checkedClick(item)">已联系做单</el-checkbox>
+                      <!-- <el-checkbox v-model="item.isContact" v-if="item.taskStatus==='1'" @change="checkedClick(item)">已联系做单</el-checkbox> -->
                       <!-- <el-table-column type="selection" v-if="item.taskStatus==='1'"></el-table-column> -->
                     </p>
                   </li>
@@ -349,29 +349,29 @@ export default {
       })
     },
     // 已联系做单的事件
-    checkedClick (val) {
-      // console.log(val)
-      this.$ajax.post('/api/order/changeIsContact', {
-        buyerTaskRecordId: val.buyerTaskRecordId,
-        isContact: val.isContact === true ? 1 : 0
-      }).then((data) => {
-        let res = data.data
-        if (res.code === '200') {
-          this.$message({
-            type: 'success',
-            message: '操作成功'
-          })
-          this.getTask()
-        } else {
-          this.$message({
-            type: 'error',
-            message: res.message
-          })
-        }
-      }).catch((err) => {
-        this.$message.error(err)
-      })
-    },
+    // checkedClick (val) {
+    //   // console.log(val)
+    //   this.$ajax.post('/api/order/changeIsContact', {
+    //     buyerTaskRecordId: val.buyerTaskRecordId,
+    //     isContact: val.isContact === true ? 1 : 0
+    //   }).then((data) => {
+    //     let res = data.data
+    //     if (res.code === '200') {
+    //       this.$message({
+    //         type: 'success',
+    //         message: '操作成功'
+    //       })
+    //       this.getTask()
+    //     } else {
+    //       this.$message({
+    //         type: 'error',
+    //         message: res.message
+    //       })
+    //     }
+    //   }).catch((err) => {
+    //     this.$message.error(err)
+    //   })
+    // },
     // 当点击查看任务详情触发的事件
     taskDetail (index, secondArr) {
       this.$router.push({ name: 'taskDetail', query: { sellerTaskId: secondArr[index].sellerTaskId } })

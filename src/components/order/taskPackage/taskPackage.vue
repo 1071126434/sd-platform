@@ -25,7 +25,7 @@
             <i>{{this.totalClusterCount.totalCluster||0}}</i>
           </span>
           <span>预计做单人数:
-            <i>{{this.totalClusterCount.totalCount||0}}</i>
+            <i>{{this.totalClusterCount.totalCountNum||0}}</i>
           </span>
         </div>
         <div class="red"></div>
@@ -74,12 +74,12 @@
     <!-- 点击确认派发之后触发的弹框 -->
     <div v-if="dialogTableVisible" class="cover">
       <div class="content">
-        <div class="cancel" @click="dialogTableVisible=false">X</div>
+        <div class="cancel" @click="exit">X</div>
         <h2>确认派单</h2>
         <div class="head">
-          <p>本任务包最大订单数:{{this.totalClusterCount.totalCluster||0}}</p>
+          <p>本任务包最大订单数:{{this.totalClusterCount.totalCount||0}}</p>
           <p>可接组团数:{{this.totalClusterCount.totalCluster||0}}</p>
-          <p>可接人数:{{this.totalClusterCount.totalCount||0}}</p>
+          <p>可接人数:{{this.availablNum||0}}</p>
         </div>
         <div class="midd">
           <p>请输入您希望消耗的订单数
@@ -176,7 +176,9 @@ export default {
       // 图片的存储
       imageUrls: [],
       // 点击存储最小值得地方
-      bestMin: ''
+      bestMin: '',
+      // 可接人数 弹框出现的
+      availablNum: ''
     }
   },
   computed: {
@@ -197,6 +199,10 @@ export default {
     this.changeCheckbox()
   },
   methods: {
+    exit () {
+      this.dialogTableVisible = false
+      this.maxBuyerUserIds = []
+    },
     // 单个选触发的事件
     handSelect (index, val) {
       console.log(index)
@@ -204,10 +210,13 @@ export default {
       let arr1 = []
       let arr2 = []
       let arr3 = []
-      let arr8 = []
       let arr5 = []
       let arr6 = []
+      this.jd = 0
+      this.taobao = 0
+      this.tianmao = 0
       for (let word of index) {
+        console.log(word)
         let goods = {
           state: word.state,
           applyIds: word.sellerTaskId,
@@ -221,10 +230,17 @@ export default {
         arr1.push(goods)
         arr2.push(goods.principal)
         arr3.push(goods.commission)
-        arr8.push(goods.sellerType)
         arr5.push(goods.productPictureUrl)
         arr6.push(goods.totalNum)
+        if (word.sellerShopType === '0') {
+          this.jd = this.jd + 1
+        } else if (word.sellerShopType === '1') {
+          this.taobao = this.taobao + 1
+        } else if (word.sellerShopType === '2') {
+          this.tianmao = this.tianmao + 1
+        }
       }
+      console.log(this.jd, this.taobao, this.tianmao)
       this.applyIdsNum = arr
       this.applyIdsNumChoose = arr1
       this.imageUrls = arr5
@@ -241,19 +257,6 @@ export default {
         ab += arr3[j]
       }
       this.commission = ab
-      // console.log(this.commission)
-      // 京东淘宝天猫的数量
-      for (var k = 0; k < arr8.length; k++) {
-        if (arr8[k] === '0') {
-          this.jd = this.jd + 1
-        }
-        if (arr8[k] === '1') {
-          this.taobao = this.taobao + 1
-        }
-        if (arr8[k] === '2') {
-          this.tianmao = this.tianmao + 1
-        }
-      }
       // 循环已选中的订单数量进行一个排序
       let bestMin = 100000
       for (var a = 0; a < arr6.length; a++) {
@@ -278,6 +281,7 @@ export default {
         if (res.code === '200') {
           this.totalClusterCount = {
             totalCluster: res.data.totalClusterCount,
+            totalCountNum: res.data.totalCount,
             totalCount: res.data.totalCount > this.bestMin ? this.bestMin : res.data.totalCount
           }
         } else {
@@ -309,7 +313,6 @@ export default {
     },
     // 弹出页面的单选触发的事件 ,这个事件是不能有全选的
     handSelectOne (index, val) {
-      console.log(index)
       let arr9 = []
       let arr1 = []
       let arr5 = []
@@ -342,11 +345,12 @@ export default {
       this.$ajax.post('/api/buyerAccount/getClusterBuyByUserIds', {
         buyerUserIds: this.buyIdsChoonse
       }).then((data) => {
-        // console.log(data)
         let res = data.data
         if (res.code === '200') {
+          // this.maxBuyerUserIds.push(res.data.maxBuyerUserIds)
           this.maxBuyerUserIds = res.data.maxBuyerUserIds
           //  this.buyIdsChoonse
+          console.log(this.maxBuyerUserIds)
         } else {
           this.$message({
             message: res.message,
@@ -358,7 +362,7 @@ export default {
       })
     },
     disabledFilter (row, index) {
-      if (this.maxBuyerUserIds.indexOf(row.availableBuyerUserAccountId) > 0) {
+      if (this.maxBuyerUserIds.indexOf(row.availableBuyerUserAccountId) >= 0) {
         return false
       } else {
         return true
@@ -453,9 +457,10 @@ export default {
       this.$ajax.post('/api/buyerAccount/getAvailableBuyers', {
         sellerTaskIds: this.applyIdsNum
       }).then((data) => {
-        // console.log(data)
+        console.log(data)
         let res = data.data
         if (res.code === '200') {
+          this.availablNum = res.data.totalCount
           let arr = []
           if (res.data) {
             for (let word of res.data.availableBuyers) {
@@ -533,6 +538,7 @@ export default {
           })
           this.dialogTableVisible = false
           this.changeCheckbox()
+          this.maxBuyerUserIds = []
         } else {
           this.$message({
             message: res.message,

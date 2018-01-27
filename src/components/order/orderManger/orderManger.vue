@@ -111,6 +111,28 @@
           </div>
           <!-- <noCont v-if="this.tableDataBuy.length===0 "></noCont> -->
         </el-tab-pane>
+        <el-tab-pane label="已联系" name="second">
+          <!-- 展示内容部分 -->
+          <div class="accountTab">
+            <el-table :data="tableDataMess" border style="width: 100%">
+              <el-table-column prop="date" label="任务包编号" width="160" align="center">
+              </el-table-column>
+              <el-table-column prop="name" label="总任务数" width="120" align="center">
+              </el-table-column>
+              <el-table-column prop="province" label="垫付总金额" width="120" align="center">
+              </el-table-column>
+              <el-table-column prop="city" label="预计佣金" width="120" align="center">
+              </el-table-column>
+              <el-table-column prop="address" label="单数" width="120" align="center">
+              </el-table-column>
+              <el-table-column prop="operaterUserName" label="剩余单数" width="120" align="center">
+              </el-table-column>
+              <el-table-column prop="buyName" label="买家姓名" width="120" align="center">
+              </el-table-column>
+            </el-table>
+          </div>
+          <!-- <noCont v-if="this.tableDataBuy.length===0 "></noCont> -->
+        </el-tab-pane>
         <!-- <noCont v-if="this.tableDataBuy.length===0 "></noCont> -->
         <div class="pager">
           <el-pagination @size-change="handleSizeChange " @current-change="handleCurrentChange " :current-page="currentPage " :page-sizes="[5, 10, 15, 20] " :page-size='pageSize' layout="total, sizes, prev, pager, next, jumper " :total="totalCount ">

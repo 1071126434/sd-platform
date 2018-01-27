@@ -74,6 +74,16 @@
               <el-table-column prop="applyTime" align="center" label="审核时间">
               </el-table-column>
               <el-table-column prop="status" align="center" label="状态">
+                <template slot-scope="scope">
+                  <div v-if="scope.row.status==='被驳回'">
+                    <el-tooltip class="item" effect="dark" :content="scope.row.comment" placement="top">
+                      <span>已驳回</span>
+                    </el-tooltip>
+                  </div>
+                  <div v-if="scope.row.status==='审核通过'">
+                    <span>审核通过</span>
+                  </div>
+                </template>
               </el-table-column>
               <el-table-column prop="operater" align="center" label="操作人">
               </el-table-column>
@@ -187,7 +197,8 @@ export default {
           adminChat: word.platformWechatName || '--',
           applyTime: word.gmtModify || '--',
           status: word.status === '0' ? '未审核' : word.status === '1' ? '审核通过' : word.status === '2' ? '被驳回' : word.status === '3' ? '已导出' : word.status === '4' ? '已打款' : '取消',
-          operater: word.operateName
+          operater: word.operateName,
+          comment: word.comment
         }
         arr.push(goods)
       }
