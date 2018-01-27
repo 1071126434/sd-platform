@@ -60,7 +60,7 @@
         </div>
         <ul class="connectDetail">
           <li>
-            <span class="userNameIcon"></span>{{ taskInfoObj.userName || '暂未填写用户名' }}</li>
+            <span class="userNameIcon"></span>{{ taskInfoObj.companyName || '暂未填写公司名' }}</li>
           <li>
             <span class="iphoneIcon"></span>{{ taskInfoObj.telephone || '暂未填写手机号码' }}</li>
           <li>
@@ -137,8 +137,8 @@
               </li>
               <li class="step3">
                 <h2>3.商品收取运费的方式</h2>
-                <p v-if="goodsInfoObj.isPostFree==1">包邮试用: 试客无需支付运费</p>
-                <p v-else>不包邮试用: 试客需支付运费</p>
+                <p v-if="goodsInfoObj.isPostFree==1">包邮试用: 买手无需支付运费</p>
+                <p v-else>不包邮试用: 买手需支付运费</p>
               </li>
             </ul>
           </el-tab-pane>

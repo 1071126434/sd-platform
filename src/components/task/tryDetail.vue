@@ -38,7 +38,7 @@
           </p>
           <p>
             <span>申请时间: </span>
-            {{ infoObj.applyTime || '--' }}
+            {{ infoObj.applyTime ? (infoObj.applyTime.split(' ')[0]) : '--' }}
           </p>
         </li>
       </ul>
