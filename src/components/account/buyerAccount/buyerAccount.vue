@@ -33,7 +33,7 @@
       </div>
     </div>
     <div class="linkAccount">
-      <el-button @click="showAlert = true">导入账号</el-button>
+      <!-- <el-button @click="showAlert = true">导入账号</el-button> -->
       <el-dialog title="导入帐号?" :append-to-body="true" :visible.sync="showAlert" width="40%">
         <div class="upload">
           <div class="cont">
